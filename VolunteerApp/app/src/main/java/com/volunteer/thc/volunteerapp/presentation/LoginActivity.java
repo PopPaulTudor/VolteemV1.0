@@ -12,9 +12,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -123,9 +128,29 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             startActivity(intent);
                         } else {
+
+                            try {
+                                throw task.getException();
+
+                            } catch (FirebaseAuthException e){
+
+                                if (e.getMessage().equals("The password is invalid or the user does not have a password.")){
+                                    mPassword.setError("Wrong password.");
+                                    mPassword.requestFocus();
+                                } else{
+
+                                    if(e.getMessage().equals("The user account has been disabled by an administrator.")){
+                                        mEmail.setError("Your account has been disabled by an administrator.");
+                                        mEmail.requestFocus();
+                                    }
+                                }
+
+                            } catch (Exception e) {
+                                Log.e(TAG,e.getMessage());
+                            }
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            //Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            //Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
 
                     }
@@ -186,13 +211,28 @@ public class LoginActivity extends AppCompatActivity {
 
                             startActivity(intent);
 
-                        }else{
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        }else {
+                            try {
+                                throw task.getException();
+                            } catch(FirebaseAuthUserCollisionException e) {
+                                mEmail.setError("Email address is already in use.");
+                                mEmail.requestFocus();
+
+                            } catch (FirebaseAuthInvalidCredentialsException e) {
+                                mEmail.setError("Please enter a valid email address.");
+                                mEmail.requestFocus();
+
+                            } catch (Exception e) {
+                                Log.e(TAG, e.getMessage());
+                            }
+                            //Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            //Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
+
                     }
 
                 });
+
     }
 
 
