@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private static final String TAG = "EmailPassword";
-    Intent intent;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +127,10 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             startActivity(intent);
+
+                            mEmail.setText(null);
+                            mPassword.setText(null);
+                            mEmail.requestFocus();
                         } else {
 
                             try {
@@ -188,6 +192,12 @@ public class LoginActivity extends AppCompatActivity {
 
                         if(task.isSuccessful()){
                             Log.d(TAG,"createUserwithEmail:Succes");
+
+                            mPhone.setText(null);
+                            mFirstname.setText(null);
+                            mLastname.setText(null);
+                            mCity.setText(null);
+                            mAge.setText(null);
 
                             mPhone.setVisibility(View.GONE);
                             mFirstname.setVisibility(View.GONE);

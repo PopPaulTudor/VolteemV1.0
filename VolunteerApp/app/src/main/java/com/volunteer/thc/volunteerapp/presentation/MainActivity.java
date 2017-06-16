@@ -41,10 +41,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    public FirebaseAuth Auth = FirebaseAuth.getInstance();
-
-    Intent intent;
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseAuth Auth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +67,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        intent = new Intent(this, LoginActivity.class);
-
     }
 
 
@@ -81,7 +76,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            moveTaskToBack(false);
         }
     }
 
@@ -122,6 +117,8 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_logout){
             Auth.signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
 
