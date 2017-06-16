@@ -12,8 +12,13 @@
     tools:context=".presentation.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+
     <TextView
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="128dp"
+        android:text="Add something here..." />
 </RelativeLayout>
