@@ -74,12 +74,6 @@ public class LoginActivity extends AppCompatActivity {
                 if(mPhone.getVisibility() == View.VISIBLE) {
                     createAccount(mEmail.getText().toString(), mPassword.getText().toString());
 
-                    mPhone.setVisibility(View.GONE);
-                    mFirstname.setVisibility(View.GONE);
-                    mLastname.setVisibility(View.GONE);
-                    mCity.setVisibility(View.GONE);
-                    mAge.setVisibility(View.GONE);
-                    mSignInBtn.setVisibility(View.VISIBLE);
                 } else{
 
                     mPhone.setVisibility(View.VISIBLE);
@@ -105,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
             mCity.setVisibility(View.GONE);
             mAge.setVisibility(View.GONE);
             mSignInBtn.setVisibility(View.VISIBLE);
-            
+
         } else {
             super.onBackPressed();
         }
@@ -169,6 +163,14 @@ public class LoginActivity extends AppCompatActivity {
 
                         if(task.isSuccessful()){
                             Log.d(TAG,"createUserwithEmail:Succes");
+
+                            mPhone.setVisibility(View.GONE);
+                            mFirstname.setVisibility(View.GONE);
+                            mLastname.setVisibility(View.GONE);
+                            mCity.setVisibility(View.GONE);
+                            mAge.setVisibility(View.GONE);
+                            mSignInBtn.setVisibility(View.VISIBLE);
+
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             String userID = user.getUid();
@@ -207,10 +209,54 @@ public class LoginActivity extends AppCompatActivity {
 
         String password = mPassword.getText().toString();
         if (TextUtils.isEmpty(password)) {
-            mPassword.setError("Please enter a password"); ///TODO check password length
+            mPassword.setError("Please enter a password."); ///TODO check password length
             valid = false;
         } else {
             mPassword.setError(null);
+        }
+
+        if(mPhone.getVisibility() == View.VISIBLE){
+
+            String firstname = mFirstname.getText().toString();
+            if(TextUtils.isEmpty(firstname)) {
+                mFirstname.setError("Please enter your first name.");
+                valid = false;
+            } else {
+                mFirstname.setError(null);
+            }
+
+            String lastname = mLastname.getText().toString();
+            if(TextUtils.isEmpty(lastname)) {
+                mLastname.setError("Please enter your last name.");
+                valid = false;
+            } else {
+                mLastname.setError(null);
+            }
+
+            String age = mAge.getText().toString();
+            if(TextUtils.isEmpty(age)) {
+                mAge.setError("Please enter your age.");
+                valid = false;
+            } else {
+                mAge.setError(null);
+            }
+
+            String phone = mPhone.getText().toString();
+            if(TextUtils.isEmpty(phone)) {
+                mPhone.setError("Please enter your phone number.");
+                valid = false;
+            } else {
+                mPhone.setError(null);
+            }
+
+            String city = mCity.getText().toString();
+            if(TextUtils.isEmpty(city)) {
+                mCity.setError("Please enter your city.");
+                valid = false;
+            } else {
+                mCity.setError(null);
+            }
+
         }
 
         return valid;
