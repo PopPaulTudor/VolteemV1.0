@@ -193,11 +193,6 @@ public class LoginActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             Log.d(TAG,"createUserwithEmail:Succes");
 
-                            mPhone.setText(null);
-                            mFirstname.setText(null);
-                            mLastname.setText(null);
-                            mCity.setText(null);
-                            mAge.setText(null);
 
                             mPhone.setVisibility(View.GONE);
                             mFirstname.setVisibility(View.GONE);
@@ -218,6 +213,12 @@ public class LoginActivity extends AppCompatActivity {
                             User user1 = new User(user_firstname,user_lastname,email,user_age,user_city,user_phone);
 
                             mDatabase.child("users").child(userID).setValue(user1);
+
+                            mPhone.setText(null);
+                            mFirstname.setText(null);
+                            mLastname.setText(null);
+                            mCity.setText(null);
+                            mAge.setText(null);
 
                             startActivity(intent);
 
