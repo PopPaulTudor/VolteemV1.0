@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
     android:background="@drawable/side_nav_bar"
@@ -12,23 +12,30 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/nav_header_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:src="@android:drawable/sym_def_app_icon" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/nav_header_name"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Android Studio"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:text="User Name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@android:color/black"
+        android:layout_alignTop="@+id/nav_header_image"
+        android:layout_alignStart="@+id/nav_header_status" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/nav_header_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="android.studio@android.com" />
+        android:text="User Status: Volunteer/Organizer"
+        android:textColor="@android:color/black"
+        android:textSize="17dp"
+        android:layout_below="@+id/nav_header_name"
+        android:layout_toEndOf="@+id/nav_header_image"
+        android:layout_marginStart="27dp" />
 
-</LinearLayout>
+</RelativeLayout>
