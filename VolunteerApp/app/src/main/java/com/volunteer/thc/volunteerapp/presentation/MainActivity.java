@@ -116,14 +116,14 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_profile) {
 
-//            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-//            mFragmentTransaction.replace(R.id.main_container, new ProfileFragment());
-//            mFragmentTransaction.commit();
-//            getSupportActionBar().setTitle("Profile");
-//            item.setChecked(true);
-//
-//            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//            drawer.closeDrawers();
+            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+            mFragmentTransaction.replace(R.id.main_container, new ProfileFragment());
+            mFragmentTransaction.commit();
+            getSupportActionBar().setTitle("Profile");
+            item.setChecked(true);
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawers();
 
         } else if (id == R.id.nav_settings) {
 

@@ -31,13 +31,13 @@ public class User {
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("email", email);
-        result.put("firstname", firstname);
-        result.put("lastname", lastname);
         result.put("age", age);
         result.put("city", city);
-        result.put("phone", phone);
+        result.put("email", email);
         result.put("experience", experience);
+        result.put("firstname", firstname);
+        result.put("lastname", lastname);
+        result.put("phone", phone);
 
         return result;
     }
@@ -50,7 +50,7 @@ public class User {
         this.email = email;
     }
 
-    public String getFirstame() {
+    public String getFirstname() {
         return firstname;
     }
 
