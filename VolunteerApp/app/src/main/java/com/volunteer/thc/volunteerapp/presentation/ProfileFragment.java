@@ -1,7 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.inputmethodservice.Keyboard;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -44,6 +44,10 @@ public class ProfileFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        final ProgressDialog progDialog = ProgressDialog.show(getActivity(),
+                "Loading profile",
+                "Loading profile, please wait....", true);
+
         user1 = new User();
         mFirstname = (TextView) view.findViewById(R.id.user_firstname);
         mFirstnameEdit = (EditText) view.findViewById(R.id.edit_firstname);
@@ -80,6 +84,8 @@ public class ProfileFragment extends Fragment {
                 mPhone.setText(user1.getPhone());
                 mCity.setText(user1.getCity());
                 mAge.setText(user1.getAge());
+
+                progDialog.dismiss();
             }
 
             @Override

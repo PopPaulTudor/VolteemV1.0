@@ -1,6 +1,8 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.inputmethodservice.Keyboard;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private static final String TAG = "EmailPassword";
     private Intent intent;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(firebaseAuth.getCurrentUser() != null){
 
                     startActivity(intent);
+                    finish();
                 }
 
             }
@@ -69,6 +73,9 @@ public class LoginActivity extends AppCompatActivity {
         mSignInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(validateForm()) {
+                    mProgressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "", true);
+                }
                 signIn(mEmail.getText().toString(),mPassword.getText().toString());
             }
         });
@@ -77,6 +84,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(mPhone.getVisibility() == View.VISIBLE) {
+
+                    if(validateForm()){
+                        mProgressDialog = ProgressDialog.show(LoginActivity.this, "Signing up", "", true);
+                    }
                     createAccount(mEmail.getText().toString(), mPassword.getText().toString());
 
                 } else{
@@ -155,6 +166,8 @@ public class LoginActivity extends AppCompatActivity {
                             //Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
 
+                        mProgressDialog.dismiss();
+
                     }
                 });
     }
@@ -232,6 +245,8 @@ public class LoginActivity extends AppCompatActivity {
                             //Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             //Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
+
+                        mProgressDialog.dismiss();
 
                     }
 
