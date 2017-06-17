@@ -127,10 +127,8 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             startActivity(intent);
+                            finish();
 
-                            mEmail.setText(null);
-                            mPassword.setText(null);
-                            mEmail.requestFocus();
                         } else {
 
                             try {
@@ -214,13 +212,8 @@ public class LoginActivity extends AppCompatActivity {
 
                             mDatabase.child("users").child(userID).setValue(user1);
 
-                            mPhone.setText(null);
-                            mFirstname.setText(null);
-                            mLastname.setText(null);
-                            mCity.setText(null);
-                            mAge.setText(null);
-
                             startActivity(intent);
+                            finish();
 
                         }else {
                             try {
