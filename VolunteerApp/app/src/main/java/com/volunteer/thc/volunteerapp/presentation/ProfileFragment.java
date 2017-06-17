@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -56,22 +57,15 @@ public class ProfileFragment extends Fragment {
         mCancel = (Button) view.findViewById(R.id.cancel);
 
         mFirstnameEdit.setTag(mFirstnameEdit.getKeyListener());
-        mFirstnameEdit.setKeyListener(null);
-
         mLastname.setTag(mLastname.getKeyListener());
-        mLastname.setKeyListener(null);
-
         mEmail.setTag(mEmail.getKeyListener());
+        mAge.setTag(mAge.getKeyListener());
+        mCity.setTag(mCity.getKeyListener());
+        mPhone.setTag(mPhone.getKeyListener());
+
         mEmail.setKeyListener(null);
 
-        mAge.setTag(mAge.getKeyListener());
-        mAge.setKeyListener(null);
-
-        mCity.setTag(mCity.getKeyListener());
-        mCity.setKeyListener(null);
-
-        mPhone.setTag(mPhone.getKeyListener());
-        mPhone.setKeyListener(null);
+        toggleEditOff();
 
         ValueEventListener userprofileListener = new ValueEventListener() {
             @Override
@@ -106,11 +100,8 @@ public class ProfileFragment extends Fragment {
                     mCancel.setVisibility(View.VISIBLE);
                     mEditSave.setText("SAVE");
 
-                    mFirstnameEdit.setKeyListener((KeyListener) mFirstnameEdit.getTag());
-                    mLastname.setKeyListener((KeyListener) mLastname.getTag());
-                    mPhone.setKeyListener((KeyListener) mPhone.getTag());
-                    mAge.setKeyListener((KeyListener) mAge.getTag());
-                    mCity.setKeyListener((KeyListener) mCity.getTag());
+                    toggleEditOn();
+
                 } else {
 
                     String currentFirstName, currentLastName, currentAge, currentCity, currentPhone;
@@ -146,6 +137,12 @@ public class ProfileFragment extends Fragment {
                             mDatabase.child("users").child(user.getUid()).child("phone").setValue(currentPhone);
                             user1.setPhone(currentPhone);
                         }
+
+                        Toast.makeText(getActivity(), "Changes saved!", Toast.LENGTH_SHORT).show();
+
+                        mCancel.setVisibility(View.GONE);
+                        mEditSave.setText("EDIT");
+                        toggleEditOff();
                     }
                 }
 
@@ -175,6 +172,24 @@ public class ProfileFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public void toggleEditOn(){
+
+        mFirstnameEdit.setKeyListener((KeyListener) mFirstnameEdit.getTag());
+        mLastname.setKeyListener((KeyListener) mLastname.getTag());
+        mPhone.setKeyListener((KeyListener) mPhone.getTag());
+        mAge.setKeyListener((KeyListener) mAge.getTag());
+        mCity.setKeyListener((KeyListener) mCity.getTag());
+    }
+
+    public void toggleEditOff(){
+
+        mFirstnameEdit.setKeyListener(null);
+        mLastname.setKeyListener(null);
+        mPhone.setKeyListener(null);
+        mCity.setKeyListener(null);
+        mAge.setKeyListener(null);
     }
 
     public boolean validateForm() {
