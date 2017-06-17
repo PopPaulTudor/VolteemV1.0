@@ -70,6 +70,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+        mFragmentTransaction.replace(R.id.main_container, new EventsFragment());
+        mFragmentTransaction.commit();
+        getSupportActionBar().setTitle("Events");
+
+        drawer.closeDrawers();
     }
 
 
@@ -114,6 +121,16 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_events) {
 
+            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+            mFragmentTransaction.replace(R.id.main_container, new EventsFragment());
+            mFragmentTransaction.commit();
+            getSupportActionBar().setTitle("Events");
+            item.setChecked(true);
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawers();
+
+
         } else if (id == R.id.nav_profile) {
 
             mFragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -126,6 +143,15 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawers();
 
         } else if (id == R.id.nav_settings) {
+
+            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+            mFragmentTransaction.replace(R.id.main_container, new SettingsFragment());
+            mFragmentTransaction.commit();
+            getSupportActionBar().setTitle("Settings");
+            item.setChecked(true);
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawers();
 
         } else if (id == R.id.nav_logout){
             Auth.signOut();
