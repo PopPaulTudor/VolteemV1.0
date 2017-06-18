@@ -5,8 +5,6 @@
     android:clickable="true"
     tools:context="com.volunteer.thc.volunteerapp.presentation.ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
 
     <TextView
         android:id="@+id/user_firstname"
