@@ -101,6 +101,19 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
+                mEmail.setFocusableInTouchMode(true);
+                mEmail.setFocusable(true);
+                mFirstnameEdit.setFocusableInTouchMode(true);
+                mFirstname.setFocusable(true);
+                mLastname.setFocusableInTouchMode(true);
+                mLastname.setFocusable(true);
+                mAge.setFocusableInTouchMode(true);
+                mAge.setFocusable(true);
+                mPhone.setFocusableInTouchMode(true);
+                mPhone.setFocusable(true);
+                mCity.setFocusableInTouchMode(true);
+                mCity.setFocusable(true);
+
                 if(mCancel.getVisibility() == View.GONE){
 
                     mCancel.setVisibility(View.VISIBLE);
@@ -150,6 +163,18 @@ public class ProfileFragment extends Fragment {
                         mEditSave.setText("EDIT");
                         toggleEditOff();
                     }
+                    mEmail.setFocusableInTouchMode(false);
+                    mEmail.setFocusable(false);
+                    mFirstnameEdit.setFocusableInTouchMode(false);
+                    mFirstnameEdit.setFocusable(false);
+                    mLastname.setFocusableInTouchMode(false);
+                    mLastname.setFocusable(false);
+                    mAge.setFocusableInTouchMode(false);
+                    mAge.setFocusable(false);
+                    mPhone.setFocusableInTouchMode(false);
+                    mPhone.setFocusable(false);
+                    mCity.setFocusableInTouchMode(false);
+                    mCity.setFocusable(false);
                 }
 
             }
@@ -171,6 +196,20 @@ public class ProfileFragment extends Fragment {
                 mPhone.setKeyListener(null);
                 mCity.setKeyListener(null);
                 mAge.setKeyListener(null);
+
+                mEmail.setFocusableInTouchMode(false);
+                mEmail.setFocusable(false);
+                mFirstnameEdit.setFocusableInTouchMode(false);
+                mFirstnameEdit.setFocusable(false);
+                mLastname.setFocusableInTouchMode(false);
+                mLastname.setFocusable(false);
+                mAge.setFocusableInTouchMode(false);
+                mAge.setFocusable(false);
+                mPhone.setFocusableInTouchMode(false);
+                mPhone.setFocusable(false);
+                mCity.setFocusableInTouchMode(false);
+                mCity.setFocusable(false);
+
 
                 mEditSave.setText("EDIT");
                 mCancel.setVisibility(View.GONE);

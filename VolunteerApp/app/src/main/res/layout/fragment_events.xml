@@ -13,4 +13,6 @@
         android:text="Add something on the Events page..."
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+
 </RelativeLayout>
