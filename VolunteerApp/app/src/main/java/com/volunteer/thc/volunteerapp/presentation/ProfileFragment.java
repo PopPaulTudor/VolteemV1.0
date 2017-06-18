@@ -1,10 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.text.method.KeyListener;
@@ -25,7 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.User;
+import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 
 public class ProfileFragment extends Fragment {
@@ -36,7 +33,7 @@ public class ProfileFragment extends Fragment {
     private TextView mFirstname;
     private EditText mFirstnameEdit, mLastname, mEmail, mAge, mCity, mPhone;
     private Button mEditSave, mCancel;
-    private User user1;
+    private Volunteer volunteer1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,7 +45,7 @@ public class ProfileFragment extends Fragment {
                 "Loading profile",
                 "Loading profile, please wait....", true);
 
-        user1 = new User();
+        volunteer1 = new Volunteer();
         mFirstname = (TextView) view.findViewById(R.id.user_firstname);
         mFirstnameEdit = (EditText) view.findViewById(R.id.edit_firstname);
         mLastname = (EditText) view.findViewById(R.id.edit_lastname);
@@ -75,15 +72,15 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                user1 = dataSnapshot.getValue(User.class);
+                volunteer1 = dataSnapshot.getValue(Volunteer.class);
 
-                mFirstname.setText("Hello " + user1.getFirstname() + "!");
-                mFirstnameEdit.setText(user1.getFirstname());
-                mEmail.setText(user1.getEmail());
-                mLastname.setText(user1.getLastname());
-                mPhone.setText(user1.getPhone());
-                mCity.setText(user1.getCity());
-                mAge.setText(user1.getAge());
+                mFirstname.setText("Hello " + volunteer1.getFirstname() + "!");
+                mFirstnameEdit.setText(volunteer1.getFirstname());
+                mEmail.setText(volunteer1.getEmail());
+                mLastname.setText(volunteer1.getLastname());
+                mPhone.setText(volunteer1.getPhone());
+                mCity.setText(volunteer1.getCity());
+                mAge.setText(volunteer1.getAge());
 
                 progDialog.dismiss();
             }
@@ -95,7 +92,7 @@ public class ProfileFragment extends Fragment {
             }
         };
 
-        mDatabase.child("users").child(user.getUid()).addListenerForSingleValueEvent(userprofileListener);
+        mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(userprofileListener);
 
         mEditSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,31 +114,32 @@ public class ProfileFragment extends Fragment {
                     currentAge = mAge.getText().toString();
                     currentCity = mCity.getText().toString();
                     currentPhone = mPhone.getText().toString();
+                    String uID = user.getUid();
 
                     if(validateForm()) {
-                        if (!currentFirstName.equals(user1.getFirstname())) {
-                            mDatabase.child("users").child(user.getUid()).child("firstname").setValue(currentFirstName);
-                            user1.setFirstname(currentFirstName);
+                        if (!currentFirstName.equals(volunteer1.getFirstname())) {
+                            mDatabase.child("users").child("volunteers").child(user.getUid()).child("firstname").setValue(currentFirstName);
+                            volunteer1.setFirstname(currentFirstName);
                         }
 
-                        if (!currentLastName.equals(user1.getLastname())) {
-                            mDatabase.child("users").child(user.getUid()).child("lastname").setValue(currentLastName);
-                            user1.setLastname(currentLastName);
+                        if (!currentLastName.equals(volunteer1.getLastname())) {
+                            mDatabase.child("users").child("volunteers").child(user.getUid()).child("lastname").setValue(currentLastName);
+                            volunteer1.setLastname(currentLastName);
                         }
 
-                        if (!currentAge.equals(user1.getAge())) {
-                            mDatabase.child("users").child(user.getUid()).child("age").setValue(currentAge);
-                            user1.setAge(currentAge);
+                        if (!currentAge.equals(volunteer1.getAge())) {
+                            mDatabase.child("users").child("volunteers").child(user.getUid()).child("age").setValue(currentAge);
+                            volunteer1.setAge(currentAge);
                         }
 
-                        if (!currentCity.equals(user1.getCity())) {
-                            mDatabase.child("users").child(user.getUid()).child("city").setValue(currentCity);
-                            user1.setCity(currentCity);
+                        if (!currentCity.equals(volunteer1.getCity())) {
+                            mDatabase.child("users").child("volunteers").child(user.getUid()).child("city").setValue(currentCity);
+                            volunteer1.setCity(currentCity);
                         }
 
-                        if (!currentPhone.equals(user1.getPhone())) {
-                            mDatabase.child("users").child(user.getUid()).child("phone").setValue(currentPhone);
-                            user1.setPhone(currentPhone);
+                        if (!currentPhone.equals(volunteer1.getPhone())) {
+                            mDatabase.child("users").child("volunteers").child(user.getUid()).child("phone").setValue(currentPhone);
+                            volunteer1.setPhone(currentPhone);
                         }
 
                         Toast.makeText(getActivity(), "Changes saved!", Toast.LENGTH_SHORT).show();
@@ -159,12 +157,12 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                mFirstnameEdit.setText(user1.getFirstname());
-                mEmail.setText(user1.getEmail());
-                mLastname.setText(user1.getLastname());
-                mPhone.setText(user1.getPhone());
-                mCity.setText(user1.getCity());
-                mAge.setText(user1.getAge());
+                mFirstnameEdit.setText(volunteer1.getFirstname());
+                mEmail.setText(volunteer1.getEmail());
+                mLastname.setText(volunteer1.getLastname());
+                mPhone.setText(volunteer1.getPhone());
+                mCity.setText(volunteer1.getCity());
+                mAge.setText(volunteer1.getAge());
 
                 mFirstnameEdit.setKeyListener(null);
                 mLastname.setKeyListener(null);

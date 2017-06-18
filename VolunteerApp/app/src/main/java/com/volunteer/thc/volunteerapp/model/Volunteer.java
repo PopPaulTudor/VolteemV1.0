@@ -9,15 +9,15 @@ import java.util.Map;
 /**
  * Created by Cristi on 6/14/2017.
  */
-public class User {
+public class Volunteer {
 
     private String firstname, lastname, email, city, phone, age, experience;
 
-    public User(){ ///constructor is empty to be able to call dataSnapshot on this class
+    public Volunteer(){ ///constructor is empty to be able to call dataSnapshot on this class
 
     }
 
-    public User(String firstname, String lastname, String email, String age, String city, String phone){
+    public Volunteer(String firstname, String lastname, String email, String age, String city, String phone){
 
         this.firstname = firstname;
         this.lastname = lastname;
