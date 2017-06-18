@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseAuth Auth = FirebaseAuth.getInstance();
     private FragmentTransaction mFragmentTransaction;
+    private FloatingActionButton fab;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,6 +103,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_events) {
 
+            fab.setVisibility(View.VISIBLE);
             mFragmentTransaction = getSupportFragmentManager().beginTransaction();
             mFragmentTransaction.replace(R.id.main_container, new EventsFragment());
             mFragmentTransaction.commit();
@@ -113,6 +116,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_profile) {
 
+            fab.setVisibility(View.GONE);
             mFragmentTransaction = getSupportFragmentManager().beginTransaction();
             mFragmentTransaction.replace(R.id.main_container, new ProfileFragment());
             mFragmentTransaction.commit();
@@ -124,12 +128,13 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_settings) {
 
+            fab.setVisibility(View.GONE);
             mFragmentTransaction = getSupportFragmentManager().beginTransaction();
             mFragmentTransaction.replace(R.id.main_container, new SettingsFragment());
+
             mFragmentTransaction.commit();
             getSupportActionBar().setTitle("Settings");
             item.setChecked(true);
-
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawers();
 
