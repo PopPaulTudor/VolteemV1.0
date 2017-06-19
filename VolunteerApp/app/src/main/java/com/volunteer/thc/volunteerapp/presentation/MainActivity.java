@@ -1,10 +1,14 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,9 +18,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 
 
@@ -27,6 +38,10 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth Auth = FirebaseAuth.getInstance();
     private FragmentTransaction mFragmentTransaction;
     private FloatingActionButton fab;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private TextView mUserStatus, mUserName;
+    private ValueEventListener mStatusListener;
+    private SharedPreferences prefs;
 
 
     @Override
@@ -52,6 +67,45 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+        mUserStatus = (TextView) header.findViewById(R.id.nav_header_status);
+        mUserName = (TextView) header.findViewById(R.id.nav_header_name);
+
+        prefs = this.getPreferences(Context.MODE_PRIVATE);
+
+
+        mStatusListener = (new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                SharedPreferences.Editor editor = prefs.edit();
+
+                if (dataSnapshot.hasChildren()) {
+                    mUserStatus.setText("Volunteer");
+                    editor.putString("user_status", "Volunteer");
+                    editor.commit();
+                    mUserName.setText(dataSnapshot.child("firstname").getValue().toString());
+                    editor.putString("user_name", mUserName.getText().toString());
+                    editor.commit();
+                } else {
+                    mUserStatus.setText("Organiser");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("Cancelled: ", "Cancelled");
+            }
+        });
+
+        String userstatus = prefs.getString("user_status", null);
+        if(TextUtils.isEmpty(userstatus)) {
+            mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mStatusListener);
+        } else {
+            mUserStatus.setText(userstatus);
+            mUserName.setText(prefs.getString("user_name", null));
+        }
 
         mFragmentTransaction = getSupportFragmentManager().beginTransaction();
         mFragmentTransaction.replace(R.id.main_container, new EventsFragment());
@@ -140,6 +194,11 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_logout){
             Auth.signOut();
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.remove("user_status");
+            editor.commit();
+            editor.remove("user_name");
+            editor.commit();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();

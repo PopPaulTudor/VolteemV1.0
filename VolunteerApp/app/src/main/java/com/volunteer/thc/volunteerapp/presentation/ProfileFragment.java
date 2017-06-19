@@ -1,7 +1,10 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.text.method.KeyListener;
@@ -34,6 +37,7 @@ public class ProfileFragment extends Fragment {
     private EditText mFirstnameEdit, mLastname, mEmail, mAge, mCity, mPhone;
     private Button mEditSave, mCancel;
     private Volunteer volunteer1;
+    private SharedPreferences prefs;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +50,7 @@ public class ProfileFragment extends Fragment {
                 "Loading profile, please wait....", true);
 
         volunteer1 = new Volunteer();
+        prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
         mFirstname = (TextView) view.findViewById(R.id.user_firstname);
         mFirstnameEdit = (EditText) view.findViewById(R.id.edit_firstname);
         mLastname = (EditText) view.findViewById(R.id.edit_lastname);
@@ -53,7 +58,6 @@ public class ProfileFragment extends Fragment {
         mAge = (EditText) view.findViewById(R.id.edit_age);
         mCity = (EditText) view.findViewById(R.id.edit_city);
         mPhone = (EditText) view.findViewById(R.id.edit_phone);
-
         mEditSave = (Button) view.findViewById(R.id.edit_save);
         mCancel = (Button) view.findViewById(R.id.cancel);
 
@@ -72,15 +76,18 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                volunteer1 = dataSnapshot.getValue(Volunteer.class);
+                String userstatus = prefs.getString("user_status", null);
+                if(TextUtils.equals(userstatus,"Volunteer")) {
+                    volunteer1 = dataSnapshot.getValue(Volunteer.class);
 
-                mFirstname.setText("Hello " + volunteer1.getFirstname() + "!");
-                mFirstnameEdit.setText(volunteer1.getFirstname());
-                mEmail.setText(volunteer1.getEmail());
-                mLastname.setText(volunteer1.getLastname());
-                mPhone.setText(volunteer1.getPhone());
-                mCity.setText(volunteer1.getCity());
-                mAge.setText(volunteer1.getAge());
+                    mFirstname.setText("Hello " + volunteer1.getFirstname() + "!");
+                    mFirstnameEdit.setText(volunteer1.getFirstname());
+                    mEmail.setText(volunteer1.getEmail());
+                    mLastname.setText(volunteer1.getLastname());
+                    mPhone.setText(volunteer1.getPhone());
+                    mCity.setText(volunteer1.getCity());
+                    mAge.setText(volunteer1.getAge());
+                }
 
                 progDialog.dismiss();
             }
