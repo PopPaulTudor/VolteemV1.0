@@ -18,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity
         mUserStatus = (TextView) header.findViewById(R.id.nav_header_status);
         mUserName = (TextView) header.findViewById(R.id.nav_header_name);
 
-        prefs = this.getPreferences(Context.MODE_PRIVATE);
+        prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
 
         mStatusListener = (new ValueEventListener() {
@@ -171,9 +170,19 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_profile) {
 
             fab.setVisibility(View.GONE);
-            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-            mFragmentTransaction.replace(R.id.main_container, new ProfileFragment());
-            mFragmentTransaction.commit();
+
+            String userstatus = prefs.getString("user_status", null);
+            if(TextUtils.equals(userstatus, "Volunteer")) {
+
+                mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+                mFragmentTransaction.replace(R.id.main_container, new VolunteerProfileFragment());
+                mFragmentTransaction.commit();
+            } else {
+
+                mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+                mFragmentTransaction.replace(R.id.main_container, new OrganiserProfileFragment());
+                mFragmentTransaction.commit();
+            }
             getSupportActionBar().setTitle("Profile");
             item.setChecked(true);
 

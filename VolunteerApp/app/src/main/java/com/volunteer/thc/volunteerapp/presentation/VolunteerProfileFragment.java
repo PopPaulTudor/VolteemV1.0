@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.text.method.KeyListener;
@@ -28,7 +27,7 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 
-public class ProfileFragment extends Fragment {
+public class VolunteerProfileFragment extends Fragment {
 
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -37,20 +36,17 @@ public class ProfileFragment extends Fragment {
     private EditText mFirstnameEdit, mLastname, mEmail, mAge, mCity, mPhone;
     private Button mEditSave, mCancel;
     private Volunteer volunteer1;
-    private SharedPreferences prefs;
+    private ProgressDialog mDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_volunteerprofile, container, false);
 
-        final ProgressDialog progDialog = ProgressDialog.show(getActivity(),
-                "Loading profile",
-                "Loading profile, please wait....", true);
+        mDialog = ProgressDialog.show(getActivity(), "Loading profile", "", true);
 
         volunteer1 = new Volunteer();
-        prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
         mFirstname = (TextView) view.findViewById(R.id.user_firstname);
         mFirstnameEdit = (EditText) view.findViewById(R.id.edit_firstname);
         mLastname = (EditText) view.findViewById(R.id.edit_lastname);
@@ -72,34 +68,31 @@ public class ProfileFragment extends Fragment {
 
         toggleEditOff();
 
-        ValueEventListener userprofileListener = new ValueEventListener() {
+        ValueEventListener mVolunteerProfileListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String userstatus = prefs.getString("user_status", null);
-                if(TextUtils.equals(userstatus,"Volunteer")) {
-                    volunteer1 = dataSnapshot.getValue(Volunteer.class);
+                volunteer1 = dataSnapshot.getValue(Volunteer.class);
+                mFirstname.setText("Hello " + volunteer1.getFirstname() + "!");
+                mFirstnameEdit.setText(volunteer1.getFirstname());
+                mEmail.setText(volunteer1.getEmail());
+                mLastname.setText(volunteer1.getLastname());
+                mPhone.setText(volunteer1.getPhone());
+                mCity.setText(volunteer1.getCity());
+                mAge.setText(volunteer1.getAge());
 
-                    mFirstname.setText("Hello " + volunteer1.getFirstname() + "!");
-                    mFirstnameEdit.setText(volunteer1.getFirstname());
-                    mEmail.setText(volunteer1.getEmail());
-                    mLastname.setText(volunteer1.getLastname());
-                    mPhone.setText(volunteer1.getPhone());
-                    mCity.setText(volunteer1.getCity());
-                    mAge.setText(volunteer1.getAge());
-                }
-
-                progDialog.dismiss();
+                mDialog.dismiss();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
-                Log.w("ProfileRead", databaseError.toException());
+                Log.w("ProfileReadCanceled: ", databaseError.toException());
             }
         };
 
-        mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(userprofileListener);
+        mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mVolunteerProfileListener);
+        mDatabase.removeEventListener(mVolunteerProfileListener);
 
         mEditSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,7 +101,7 @@ public class ProfileFragment extends Fragment {
                 mEmail.setFocusableInTouchMode(true);
                 mEmail.setFocusable(true);
                 mFirstnameEdit.setFocusableInTouchMode(true);
-                mFirstname.setFocusable(true);
+                mFirstnameEdit.setFocusable(true);
                 mLastname.setFocusableInTouchMode(true);
                 mLastname.setFocusable(true);
                 mAge.setFocusableInTouchMode(true);
@@ -134,7 +127,6 @@ public class ProfileFragment extends Fragment {
                     currentAge = mAge.getText().toString();
                     currentCity = mCity.getText().toString();
                     currentPhone = mPhone.getText().toString();
-                    String uID = user.getUid();
 
                     if(validateForm()) {
                         if (!currentFirstName.equals(volunteer1.getFirstname())) {
@@ -196,11 +188,7 @@ public class ProfileFragment extends Fragment {
                 mCity.setText(volunteer1.getCity());
                 mAge.setText(volunteer1.getAge());
 
-                mFirstnameEdit.setKeyListener(null);
-                mLastname.setKeyListener(null);
-                mPhone.setKeyListener(null);
-                mCity.setKeyListener(null);
-                mAge.setKeyListener(null);
+                toggleEditOff();
 
                 mEmail.setFocusableInTouchMode(false);
                 mEmail.setFocusable(false);

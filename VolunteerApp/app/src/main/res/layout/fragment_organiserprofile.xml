@@ -1,0 +1,121 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    tools:context="com.volunteer.thc.volunteerapp.presentation.VolunteerProfileFragment">
+
+
+    <TextView
+        android:id="@+id/user_company"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="132dp"
+        android:layout_marginTop="43dp"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/text_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email: "
+        android:textSize="17dp"
+        android:layout_below="@+id/user_company"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="46dp" />
+    <TextView
+        android:id="@+id/text_company"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Company: "
+        android:textSize="17dp"
+        android:layout_alignBaseline="@+id/edit_company"
+        android:layout_alignBottom="@+id/edit_company"
+        android:layout_alignParentStart="true" />
+    <TextView
+        android:id="@+id/text_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="City: "
+        android:textSize="17dp"
+        android:layout_alignBaseline="@+id/edit_city"
+        android:layout_alignBottom="@+id/edit_city"
+        android:layout_alignParentStart="true" />
+    <TextView
+        android:id="@+id/text_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Phone: "
+        android:textSize="17dp"
+        android:layout_alignBaseline="@+id/edit_phone"
+        android:layout_alignBottom="@+id/edit_phone"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:id="@+id/edit_email"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:layout_alignBaseline="@+id/text_email"
+        android:layout_alignBottom="@+id/text_email"
+        android:layout_toEndOf="@+id/text_email" />
+
+    <EditText
+        android:id="@+id/edit_company"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:layout_below="@+id/edit_email"
+        android:layout_toEndOf="@+id/text_company" />
+
+    <EditText
+        android:id="@+id/edit_city"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/edit_company"
+        android:layout_below="@+id/edit_company"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/edit_phone"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="phone"
+        android:layout_below="@+id/edit_city"
+        android:layout_toEndOf="@+id/text_phone" />
+
+
+
+    <Button
+        android:id="@+id/edit_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/edit_phone"
+        android:text="EDIT" />
+
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/edit_phone"
+        android:layout_below="@+id/edit_phone"
+        android:text="CANCEL"
+        android:focusable="true"
+        android:visibility="gone" />
+</RelativeLayout>
