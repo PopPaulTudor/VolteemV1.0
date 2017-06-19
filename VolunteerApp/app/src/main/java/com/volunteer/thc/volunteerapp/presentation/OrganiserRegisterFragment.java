@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
@@ -106,6 +108,14 @@ public class OrganiserRegisterFragment extends Fragment{
                             Organiser organiser = new Organiser(email, user_company, user_city, user_phone);
 
                             mDatabase.child("users").child("organisers").child(userID).setValue(organiser);
+
+                            UserProfileChangeRequest mProfileUpdate = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(user_company)
+                                    .build();
+                            
+                            user.updateProfile(mProfileUpdate);
+                            user.sendEmailVerification();
+                            Toast.makeText(getActivity(), "Account successfully created. A verification email has been sent to your email address.", Toast.LENGTH_LONG).show();
 
                             startActivity(intent);
                             getActivity().finish();

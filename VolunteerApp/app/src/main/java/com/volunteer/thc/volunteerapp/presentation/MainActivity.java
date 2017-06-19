@@ -84,11 +84,10 @@ public class MainActivity extends AppCompatActivity
                     mUserStatus.setText("Volunteer");
                     editor.putString("user_status", "Volunteer");
                     editor.commit();
-                    mUserName.setText(dataSnapshot.child("firstname").getValue().toString());
-                    editor.putString("user_name", mUserName.getText().toString());
-                    editor.commit();
                 } else {
                     mUserStatus.setText("Organiser");
+                    editor.putString("user_status", "Organiser");
+                    editor.commit();
                 }
             }
 
@@ -101,10 +100,10 @@ public class MainActivity extends AppCompatActivity
         String userstatus = prefs.getString("user_status", null);
         if(TextUtils.isEmpty(userstatus)) {
             mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mStatusListener);
-        } else {
-            mUserStatus.setText(userstatus);
-            mUserName.setText(prefs.getString("user_name", null));
         }
+
+        mUserName.setText(user.getDisplayName());
+        mUserStatus.setText(userstatus);
 
         mFragmentTransaction = getSupportFragmentManager().beginTransaction();
         mFragmentTransaction.replace(R.id.main_container, new EventsFragment());
