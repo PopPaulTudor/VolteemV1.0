@@ -113,9 +113,26 @@ public class OrganiserRegisterFragment extends Fragment{
                                     .setDisplayName(user_company)
                                     .build();
                             
-                            user.updateProfile(mProfileUpdate);
-                            user.sendEmailVerification();
-                            Toast.makeText(getActivity(), "Account successfully created. A verification email has been sent to your email address.", Toast.LENGTH_LONG).show();
+                            user.updateProfile(mProfileUpdate)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if(task.isSuccessful()) {
+                                                Log.d("ProfileUpdate ", "is successfull");
+                                            } else {
+                                                Log.d("ProfileUpdate ", "failed");
+                                            }
+                                        }
+                                    });
+
+                            user.sendEmailVerification()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Toast.makeText(getActivity(), "Account successfully created. A verification email has been sent to your email address.", Toast.LENGTH_LONG).show();
+
+                                        }
+                                    });
 
                             startActivity(intent);
                             getActivity().finish();

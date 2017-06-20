@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
@@ -36,7 +34,6 @@ public class MainActivity extends AppCompatActivity
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseAuth Auth = FirebaseAuth.getInstance();
     private FragmentTransaction mFragmentTransaction;
-    private FloatingActionButton fab;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private TextView mUserStatus, mUserName;
     private ValueEventListener mStatusListener;
@@ -49,14 +46,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        fab = (FloatingActionButton)findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "As organizer you can add event", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -73,7 +62,6 @@ public class MainActivity extends AppCompatActivity
 
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
-
         mStatusListener = (new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -83,11 +71,11 @@ public class MainActivity extends AppCompatActivity
                 if (dataSnapshot.hasChildren()) {
                     mUserStatus.setText("Volunteer");
                     editor.putString("user_status", "Volunteer");
-                    editor.commit();
+                    editor.apply();
                 } else {
                     mUserStatus.setText("Organiser");
                     editor.putString("user_status", "Organiser");
-                    editor.commit();
+                    editor.apply();
                 }
             }
 
@@ -98,16 +86,27 @@ public class MainActivity extends AppCompatActivity
         });
 
         String userstatus = prefs.getString("user_status", null);
-        if(TextUtils.isEmpty(userstatus)) {
+        String username = user.getDisplayName();
+
+        if(TextUtils.equals(userstatus, null)) {
             mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mStatusListener);
+            mDatabase.removeEventListener(mStatusListener);
+            userstatus = prefs.getString("user_status", null);
         }
 
-        mUserName.setText(user.getDisplayName());
+        mUserName.setText(username);
         mUserStatus.setText(userstatus);
 
-        mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-        mFragmentTransaction.replace(R.id.main_container, new EventsFragment());
-        mFragmentTransaction.commit();
+        if(TextUtils.equals(userstatus, "Volunteer")) {
+            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+            mFragmentTransaction.replace(R.id.main_container, new VolunteerEventsFragment());
+            mFragmentTransaction.commit();
+        } else {
+            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+            mFragmentTransaction.replace(R.id.main_container, new OrganiserEventsFragment());
+            mFragmentTransaction.commit();
+        }
+
         getSupportActionBar().setTitle("Events");
 
         drawer.closeDrawers();
@@ -155,9 +154,15 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_events) {
 
-            fab.setVisibility(View.VISIBLE);
-            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-            mFragmentTransaction.replace(R.id.main_container, new EventsFragment());
+            String userstatus = prefs.getString("user_status", null);
+            if(TextUtils.equals(userstatus, "Volunteer")) {
+                mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+                mFragmentTransaction.replace(R.id.main_container, new VolunteerEventsFragment());
+            } else {
+                mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+                mFragmentTransaction.replace(R.id.main_container, new OrganiserEventsFragment());
+            }
+
             mFragmentTransaction.commit();
             getSupportActionBar().setTitle("Events");
             item.setChecked(true);
@@ -167,8 +172,6 @@ public class MainActivity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_profile) {
-
-            fab.setVisibility(View.GONE);
 
             String userstatus = prefs.getString("user_status", null);
             if(TextUtils.equals(userstatus, "Volunteer")) {
@@ -190,7 +193,6 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_settings) {
 
-            fab.setVisibility(View.GONE);
             mFragmentTransaction = getSupportFragmentManager().beginTransaction();
             mFragmentTransaction.replace(R.id.main_container, new SettingsFragment());
 
@@ -203,10 +205,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout){
             Auth.signOut();
             SharedPreferences.Editor editor = prefs.edit();
-            editor.remove("user_status");
-            editor.commit();
-            editor.remove("user_name");
-            editor.commit();
+            editor.putString("user_status", null);
+            editor.apply();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
