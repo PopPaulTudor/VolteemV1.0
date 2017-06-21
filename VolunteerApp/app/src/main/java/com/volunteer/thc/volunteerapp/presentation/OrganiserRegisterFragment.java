@@ -129,7 +129,7 @@ public class OrganiserRegisterFragment extends Fragment{
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            Toast.makeText(getActivity(), "Account successfully created. A verification email has been sent to your email address.", Toast.LENGTH_LONG).show();
+                                            // TODO: line creates NPE: Toast.makeText(getActivity(), "Account successfully created. A verification email has been sent to your email address.", Toast.LENGTH_LONG).show();
 
                                         }
                                     });

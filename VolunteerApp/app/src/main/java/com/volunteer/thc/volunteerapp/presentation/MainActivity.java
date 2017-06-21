@@ -68,15 +68,20 @@ public class MainActivity extends AppCompatActivity
 
                 SharedPreferences.Editor editor = prefs.edit();
 
+                String userstatus;
                 if (dataSnapshot.hasChildren()) {
                     mUserStatus.setText("Volunteer");
                     editor.putString("user_status", "Volunteer");
                     editor.apply();
+                    userstatus = "Volunteer";
+
                 } else {
                     mUserStatus.setText("Organiser");
                     editor.putString("user_status", "Organiser");
                     editor.apply();
+                    userstatus = "Organiser";
                 }
+                ShowEvents(userstatus);
             }
 
             @Override
@@ -91,20 +96,11 @@ public class MainActivity extends AppCompatActivity
         if(TextUtils.equals(userstatus, null)) {
             mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mStatusListener);
             mDatabase.removeEventListener(mStatusListener);
-            userstatus = prefs.getString("user_status", null);
-        }
-
-        mUserName.setText(username);
-        mUserStatus.setText(userstatus);
-
-        if(TextUtils.equals(userstatus, "Volunteer")) {
-            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-            mFragmentTransaction.replace(R.id.main_container, new VolunteerEventsFragment());
-            mFragmentTransaction.commit();
         } else {
-            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-            mFragmentTransaction.replace(R.id.main_container, new OrganiserEventsFragment());
-            mFragmentTransaction.commit();
+
+            mUserStatus.setText(userstatus);
+            ShowEvents(userstatus);
+
         }
 
         getSupportActionBar().setTitle("Events");
@@ -216,4 +212,19 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void ShowEvents(String userstatus) {
+
+        if(TextUtils.equals(userstatus, "Volunteer")) {
+            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+            mFragmentTransaction.replace(R.id.main_container, new VolunteerEventsFragment());
+            mFragmentTransaction.commit();
+        } else {
+            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+            mFragmentTransaction.replace(R.id.main_container, new OrganiserEventsFragment());
+            mFragmentTransaction.commit();
+        }
+
+    }
+
 }
