@@ -98,18 +98,7 @@ public class VolunteerProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                mEmail.setFocusableInTouchMode(true);
-                mEmail.setFocusable(true);
-                mFirstnameEdit.setFocusableInTouchMode(true);
-                mFirstnameEdit.setFocusable(true);
-                mLastname.setFocusableInTouchMode(true);
-                mLastname.setFocusable(true);
-                mAge.setFocusableInTouchMode(true);
-                mAge.setFocusable(true);
-                mPhone.setFocusableInTouchMode(true);
-                mPhone.setFocusable(true);
-                mCity.setFocusableInTouchMode(true);
-                mCity.setFocusable(true);
+                toggleFocusOn();
 
                 if(mCancel.getVisibility() == View.GONE){
 
@@ -159,19 +148,8 @@ public class VolunteerProfileFragment extends Fragment {
                         mCancel.setVisibility(View.GONE);
                         mEditSave.setText("EDIT");
                         toggleEditOff();
+                        toggleFocusOff();
                     }
-                    mEmail.setFocusableInTouchMode(false);
-                    mEmail.setFocusable(false);
-                    mFirstnameEdit.setFocusableInTouchMode(false);
-                    mFirstnameEdit.setFocusable(false);
-                    mLastname.setFocusableInTouchMode(false);
-                    mLastname.setFocusable(false);
-                    mAge.setFocusableInTouchMode(false);
-                    mAge.setFocusable(false);
-                    mPhone.setFocusableInTouchMode(false);
-                    mPhone.setFocusable(false);
-                    mCity.setFocusableInTouchMode(false);
-                    mCity.setFocusable(false);
                 }
 
             }
@@ -189,20 +167,7 @@ public class VolunteerProfileFragment extends Fragment {
                 mAge.setText(volunteer1.getAge());
 
                 toggleEditOff();
-
-                mEmail.setFocusableInTouchMode(false);
-                mEmail.setFocusable(false);
-                mFirstnameEdit.setFocusableInTouchMode(false);
-                mFirstnameEdit.setFocusable(false);
-                mLastname.setFocusableInTouchMode(false);
-                mLastname.setFocusable(false);
-                mAge.setFocusableInTouchMode(false);
-                mAge.setFocusable(false);
-                mPhone.setFocusableInTouchMode(false);
-                mPhone.setFocusable(false);
-                mCity.setFocusableInTouchMode(false);
-                mCity.setFocusable(false);
-
+                toggleFocusOff();
 
                 mEditSave.setText("EDIT");
                 mCancel.setVisibility(View.GONE);
@@ -230,50 +195,56 @@ public class VolunteerProfileFragment extends Fragment {
         mAge.setKeyListener(null);
     }
 
+    public void toggleFocusOn() {
+
+        mEmail.setFocusableInTouchMode(true);
+        mEmail.setFocusable(true);
+        mFirstnameEdit.setFocusableInTouchMode(true);
+        mFirstnameEdit.setFocusable(true);
+        mLastname.setFocusableInTouchMode(true);
+        mLastname.setFocusable(true);
+        mAge.setFocusableInTouchMode(true);
+        mAge.setFocusable(true);
+        mPhone.setFocusableInTouchMode(true);
+        mPhone.setFocusable(true);
+        mCity.setFocusableInTouchMode(true);
+        mCity.setFocusable(true);
+    }
+
+    public void toggleFocusOff() {
+
+        mEmail.setFocusableInTouchMode(false);
+        mEmail.setFocusable(false);
+        mFirstnameEdit.setFocusableInTouchMode(false);
+        mFirstnameEdit.setFocusable(false);
+        mLastname.setFocusableInTouchMode(false);
+        mLastname.setFocusable(false);
+        mAge.setFocusableInTouchMode(false);
+        mAge.setFocusable(false);
+        mPhone.setFocusableInTouchMode(false);
+        mPhone.setFocusable(false);
+        mCity.setFocusableInTouchMode(false);
+        mCity.setFocusable(false);
+    }
+
     public boolean validateForm() {
 
-        boolean valid = true;
-
-        String firstname = mFirstnameEdit.getText().toString();
-        if (TextUtils.isEmpty(firstname)) {
-            mFirstnameEdit.setError("This field can not be empty.");
-            valid = false;
-        } else {
-            mFirstnameEdit.setError(null);
-        }
-
-        String lastname = mLastname.getText().toString();
-        if (TextUtils.isEmpty(lastname)) {
-            mLastname.setError("This field can not be empty.");
-            valid = false;
-        } else {
-            mLastname.setError(null);
-        }
-
-        String age = mAge.getText().toString();
-        if (TextUtils.isEmpty(age)) {
-            mAge.setError("This field can not be empty.");
-            valid = false;
-        } else {
-            mAge.setError(null);
-        }
-        String phone = mPhone.getText().toString();
-        if (TextUtils.isEmpty(phone)) {
-            mPhone.setError("This field can not be empty.");
-            valid = false;
-        } else {
-            mPhone.setError(null);
-        }
-
-        String city = mCity.getText().toString();
-        if (TextUtils.isEmpty(city)) {
-            mCity.setError("This field can not be empty.");
-            valid = false;
-        } else {
-            mCity.setError(null);
-        }
-
+        boolean valid;
+        valid = (editTextIsValid(mFirstnameEdit) && editTextIsValid(mLastname) && editTextIsValid(mAge) &&
+                    editTextIsValid(mPhone) && editTextIsValid(mCity));
         return valid;
     }
 
+    private boolean editTextIsValid(EditText mEditText) {
+
+        String text = mEditText.getText().toString();
+        if(TextUtils.isEmpty(text)) {
+            mEditText.setError("This field can not be empty.");
+            mEditText.requestFocus();
+            return false;
+        } else {
+            mEditText.setError(null);
+        }
+        return true;
+    }
 }

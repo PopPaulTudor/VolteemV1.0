@@ -125,34 +125,22 @@ public class OrganiserRegisterFragment extends Fragment{
                                         }
                                     });
 
-                            user.sendEmailVerification()
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            // TODO: line creates NPE: Toast.makeText(getActivity(), "Account successfully created. A verification email has been sent to your email address.", Toast.LENGTH_LONG).show();
-
-                                        }
-                                    });
-
+                            user.sendEmailVerification();
                             startActivity(intent);
                             getActivity().finish();
 
-                        }else {
-                            try {
-                                throw task.getException();
-                            } catch(FirebaseAuthUserCollisionException e) {
+                        } else {
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                                 mEmail.setError("Email address is already in use.");
                                 mEmail.requestFocus();
-
-                            } catch (FirebaseAuthInvalidCredentialsException e) {
-                                mEmail.setError("Please enter a valid email address.");
-                                mEmail.requestFocus();
-
-                            } catch (Exception e) {
-                                Log.e(TAG, e.getMessage());
+                            } else {
+                                if(task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                    mEmail.setError("Please enter a valid email address.");
+                                    mEmail.requestFocus();
+                                } else {
+                                    Log.w("Error registering ", task.getException());
+                                }
                             }
-                            //Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            //Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
                         mProgressDialog.dismiss();
                     }
@@ -162,53 +150,29 @@ public class OrganiserRegisterFragment extends Fragment{
     }
 
     private boolean validateForm() {
-        boolean valid = true;
 
-        String email = mEmail.getText().toString();
-        if (TextUtils.isEmpty(email)) {
-            mEmail.setError("Please enter your email address.");
-            valid = false;
-        } else {
-            mEmail.setError(null);
-        }
-
-        String password = mPassword.getText().toString();
-        if (TextUtils.isEmpty(password)) {
-            mPassword.setError("Please enter a password.");
-            valid = false;
-        } else {
-            if(password.length() < 6) {
-                mPassword.setError("Your password must be at least 6 characters long.");
-            } else {
-                mPassword.setError(null);
-            }
-        }
-
-        String company = mCompany.getText().toString();
-        if (TextUtils.isEmpty(company)) {
-            mCompany.setError("Please enter your company's name.");
-            valid = false;
-        } else {
-            mCompany.setError(null);
-        }
-
-        String city = mCity.getText().toString();
-        if (TextUtils.isEmpty(city)) {
-            mCity.setError("Please enter your city.");
-            valid = false;
-        } else {
-            mCity.setError(null);
-        }
-
-        String phone = mPhone.getText().toString();
-        if(TextUtils.isEmpty(phone)) {
-            mPhone.setError("Please enter your phone number.");
-        } else {
-            mPhone.setError(null);
-        }
-
+        boolean valid;
+        valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mCompany) &&
+                        editTextIsValid(mCity) && editTextIsValid(mPhone));
         return valid;
     }
 
+    private boolean editTextIsValid(EditText mEditText) {
+        String text = mEditText.getText().toString();
+        if(TextUtils.isEmpty(text)) {
+            mEditText.setError("This field can not be empty.");
+            mEditText.requestFocus();
+            return false;
+        } else {
+            if (mEditText == mPassword && text.length() < 6) {
+                mEditText.setError("Your password must be at least 6 characters long.");
+                mEditText.requestFocus();
+                return false;
+            } else {
+                mEditText.setError(null);
+            }
+        }
+        return true;
+    }
 }
 

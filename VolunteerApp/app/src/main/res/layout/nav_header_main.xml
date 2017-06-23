@@ -19,7 +19,7 @@
 
     <TextView
         android:id="@+id/nav_header_name"
-        android:layout_width="140dp"
+        android:layout_width="140sp"
         android:layout_height="wrap_content"
         android:text="User Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -33,9 +33,9 @@
         android:layout_height="wrap_content"
         android:text="User Status: Volunteer/Organizer"
         android:textColor="@android:color/black"
-        android:textSize="17dp"
+        android:textSize="17sp"
         android:layout_below="@+id/nav_header_name"
         android:layout_toEndOf="@+id/nav_header_image"
-        android:layout_marginStart="27dp" />
+        android:layout_marginStart="27sp" />
 
 </RelativeLayout>

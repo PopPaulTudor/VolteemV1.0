@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.volunteer.thc.volunteerapp.R;
 public class OrganiserEventsFragment extends Fragment{
 
     private FloatingActionButton mAddEvent;
+    private FragmentTransaction mFragmentTransaction;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,13 +31,14 @@ public class OrganiserEventsFragment extends Fragment{
         mAddEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Coming soon...", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                mFragmentTransaction = getFragmentManager().beginTransaction();
+                mFragmentTransaction.replace(R.id.main_container, new CreateEventFragment());
+                mFragmentTransaction.commit();
             }
         });
 
         //TODO: retrieve current organiser's events
-        //TODO: add new event
 
         return view;
     }

@@ -93,14 +93,7 @@ public class OrganiserProfileFragment extends Fragment{
             @Override
             public void onClick(View view) {
 
-                mEmail.setFocusableInTouchMode(true);
-                mEmail.setFocusable(true);
-                mCompany.setFocusableInTouchMode(true);
-                mCompany.setFocusable(true);
-                mPhone.setFocusableInTouchMode(true);
-                mPhone.setFocusable(true);
-                mCity.setFocusableInTouchMode(true);
-                mCity.setFocusable(true);
+                toggleFocusOn();
 
                 if(mCancel.getVisibility() == View.GONE){
 
@@ -138,15 +131,8 @@ public class OrganiserProfileFragment extends Fragment{
                         mCancel.setVisibility(View.GONE);
                         mEditSave.setText("EDIT");
                         toggleEditOff();
+                        toggleFocusOff();
                     }
-                    mEmail.setFocusableInTouchMode(false);
-                    mEmail.setFocusable(false);
-                    mCompany.setFocusableInTouchMode(false);
-                    mCompany.setFocusable(false);
-                    mPhone.setFocusableInTouchMode(false);
-                    mPhone.setFocusable(false);
-                    mCity.setFocusableInTouchMode(false);
-                    mCity.setFocusable(false);
                 }
 
             }
@@ -162,16 +148,7 @@ public class OrganiserProfileFragment extends Fragment{
                 mCity.setText(organiser.getCity());
 
                 toggleEditOff();
-
-                mEmail.setFocusableInTouchMode(false);
-                mEmail.setFocusable(false);
-                mCompany.setFocusableInTouchMode(false);
-                mCompany.setFocusable(false);
-                mPhone.setFocusableInTouchMode(false);
-                mPhone.setFocusable(false);
-                mCity.setFocusableInTouchMode(false);
-                mCity.setFocusable(false);
-
+                toggleFocusOff();
 
                 mEditSave.setText("EDIT");
                 mCancel.setVisibility(View.GONE);
@@ -180,7 +157,6 @@ public class OrganiserProfileFragment extends Fragment{
 
         return view;
     }
-
 
     public void toggleEditOn(){
 
@@ -196,34 +172,47 @@ public class OrganiserProfileFragment extends Fragment{
         mCity.setKeyListener(null);
     }
 
+    public void toggleFocusOn() {
+
+        mEmail.setFocusableInTouchMode(true);
+        mEmail.setFocusable(true);
+        mCompany.setFocusableInTouchMode(true);
+        mCompany.setFocusable(true);
+        mPhone.setFocusableInTouchMode(true);
+        mPhone.setFocusable(true);
+        mCity.setFocusableInTouchMode(true);
+        mCity.setFocusable(true);
+    }
+
+    public void toggleFocusOff() {
+
+        mEmail.setFocusableInTouchMode(false);
+        mEmail.setFocusable(false);
+        mCompany.setFocusableInTouchMode(false);
+        mCompany.setFocusable(false);
+        mPhone.setFocusableInTouchMode(false);
+        mPhone.setFocusable(false);
+        mCity.setFocusableInTouchMode(false);
+        mCity.setFocusable(false);
+    }
+
     public boolean validateForm() {
 
         boolean valid = true;
-
-        String company = mCompany.getText().toString();
-        if (TextUtils.isEmpty(company)) {
-            mCompany.setError("This field can not be empty.");
-            valid = false;
-        } else {
-            mCompany.setError(null);
-        }
-
-        String phone = mPhone.getText().toString();
-        if (TextUtils.isEmpty(phone)) {
-            mPhone.setError("This field can not be empty.");
-            valid = false;
-        } else {
-            mPhone.setError(null);
-        }
-
-        String city = mCity.getText().toString();
-        if (TextUtils.isEmpty(city)) {
-            mCity.setError("This field can not be empty.");
-            valid = false;
-        } else {
-            mCity.setError(null);
-        }
-
+        valid = (editTextIsValid(mCompany) && editTextIsValid(mCity) && editTextIsValid(mPhone));
         return valid;
+    }
+
+    private boolean editTextIsValid(EditText mEditText) {
+
+        String text = mEditText.getText().toString();
+        if(TextUtils.isEmpty(text)) {
+            mEditText.setError("This field can not be empty.");
+            mEditText.requestFocus();
+            return false;
+        } else {
+            mEditText.setError(null);
+        }
+        return true;
     }
 }
