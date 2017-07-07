@@ -2,13 +2,12 @@ package com.volunteer.thc.volunteerapp.presentation;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,62 +19,63 @@ import com.volunteer.thc.volunteerapp.R;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String TAG = "EmailPassword";
     private EditText mEmail, mPassword;
-    private Button mRegisterBtn,mLogInBtn;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private static final String TAG = "EmailPassword";
-    private Intent intent;
     private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        intent = new Intent(this, MainActivity.class);
+
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
-        mLogInBtn = (Button) findViewById(R.id.login);
-        mRegisterBtn = (Button) findViewById(R.id.register);
 
         mAuth = FirebaseAuth.getInstance();
-
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
-                if(firebaseAuth.getCurrentUser() != null){
-
-                    startActivity(intent);
-                    finish();
+                if (firebaseAuth.getCurrentUser() != null) {
+                    startActivityByClass(MainActivity.class);
                 }
-
             }
         };
 
-        mLogInBtn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validateForm()){
+                if (validateForm()) {
                     mProgressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "", true);
                 }
-                LogIn(mEmail.getText().toString(),mPassword.getText().toString());
+                logIn(mEmail.getText().toString(), mPassword.getText().toString());
             }
         });
 
-        mRegisterBtn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.register).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent register_intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(register_intent);
-                finish();
+                startActivityByClass(RegisterActivity.class);
             }
         });
     }
 
-    ///TODO email verif
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthStateListener);
+    }
 
-    private void LogIn(String email, String password) {
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthStateListener != null) {
+            mAuth.removeAuthStateListener(mAuthStateListener);
+        }
+    }
+
+    private void logIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);
         if (!validateForm()) {
             return;
@@ -88,27 +88,21 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
-
                         } else {
-
-                            try {
-                                throw task.getException();
-
-                            } catch (FirebaseAuthException e){
-
-                                if (e.getMessage().equals("The password is invalid or the user does not have a password.")){
-                                    mPassword.setError("Wrong password.");
-                                    mPassword.requestFocus();
-                                } else{
-
-                                    if(e.getMessage().equals("The user account has been disabled by an administrator.")){
+                            Exception exception = task.getException();
+                            if (exception != null) {
+                                if (exception instanceof FirebaseAuthException) {
+                                    if (exception.getMessage().equals("The password is invalid or the user does not have a password.")) {
+                                        mPassword.setError("Wrong password.");
+                                        mPassword.requestFocus();
+                                    } else if (exception.getMessage().equals("The user account has been disabled by an administrator.")) {
                                         mEmail.setError("Your account has been disabled by an administrator.");
                                         mEmail.requestFocus();
                                     }
+                                } else {
+                                    // In this case there can be any Exception
+                                    Log.e(TAG, exception.getMessage());
                                 }
-
-                            } catch (Exception e) {
-                                Log.e(TAG,e.getMessage());
                             }
                             // If sign in fails, display a message to the user.
                             //Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -119,43 +113,28 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        mAuth.addAuthStateListener(mAuthStateListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        if (mAuthStateListener != null) {
-            mAuth.removeAuthStateListener(mAuthStateListener);
-        }
-    }
-
-
     private boolean validateForm() {
-        boolean valid = true;
-
-        String email = mEmail.getText().toString();
-        if (TextUtils.isEmpty(email)) {
-            mEmail.setError("Please enter your email address.");
-            valid = false;
-        } else {
-            mEmail.setError(null);
-        }
-
-        String password = mPassword.getText().toString();
-        if (TextUtils.isEmpty(password)) {
-            mPassword.setError("Please enter your password.");
-            valid = false;
-        } else {
-            mPassword.setError(null);
-        }
-
-
+        //TODO email check
+        boolean valid = checkField(mEmail, "Please enter your email address.");
+        valid &= checkField(mPassword, "Please enter your password.");
         return valid;
+    }
+
+    private boolean checkField(EditText editText, String errorMessage) {
+        boolean result = true;
+        String email = editText.getText().toString();
+        if (TextUtils.isEmpty(email)) {
+            editText.setError(errorMessage);
+            result = false;
+        } else {
+            editText.setError(null);
+        }
+        return result;
+    }
+
+    private void startActivityByClass(Class activity) {
+        Intent intent = new Intent(LoginActivity.this, activity);
+        startActivity(intent);
+        finish();
     }
 }

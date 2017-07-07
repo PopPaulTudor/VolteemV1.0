@@ -10,22 +10,22 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add something on the Organiser Events page..."
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:text="Add something on the Organiser Events page..." />
 
-    <android.support.design.widget.FloatingActionButton
+    <android.support.design.widget.FloatingActionButton xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/add_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:backgroundTint="#81C784"
-        android:src="@drawable/add"
-        android:layout_marginLeft="@dimen/fab_margin"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:layout_marginBottom="32sp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="18sp" />
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginLeft="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:src="@drawable/add"
+        app:backgroundTint="@color/floatingButtonBackgroundTint" />
 
 </RelativeLayout>
