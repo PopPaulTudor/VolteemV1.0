@@ -6,13 +6,13 @@
     tools:context="com.volunteer.thc.volunteerapp.presentation.OrganiserEventsFragment">
 
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Add something on the Organiser Events page..." />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/RecViewOrgEvents"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
 
     <android.support.design.widget.FloatingActionButton xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/add_event"
