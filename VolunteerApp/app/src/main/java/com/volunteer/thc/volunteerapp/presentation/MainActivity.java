@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 SharedPreferences.Editor editor = prefs.edit();
-
                 String userstatus;
                 if (dataSnapshot.hasChildren()) {
                     mUserStatus.setText("Volunteer");
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity
                     editor.apply();
                     userstatus = "Organiser";
                 }
-                ShowEvents(userstatus);
+                showEvents(userstatus);
             }
 
             @Override
@@ -99,12 +98,11 @@ public class MainActivity extends AppCompatActivity
         } else {
 
             mUserStatus.setText(userstatus);
-            ShowEvents(userstatus);
+            showEvents(userstatus);
 
         }
 
         getSupportActionBar().setTitle("Events");
-
         drawer.closeDrawers();
     }
 
@@ -191,7 +189,6 @@ public class MainActivity extends AppCompatActivity
 
             mFragmentTransaction = getSupportFragmentManager().beginTransaction();
             mFragmentTransaction.replace(R.id.main_container, new SettingsFragment());
-
             mFragmentTransaction.commit();
             getSupportActionBar().setTitle("Settings");
             item.setChecked(true);
@@ -213,7 +210,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void ShowEvents(String userstatus) {
+    public void showEvents(String userstatus) {
 
         if(TextUtils.equals(userstatus, "Volunteer")) {
             mFragmentTransaction = getSupportFragmentManager().beginTransaction();

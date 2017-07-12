@@ -1,5 +1,6 @@
 package com.volunteer.thc.volunteerapp.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import java.util.Map;
 public class Organiser {
 
     private String email, company, eventsnumber, city, rating, experience, phone;
+    private ArrayList<String> events;
 
     public Organiser(){
 
@@ -22,6 +24,7 @@ public class Organiser {
         this.rating = ""+0;
         this.experience = ""+0;
         this.phone = phone;
+        this.events = new ArrayList<>();
     }
 
     public Map<String, Object> toMap() {
@@ -33,6 +36,7 @@ public class Organiser {
         result.put("rating", rating);
         result.put("eventsnumber", eventsnumber);
         result.put("phone", phone);
+        result.put("events", events);
 
         return result;
     }
@@ -88,5 +92,13 @@ public class Organiser {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public ArrayList<String> getEvents() {
+        return events;
+    }
+
+    public void setEvents(ArrayList<String> events) {
+        this.events = events;
     }
 }

@@ -1,9 +1,12 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +65,14 @@ public class CreateEventFragment extends Fragment {
                     Event new_event = new Event(user.getUid(), name, location, date, type, description,
                             deadline, size);
 
-                    mDatabase.child("events").push().setValue(new_event);
+                    String eventID = mDatabase.child("events").push().getKey();
+                    mDatabase.child("events").child(eventID).setValue(new_event);
+                    SharedPreferences prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+                    mDatabase.child("users").child("organisers").child(user.getUid()).child("events")
+                            .child(prefs.getInt("lastID", 0)+"").setValue(eventID);
+
+                    ///TODO: increase number of organiser's events
+
                     returnToEvents();
                     Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }
