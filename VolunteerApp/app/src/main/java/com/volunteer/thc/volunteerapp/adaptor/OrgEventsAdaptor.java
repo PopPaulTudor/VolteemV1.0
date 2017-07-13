@@ -1,6 +1,7 @@
 package com.volunteer.thc.volunteerapp.adaptor;
 
 import android.media.Image;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,9 @@ import android.widget.TextView;
 
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.presentation.DisplayEventActivity;
 
+import java.security.interfaces.DSAKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +25,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
 
     private List<Event> EventsList;
+
 
     public OrgEventsAdaptor(List<Event> list){
         EventsList= list;
@@ -36,11 +40,20 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     }
 
     @Override
-    public void onBindViewHolder(OrgEventsAdaptor.EventViewHolder holder, int position) {
+    public void onBindViewHolder(OrgEventsAdaptor.EventViewHolder holder, final int position) {
 
-        holder.CardName.setText(EventsList.get(position).getName());
-        holder.CardLocation.setText(EventsList.get(position).getLocation());
-        holder.CardDate.setText(EventsList.get(position).getDate());
+        holder.cardName.setText(EventsList.get(position).getName());
+        holder.cardLocation.setText(EventsList.get(position).getLocation());
+        holder.cardDate.setText(EventsList.get(position).getDate());
+        holder.cardName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                DisplayEventActivity displayEventActivity= new DisplayEventActivity();
+                displayEventActivity.onExpandEvent(EventsList.get(position));
+
+            }
+        });
 
 
     }
@@ -59,17 +72,19 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
     class EventViewHolder extends RecyclerView.ViewHolder{
 
-        TextView CardName;
-        TextView CardDate;
-        TextView CardLocation;
+        TextView cardName;
+        TextView cardDate;
+        TextView cardLocation;
         ImageView imageView;
+        CardView cardView;
 
         EventViewHolder(View v) {
             super(v);
 
-            CardName= (TextView) v.findViewById(R.id.NameCardElement);
-            CardDate= (TextView) v.findViewById(R.id.DateCardElement);
-            CardLocation= (TextView) v.findViewById(R.id.LocationCardElement);
+            cardName= (TextView) v.findViewById(R.id.NameCardElement);
+            cardDate= (TextView) v.findViewById(R.id.DateCardElement);
+            cardLocation= (TextView) v.findViewById(R.id.LocationCardElement);
+            cardView= (CardView) v.findViewById(R.id.CardElement);
 
 
 
