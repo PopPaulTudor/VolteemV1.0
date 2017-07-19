@@ -47,7 +47,6 @@ public class VolunteerProfileFragment extends Fragment {
         mDialog = ProgressDialog.show(getActivity(), "Loading profile", "", true);
 
         volunteer1 = new Volunteer();
-        mFirstname = (TextView) view.findViewById(R.id.user_firstname);
         mFirstnameEdit = (EditText) view.findViewById(R.id.edit_firstname);
         mLastname = (EditText) view.findViewById(R.id.edit_lastname);
         mEmail = (EditText) view.findViewById(R.id.edit_email);
@@ -73,7 +72,6 @@ public class VolunteerProfileFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 volunteer1 = dataSnapshot.getValue(Volunteer.class);
-                mFirstname.setText("Hello " + volunteer1.getFirstname() + "!");
                 mFirstnameEdit.setText(volunteer1.getFirstname());
                 mEmail.setText(volunteer1.getEmail());
                 mLastname.setText(volunteer1.getLastname());

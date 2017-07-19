@@ -10,8 +10,8 @@
         android:id="@+id/CardElement"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        app:cardBackgroundColor="@color/colorPrimary"
-        android:background="@color/colorPrimaryDark"
+        app:cardBackgroundColor="@color/green"
+        android:background="@color/green"
         app:cardCornerRadius="10dp">
 
         <RelativeLayout
