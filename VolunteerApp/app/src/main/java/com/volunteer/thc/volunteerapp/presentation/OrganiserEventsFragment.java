@@ -79,7 +79,7 @@ public class OrganiserEventsFragment extends Fragment {
                 mEventIDs = organiser.getEvents();
                 if(mEventIDs == null) {
 
-                    Snackbar snackbar= Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
+                    Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
                     snackbar.setAction("Add", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -105,14 +105,34 @@ public class OrganiserEventsFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                mEventsList.add(dataSnapshot.getValue(Event.class));
+                String name, location, date, type, description, deadline, created_by, eventID;
+                int size;
+                ArrayList<String> registeredUsers = new ArrayList<>();
+
+                created_by = dataSnapshot.child("created_by").getValue().toString();
+                eventID = dataSnapshot.child("eventID").getValue().toString();
+                name = dataSnapshot.child("name").getValue().toString();
+                location = dataSnapshot.child("location").getValue().toString();
+                size = Integer.parseInt(dataSnapshot.child("size").getValue().toString());
+                date = dataSnapshot.child("date").getValue().toString();
+                type = dataSnapshot.child("type").getValue().toString();
+                description = dataSnapshot.child("description").getValue().toString();
+                deadline = dataSnapshot.child("deadline").getValue().toString();
+
+                for (DataSnapshot registered_users: dataSnapshot.child("registered_users").getChildren()) {
+
+                    registeredUsers.add(registered_users.child("user").getValue().toString());
+                }
+
+                mEventsList.add(new Event(created_by, name, location, date, type, eventID, description, deadline, size, registeredUsers));
+
                 if(indexOfEvent < mEventIDs.size()) {
                     getSingleEvent(indexOfEvent);
                     ++indexOfEvent;
                 } else {
 
                     mProgressDialog.dismiss();
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList);
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList,getContext());
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);
@@ -126,7 +146,7 @@ public class OrganiserEventsFragment extends Fragment {
             }
         };
 
-            
+
         return view;
     }
 

@@ -93,13 +93,13 @@ public class MainActivity extends AppCompatActivity
         String username = user.getDisplayName();
 
         if(TextUtils.equals(userstatus, null)) {
+
             mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mStatusListener);
             mDatabase.removeEventListener(mStatusListener);
         } else {
 
             mUserStatus.setText(userstatus);
             showEvents(userstatus);
-
         }
 
         getSupportActionBar().setTitle("Events");
@@ -165,6 +165,18 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawers();
 
 
+        } else if (id == R.id.user_events) {
+
+            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+            mFragmentTransaction.replace(R.id.main_container, new VolunteerMyEventsFragment());
+            mFragmentTransaction.commit();
+
+            getSupportActionBar().setTitle("My Events");
+            item.setChecked(true);
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawers();
+
         } else if (id == R.id.nav_profile) {
 
             String userstatus = prefs.getString("user_status", null);
@@ -196,6 +208,7 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawers();
 
         } else if (id == R.id.nav_logout){
+
             Auth.signOut();
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("user_status", null);
@@ -213,6 +226,12 @@ public class MainActivity extends AppCompatActivity
     public void showEvents(String userstatus) {
 
         if(TextUtils.equals(userstatus, "Volunteer")) {
+
+            NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+            Menu navMenu = navView.getMenu();
+
+            navMenu.findItem(R.id.user_events).setVisible(true);
+
             mFragmentTransaction = getSupportFragmentManager().beginTransaction();
             mFragmentTransaction.replace(R.id.main_container, new VolunteerEventsFragment());
             mFragmentTransaction.commit();

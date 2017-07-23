@@ -1,8 +1,6 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
-
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -28,10 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Cristi on 6/20/2017.
+ * Created by Cristi on 7/15/2017.
  */
 
-public class VolunteerEventsFragment extends Fragment {
+public class VolunteerMyEventsFragment extends Fragment {
 
     private List<Event> mEventsList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -73,11 +71,10 @@ public class VolunteerEventsFragment extends Fragment {
                 for (DataSnapshot eventSnapshot: dataSnapshot.getChildren()) {
 
                     Event currentEvent = eventSnapshot.getValue(Event.class);
-                    if (!isUserRegisteredForEvent(currentEvent.getEventID())) {
+                    if (isUserRegisteredForEvent(currentEvent.getEventID())) {
                         mEventsList.add(currentEvent);
                     }
                 }
-                FragmentTransaction mFragmentTransaction = getFragmentManager().beginTransaction();
                 mProgressDialog.dismiss();
                 OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
                 recyclerView.setAdapter(adapter);

@@ -5,20 +5,30 @@
 
         <item
             android:id="@+id/nav_events"
+            android:title="All Events"
+            android:icon="@drawable/event"/>
+
+        <item
+            android:id="@+id/user_events"
+            android:title="My Events"
             android:icon="@drawable/event"
-            android:title="All Events" />
+            android:visible="false"/>
+
         <item
             android:id="@+id/nav_profile"
-            android:icon="@drawable/profile"
-            android:title="Profile" />
+            android:title="Profile"
+            android:icon="@drawable/profile"/>
+
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/settings"
-            android:title="Settings" />
+            android:title="Settings"
+            android:icon="@drawable/settings"/>
+
         <item
             android:id="@+id/nav_logout"
-            android:icon="@drawable/logout"
-            android:title="Logout" />
+            android:title="Logout"
+            android:icon="@drawable/logout"/>
+
     </group>
 
 </menu>

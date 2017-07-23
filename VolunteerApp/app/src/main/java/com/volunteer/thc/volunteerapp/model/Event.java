@@ -1,15 +1,16 @@
 package com.volunteer.thc.volunteerapp.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Cristi on 6/14/2017.
  */
-public class Event {
+public class Event implements Serializable{
 
-    private String created_by, name, location, date, type, description, deadline;
+    private String created_by, name, location, date, type, description, deadline, eventID;
     private int size;
-    //private ArrayList<String> registered_volunteers;
+    private ArrayList<String> registered_volunteers;
    // private ArrayList<String> accepted_volunteers;
     // !!!! ARRAYS NOT RECOMMENDED BY FIREBASE AS THEY CAN CAUSE OVERWRITING ERRORS !!!!
 
@@ -17,7 +18,7 @@ public class Event {
 
     }
 
-    public Event (String created_by, String name, String location, String date, String type,
+    public Event (String created_by, String name, String location, String date, String type, String eventID,
                   String description, String deadline, int size) {
         this.created_by = created_by;
         this.name = name;
@@ -27,8 +28,23 @@ public class Event {
         this.description = description;
         this.deadline = deadline;
         this.size = size;
-       // this.registered_volunteers = new ArrayList<>();
+        this.eventID = eventID;
+        this.registered_volunteers = new ArrayList<>();
        // this.accepted_volunteers = new ArrayList<>();
+    }
+
+    public Event (String created_by, String name, String location, String date, String type, String eventID,
+                  String description, String deadline, int size, ArrayList<String> registered_volunteers) {
+        this.created_by = created_by;
+        this.name = name;
+        this.location = location;
+        this.date = date;
+        this.type = type;
+        this.description = description;
+        this.deadline = deadline;
+        this.size = size;
+        this.eventID = eventID;
+        this.registered_volunteers = registered_volunteers;
     }
 
     public String getCreated_by() {
@@ -95,13 +111,21 @@ public class Event {
         this.size = size;
     }
 
-//    public ArrayList<String> getRegistered_volunteers() {
-//        return registered_volunteers;
-//    }
-//
-//    public void setRegistered_volunteers(ArrayList<String> registered_volunteers) {
-//        this.registered_volunteers = registered_volunteers;
-//    }
+    public String getEventID() {
+        return eventID;
+    }
+
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
+    }
+
+    public ArrayList<String> getRegistered_volunteers() {
+        return registered_volunteers;
+    }
+
+    public void setRegistered_volunteers(ArrayList<String> registered_volunteers) {
+        this.registered_volunteers = registered_volunteers;
+    }
 //
 //    public ArrayList<String> getAccepted_volunteers() {
 //        return accepted_volunteers;

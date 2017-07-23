@@ -62,10 +62,11 @@ public class CreateEventFragment extends Fragment {
                     String deadline = mDeadline.getText().toString();
                     int size = Integer.parseInt(mSize.getText().toString());
 
-                    Event new_event = new Event(user.getUid(), name, location, date, type, description,
+                    String eventID = mDatabase.child("events").push().getKey();
+
+                    Event new_event = new Event(user.getUid(), name, location, date, type, eventID, description,
                             deadline, size);
 
-                    String eventID = mDatabase.child("events").push().getKey();
                     mDatabase.child("events").child(eventID).setValue(new_event);
                     SharedPreferences prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
                     mDatabase.child("users").child("organisers").child(user.getUid()).child("events")
