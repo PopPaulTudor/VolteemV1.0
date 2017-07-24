@@ -79,6 +79,7 @@ public class OrganiserEventsFragment extends Fragment {
                 mEventIDs = organiser.getEvents();
                 if(mEventIDs == null) {
 
+                    mProgressDialog.dismiss();
                     Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
                     snackbar.setAction("Add", new View.OnClickListener() {
                         @Override

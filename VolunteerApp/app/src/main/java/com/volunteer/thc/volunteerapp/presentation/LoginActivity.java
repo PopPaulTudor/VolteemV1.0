@@ -4,11 +4,16 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,6 +29,8 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private ProgressDialog mProgressDialog;
+    private Button mSendResetPasswordEmail;
+    private EditText mResetPasswordEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +64,47 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivityByClass(RegisterActivity.class);
+            }
+        });
+
+        findViewById(R.id.forgot_password).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(LoginActivity.this);
+                View parentView = getLayoutInflater().inflate(R.layout.reset_password_bottom_sheet_design, null);
+                mBottomSheetDialog.setContentView(parentView);
+                BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
+                mBottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension
+                        (TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics()));
+                mBottomSheetDialog.show();
+
+                mResetPasswordEmail = (EditText) parentView.findViewById(R.id.email_reset);
+                mSendResetPasswordEmail = (Button) parentView.findViewById(R.id.send_email);
+
+                mSendResetPasswordEmail.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        String email = mResetPasswordEmail.getText().toString();
+                        if(!TextUtils.isEmpty(email)) {
+
+                            mResetPasswordEmail.setError(null);
+                            mBottomSheetDialog.dismiss();
+                            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+                                            if(task.isSuccessful()) {
+                                                Toast.makeText(LoginActivity.this, "Password email sent. Please check your inbox.", Toast.LENGTH_LONG).show();
+                                            } else{
+                                                Toast.makeText(LoginActivity.this, "Reset failed. Verify if the email is written correctly and try again.", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
             }
         });
     }
@@ -104,9 +152,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.e(TAG, exception.getMessage());
                                 }
                             }
-                            // If sign in fails, display a message to the user.
-                            //Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            //Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            ///TODO: handle more exceptions
                         }
                         mProgressDialog.dismiss();
                     }
@@ -114,7 +160,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean validateForm() {
-        //TODO email check
         boolean valid = checkField(mEmail, "Please enter your email address.");
         valid &= checkField(mPassword, "Please enter your password.");
         return valid;
