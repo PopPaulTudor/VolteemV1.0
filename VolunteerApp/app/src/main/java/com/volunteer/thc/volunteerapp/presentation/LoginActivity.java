@@ -1,7 +1,10 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -56,14 +59,23 @@ public class LoginActivity extends AppCompatActivity {
                 if (validateForm()) {
                     mProgressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "", true);
                 }
-                logIn(mEmail.getText().toString(), mPassword.getText().toString());
+                if(isNetworkAvailable()) {
+                    logIn(mEmail.getText().toString(), mPassword.getText().toString());
+                } else {
+                    mProgressDialog.dismiss();
+                    Toast.makeText(LoginActivity.this,"No internet connection.", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         findViewById(R.id.register).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityByClass(RegisterActivity.class);
+                if(isNetworkAvailable()) {
+                    startActivityByClass(RegisterActivity.class);
+                } else {
+                    Toast.makeText(LoginActivity.this,"No internet connection.", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -181,5 +193,12 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, activity);
         startActivity(intent);
         finish();
+    }
+
+    private boolean isNetworkAvailable(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
     }
 }

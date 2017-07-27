@@ -48,11 +48,22 @@ public class VolunteerMyEventsFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
 
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadEvents();
+    }
+
+    private void loadEvents(){
         mProgressDialog = ProgressDialog.show(getActivity(), "Getting events...", "", true);
 
         mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                mUserEvents = new ArrayList<>();
                 for(DataSnapshot usersSnapshot: dataSnapshot.child("events").getChildren()) {
                     mUserEvents.add(usersSnapshot.getValue().toString());
                 }
@@ -68,8 +79,8 @@ public class VolunteerMyEventsFragment extends Fragment {
         mRetrieveEvents = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                mEventsList = new ArrayList<>();
                 for (DataSnapshot eventSnapshot: dataSnapshot.getChildren()) {
-
                     Event currentEvent = eventSnapshot.getValue(Event.class);
                     if (isUserRegisteredForEvent(currentEvent.getEventID())) {
                         mEventsList.add(currentEvent);
@@ -87,8 +98,6 @@ public class VolunteerMyEventsFragment extends Fragment {
 
             }
         };
-
-        return view;
     }
 
     private boolean isUserRegisteredForEvent(String eventID) {

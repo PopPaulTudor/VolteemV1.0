@@ -2,7 +2,10 @@ package com.volunteer.thc.volunteerapp.presentation;
 
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -12,6 +15,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,48 +54,13 @@ public class VolunteerEventsFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
 
-        mProgressDialog = ProgressDialog.show(getActivity(), "Getting events...", "", true);
-
-        mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot usersSnapshot: dataSnapshot.child("events").getChildren()) {
-                    mUserEvents.add(usersSnapshot.getValue().toString());
-                }
-                mDatabase.child("events").addListenerForSingleValueEvent(mRetrieveEvents);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        mRetrieveEvents = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot eventSnapshot: dataSnapshot.getChildren()) {
-
-                    Event currentEvent = eventSnapshot.getValue(Event.class);
-                    if (!isUserRegisteredForEvent(currentEvent.getEventID())) {
-                        mEventsList.add(currentEvent);
-                    }
-                }
-                FragmentTransaction mFragmentTransaction = getFragmentManager().beginTransaction();
-                mProgressDialog.dismiss();
-                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
-                recyclerView.setAdapter(adapter);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                recyclerView.setLayoutManager(linearLayoutManager);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
         return view;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadEvents();
     }
 
     private boolean isUserRegisteredForEvent(String eventID) {
@@ -102,5 +71,65 @@ public class VolunteerEventsFragment extends Fragment {
             }
         }
         return false;
+    }
+
+    private void loadEvents(){
+
+        mProgressDialog = ProgressDialog.show(getActivity(), "Getting events...", "", true);
+
+        if (isNetworkAvailable()) {
+
+            mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot usersSnapshot : dataSnapshot.child("events").getChildren()) {
+                        mUserEvents.add(usersSnapshot.getValue().toString());
+                    }
+                    mDatabase.child("events").addListenerForSingleValueEvent(mRetrieveEvents);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            mRetrieveEvents = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    mEventsList = new ArrayList<>();
+                    for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
+
+                        Event currentEvent = eventSnapshot.getValue(Event.class);
+                        if (!isUserRegisteredForEvent(currentEvent.getEventID())) {
+                            mEventsList.add(currentEvent);
+                        }
+                    }
+                    mProgressDialog.dismiss();
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
+                    recyclerView.setAdapter(adapter);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(linearLayoutManager);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+        } else {
+
+            mProgressDialog.dismiss();
+            Toast.makeText(getActivity(), "No internet connection.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean isNetworkAvailable(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
     }
 }

@@ -3,6 +3,8 @@ package com.volunteer.thc.volunteerapp.presentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
@@ -17,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth Auth = FirebaseAuth.getInstance();
     private FragmentTransaction mFragmentTransaction;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private TextView mUserStatus, mUserName;
+    private TextView mUserStatus;
     private ValueEventListener mStatusListener;
     private SharedPreferences prefs;
 
@@ -58,7 +61,6 @@ public class MainActivity extends AppCompatActivity
 
         View header = navigationView.getHeaderView(0);
         mUserStatus = (TextView) header.findViewById(R.id.nav_header_status);
-        mUserName = (TextView) header.findViewById(R.id.nav_header_name);
 
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
@@ -90,7 +92,6 @@ public class MainActivity extends AppCompatActivity
         });
 
         String userstatus = prefs.getString("user_status", null);
-        String username = user.getDisplayName();
 
         if(TextUtils.equals(userstatus, null)) {
 
@@ -146,76 +147,85 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_events) {
+        if(isNetworkAvailable()) {
 
-            String userstatus = prefs.getString("user_status", null);
-            if(TextUtils.equals(userstatus, "Volunteer")) {
-                mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-                mFragmentTransaction.replace(R.id.main_container, new VolunteerEventsFragment());
-            } else {
-                mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-                mFragmentTransaction.replace(R.id.main_container, new OrganiserEventsFragment());
-            }
+            if (id == R.id.nav_events) {
 
-            mFragmentTransaction.commit();
-            getSupportActionBar().setTitle("Events");
-            item.setChecked(true);
+                prefs.edit().putInt("cameFrom", 1).commit();
 
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawers();
+                String userstatus = prefs.getString("user_status", null);
+                if (TextUtils.equals(userstatus, "Volunteer")) {
+                    mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    mFragmentTransaction.replace(R.id.main_container, new VolunteerEventsFragment());
+                } else {
+                    mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    mFragmentTransaction.replace(R.id.main_container, new OrganiserEventsFragment());
+                }
 
-
-        } else if (id == R.id.user_events) {
-
-            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-            mFragmentTransaction.replace(R.id.main_container, new VolunteerMyEventsFragment());
-            mFragmentTransaction.commit();
-
-            getSupportActionBar().setTitle("My Events");
-            item.setChecked(true);
-
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawers();
-
-        } else if (id == R.id.nav_profile) {
-
-            String userstatus = prefs.getString("user_status", null);
-            if(TextUtils.equals(userstatus, "Volunteer")) {
-
-                mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-                mFragmentTransaction.replace(R.id.main_container, new VolunteerProfileFragment());
                 mFragmentTransaction.commit();
-            } else {
+                getSupportActionBar().setTitle("Events");
+                item.setChecked(true);
+
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawers();
+
+
+            } else if (id == R.id.user_events) {
+
+                prefs.edit().putInt("cameFrom", 2).commit();
 
                 mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-                mFragmentTransaction.replace(R.id.main_container, new OrganiserProfileFragment());
+                mFragmentTransaction.replace(R.id.main_container, new VolunteerMyEventsFragment());
                 mFragmentTransaction.commit();
+
+                getSupportActionBar().setTitle("My Events");
+                item.setChecked(true);
+
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawers();
+
+            } else if (id == R.id.nav_profile) {
+
+                String userstatus = prefs.getString("user_status", null);
+                if (TextUtils.equals(userstatus, "Volunteer")) {
+
+                    mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    mFragmentTransaction.replace(R.id.main_container, new VolunteerProfileFragment());
+                    mFragmentTransaction.commit();
+                } else {
+
+                    mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    mFragmentTransaction.replace(R.id.main_container, new OrganiserProfileFragment());
+                    mFragmentTransaction.commit();
+                }
+                getSupportActionBar().setTitle("Profile");
+                item.setChecked(true);
+
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawers();
+
+            } else if (id == R.id.nav_settings) {
+
+                mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+                mFragmentTransaction.replace(R.id.main_container, new SettingsFragment());
+                mFragmentTransaction.commit();
+                getSupportActionBar().setTitle("Settings");
+                item.setChecked(true);
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawers();
+
+            } else if (id == R.id.nav_logout) {
+
+                Auth.signOut();
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("user_status", null);
+                editor.apply();
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
-            getSupportActionBar().setTitle("Profile");
-            item.setChecked(true);
-
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawers();
-
-        } else if (id == R.id.nav_settings) {
-
-            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-            mFragmentTransaction.replace(R.id.main_container, new SettingsFragment());
-            mFragmentTransaction.commit();
-            getSupportActionBar().setTitle("Settings");
-            item.setChecked(true);
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawers();
-
-        } else if (id == R.id.nav_logout){
-
-            Auth.signOut();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("user_status", null);
-            editor.apply();
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            finish();
+        } else {
+            Toast.makeText(MainActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -224,6 +234,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void showEvents(String userstatus) {
+
+        prefs.edit().putInt("cameFrom", 1).commit();
 
         if(TextUtils.equals(userstatus, "Volunteer")) {
 
@@ -240,7 +252,12 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction.replace(R.id.main_container, new OrganiserEventsFragment());
             mFragmentTransaction.commit();
         }
-
     }
 
+    private boolean isNetworkAvailable(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
 }

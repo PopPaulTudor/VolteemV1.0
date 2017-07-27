@@ -1,10 +1,15 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,14 +26,17 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
+import java.util.ArrayList;
+
 public class VolunteerSingleEventActivity extends AppCompatActivity {
 
     private TextView mEventName, mEventLocation, mEventDate, mEventType, mEventDescription, mEventDeadline, mEventSize;
     private Event currentEvent;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private Button mSignUp;
+    private Button mSignupForEvent, mLeaveEvent;
     private ValueEventListener mRegisterListener;
+    private ArrayList<String> events = new ArrayList<>();
     private int eventsNumber;
 
     @Override
@@ -39,7 +47,6 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         currentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
-        mSignUp = (Button) findViewById(R.id.event_signup);
 
         mEventName = (TextView) findViewById(R.id.event_name);
         mEventLocation = (TextView) findViewById(R.id.event_location);
@@ -49,6 +56,9 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventDeadline = (TextView) findViewById(R.id.event_deadline);
         mEventSize = (TextView) findViewById(R.id.event_size);
 
+        mSignupForEvent = (Button) findViewById(R.id.event_signup);
+        mLeaveEvent = (Button) findViewById(R.id.event_leave);
+
         mEventName.setText(currentEvent.getName());
         mEventLocation.setText(currentEvent.getLocation());
         mEventDate.setText(currentEvent.getDate());
@@ -56,6 +66,29 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventDescription.setText(currentEvent.getDescription());
         mEventDeadline.setText(currentEvent.getDeadline());
         mEventSize.setText(currentEvent.getSize()+"");
+
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+
+        if(prefs.getInt("cameFrom", 1) == 1) {
+            mSignupForEvent.setVisibility(View.VISIBLE);
+        } else {
+            mLeaveEvent.setVisibility(View.VISIBLE);
+        }
+
+        mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot data: dataSnapshot.getChildren()) {
+                    events.add(data.getValue().toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         mRegisterListener = new ValueEventListener() {
             @Override
@@ -69,20 +102,90 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Toast.makeText(VolunteerSingleEventActivity.this, "Sign up failed!", Toast.LENGTH_LONG).show();
             }
         };
 
-        mSignUp.setOnClickListener(new View.OnClickListener() {
+        mSignupForEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(VolunteerSingleEventActivity.this, "Signing up for event...", Toast.LENGTH_SHORT).show();
-                mDatabase.child("events").child(currentEvent.getEventID()).child("registered_users").push()
-                        .child("user").setValue(user.getUid());
-                mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
-                        .addListenerForSingleValueEvent(mRegisterListener);
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(VolunteerSingleEventActivity.this);
+                View parentView = getLayoutInflater().inflate(R.layout.event_register_bottom_sheet_design, null);
+                mBottomSheetDialog.setContentView(parentView);
+                BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
+                mBottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension
+                        (TypedValue.COMPLEX_UNIT_DIP, 210, getResources().getDisplayMetrics()));
+                mBottomSheetDialog.show();
+
+                parentView.findViewById(R.id.register_event).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        mBottomSheetDialog.dismiss();
+                        Toast.makeText(VolunteerSingleEventActivity.this, "Signing up for event...", Toast.LENGTH_SHORT).show();
+                        mDatabase.child("events").child(currentEvent.getEventID()).child("registered_users").push()
+                                .child("user").setValue(user.getUid());
+                        mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
+                                .addListenerForSingleValueEvent(mRegisterListener);
+                    }
+                });
+
+                parentView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mBottomSheetDialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        mLeaveEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(VolunteerSingleEventActivity.this);
+                View parentView = getLayoutInflater().inflate(R.layout.leave_event_bottom_sheet_design, null);
+                mBottomSheetDialog.setContentView(parentView);
+                BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
+                mBottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension
+                        (TypedValue.COMPLEX_UNIT_DIP, 210, getResources().getDisplayMetrics()));
+                mBottomSheetDialog.show();
+
+                parentView.findViewById(R.id.leave).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        mBottomSheetDialog.dismiss();
+                        Toast.makeText(VolunteerSingleEventActivity.this, "Leaving event...", Toast.LENGTH_LONG).show();
+
+                        mDatabase.child("events").child(currentEvent.getEventID()).child("registered_users").orderByChild("user")
+                                .startAt(user.getUid()).endAt(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot data: dataSnapshot.getChildren()){
+                                    mDatabase.child("events").child(currentEvent.getEventID()).child("registered_users").child(data.getKey()).setValue(null);
+                                }
+                                events.remove(currentEvent.getEventID());
+                                mDatabase.child("users").child("volunteers").child(user.getUid()).child("events").setValue(events);
+                                Toast.makeText(VolunteerSingleEventActivity.this, "Event left.", Toast.LENGTH_LONG).show();
+                                finish();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Toast.makeText(VolunteerSingleEventActivity.this, "Leaving event failed.", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
+
+                parentView.findViewById(R.id.stay).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mBottomSheetDialog.dismiss();
+                    }
+                });
             }
         });
     }
-
 }

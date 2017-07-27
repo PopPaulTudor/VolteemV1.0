@@ -3,6 +3,8 @@ package com.volunteer.thc.volunteerapp.presentation;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -71,83 +74,89 @@ public class OrganiserEventsFragment extends Fragment {
 
         mProgressDialog = ProgressDialog.show(getActivity(), "Getting events...", "", true);
 
-        mDatabase.child("users").child("organisers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        if(isNetworkAvailable()) {
 
-                organiser = dataSnapshot.getValue(Organiser.class);
-                mEventIDs = organiser.getEvents();
-                if(mEventIDs == null) {
+            mDatabase.child("users").child("organisers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    mProgressDialog.dismiss();
-                    Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
-                    snackbar.setAction("Add", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            openCreateEventFragment();
-                        }
-                    });
-                    snackbar.show();
+                    organiser = dataSnapshot.getValue(Organiser.class);
+                    mEventIDs = organiser.getEvents();
+                    if (mEventIDs == null) {
 
-                } else {
-                    getSingleEvent(0);
-                    SharedPreferences prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                    prefs.edit().putInt("lastID", mEventIDs.size()).apply();
-                }
-            }
+                        mProgressDialog.dismiss();
+                        Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
+                        snackbar.setAction("Add", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                openCreateEventFragment();
+                            }
+                        });
+                        snackbar.show();
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        mSingleEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                String name, location, date, type, description, deadline, created_by, eventID;
-                int size;
-                ArrayList<String> registeredUsers = new ArrayList<>();
-
-                created_by = dataSnapshot.child("created_by").getValue().toString();
-                eventID = dataSnapshot.child("eventID").getValue().toString();
-                name = dataSnapshot.child("name").getValue().toString();
-                location = dataSnapshot.child("location").getValue().toString();
-                size = Integer.parseInt(dataSnapshot.child("size").getValue().toString());
-                date = dataSnapshot.child("date").getValue().toString();
-                type = dataSnapshot.child("type").getValue().toString();
-                description = dataSnapshot.child("description").getValue().toString();
-                deadline = dataSnapshot.child("deadline").getValue().toString();
-
-                for (DataSnapshot registered_users: dataSnapshot.child("registered_users").getChildren()) {
-
-                    registeredUsers.add(registered_users.child("user").getValue().toString());
+                    } else {
+                        getSingleEvent(0);
+                        SharedPreferences prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+                        prefs.edit().putInt("lastID", mEventIDs.size()).apply();
+                    }
                 }
 
-                mEventsList.add(new Event(created_by, name, location, date, type, eventID, description, deadline, size, registeredUsers));
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-                if(indexOfEvent < mEventIDs.size()) {
-                    getSingleEvent(indexOfEvent);
-                    ++indexOfEvent;
-                } else {
-
-                    mProgressDialog.dismiss();
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList,getContext());
-                    recyclerView.setAdapter(adapter);
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                    recyclerView.setLayoutManager(linearLayoutManager);
                 }
-            }
+            });
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+            mSingleEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                Log.e("Read", "error");
-            }
-        };
+                    String name, location, date, type, description, deadline, created_by, eventID;
+                    int size;
+                    ArrayList<String> registeredUsers = new ArrayList<>();
 
+                    created_by = dataSnapshot.child("created_by").getValue().toString();
+                    eventID = dataSnapshot.child("eventID").getValue().toString();
+                    name = dataSnapshot.child("name").getValue().toString();
+                    location = dataSnapshot.child("location").getValue().toString();
+                    size = Integer.parseInt(dataSnapshot.child("size").getValue().toString());
+                    date = dataSnapshot.child("date").getValue().toString();
+                    type = dataSnapshot.child("type").getValue().toString();
+                    description = dataSnapshot.child("description").getValue().toString();
+                    deadline = dataSnapshot.child("deadline").getValue().toString();
 
+                    for (DataSnapshot registered_users : dataSnapshot.child("registered_users").getChildren()) {
+
+                        registeredUsers.add(registered_users.child("user").getValue().toString());
+                    }
+
+                    mEventsList.add(new Event(created_by, name, location, date, type, eventID, description, deadline, size, registeredUsers));
+
+                    if (indexOfEvent < mEventIDs.size()) {
+                        getSingleEvent(indexOfEvent);
+                        ++indexOfEvent;
+                    } else {
+
+                        mProgressDialog.dismiss();
+                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
+                        recyclerView.setAdapter(adapter);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                        recyclerView.setLayoutManager(linearLayoutManager);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                    Log.e("Read", "error");
+                }
+            };
+
+        } else {
+
+            mProgressDialog.dismiss();
+            Toast.makeText(getActivity(), "No internet connection.", Toast.LENGTH_LONG).show();
+        }
         return view;
     }
 
@@ -163,4 +172,10 @@ public class OrganiserEventsFragment extends Fragment {
         mFragmentTransaction.commit();
     }
 
+    private boolean isNetworkAvailable(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
 }
