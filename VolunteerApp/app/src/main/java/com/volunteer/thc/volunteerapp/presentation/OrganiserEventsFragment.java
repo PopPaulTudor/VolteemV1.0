@@ -1,5 +1,6 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -96,8 +97,11 @@ public class OrganiserEventsFragment extends Fragment {
 
                     } else {
                         getSingleEvent(0);
-                        SharedPreferences prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                        prefs.edit().putInt("lastID", mEventIDs.size()).apply();
+                        Activity activity = getActivity();
+                        if(activity != null) {
+                            SharedPreferences prefs = activity.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+                            prefs.edit().putInt("lastID", mEventIDs.size()).apply();
+                        }
                     }
                 }
 
@@ -114,6 +118,7 @@ public class OrganiserEventsFragment extends Fragment {
                     String name, location, date, type, description, deadline, created_by, eventID;
                     int size;
                     ArrayList<String> registeredUsers = new ArrayList<>();
+                    ArrayList<String> acceptedUsers = new ArrayList<>();
 
                     created_by = dataSnapshot.child("created_by").getValue().toString();
                     eventID = dataSnapshot.child("eventID").getValue().toString();
@@ -130,7 +135,12 @@ public class OrganiserEventsFragment extends Fragment {
                         registeredUsers.add(registered_users.child("user").getValue().toString());
                     }
 
-                    mEventsList.add(new Event(created_by, name, location, date, type, eventID, description, deadline, size, registeredUsers));
+                    for (DataSnapshot registered_users : dataSnapshot.child("accepted_users").getChildren()) {
+
+                        acceptedUsers.add(registered_users.child("user").getValue().toString());
+                    }
+
+                    mEventsList.add(new Event(created_by, name, location, date, type, eventID, description, deadline, size, registeredUsers, acceptedUsers));
 
                     if (indexOfEvent < mEventIDs.size()) {
                         getSingleEvent(indexOfEvent);

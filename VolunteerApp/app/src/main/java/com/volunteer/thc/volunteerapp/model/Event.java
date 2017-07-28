@@ -11,8 +11,7 @@ public class Event implements Serializable{
     private String created_by, name, location, date, type, description, deadline, eventID;
     private int size;
     private ArrayList<String> registered_volunteers;
-   // private ArrayList<String> accepted_volunteers;
-    // !!!! ARRAYS NOT RECOMMENDED BY FIREBASE AS THEY CAN CAUSE OVERWRITING ERRORS !!!!
+    private ArrayList<String> accepted_volunteers;
 
     public Event(){
 
@@ -30,11 +29,11 @@ public class Event implements Serializable{
         this.size = size;
         this.eventID = eventID;
         this.registered_volunteers = new ArrayList<>();
-       // this.accepted_volunteers = new ArrayList<>();
+        this.accepted_volunteers = new ArrayList<>();
     }
 
     public Event (String created_by, String name, String location, String date, String type, String eventID,
-                  String description, String deadline, int size, ArrayList<String> registered_volunteers) {
+                  String description, String deadline, int size, ArrayList<String> registered_volunteers, ArrayList<String> accepted_volunteers) {
         this.created_by = created_by;
         this.name = name;
         this.location = location;
@@ -45,6 +44,7 @@ public class Event implements Serializable{
         this.size = size;
         this.eventID = eventID;
         this.registered_volunteers = registered_volunteers;
+        this.accepted_volunteers = accepted_volunteers;
     }
 
     public String getCreated_by() {
@@ -126,12 +126,12 @@ public class Event implements Serializable{
     public void setRegistered_volunteers(ArrayList<String> registered_volunteers) {
         this.registered_volunteers = registered_volunteers;
     }
-//
-//    public ArrayList<String> getAccepted_volunteers() {
-//        return accepted_volunteers;
-//    }
-//
-//    public void setAccepted_volunteers(ArrayList<String> accepted_volunteers) {
-//        this.accepted_volunteers = accepted_volunteers;
-//    }
+
+    public ArrayList<String> getAccepted_volunteers() {
+        return accepted_volunteers;
+    }
+
+    public void setAccepted_volunteers(ArrayList<String> accepted_volunteers) {
+        this.accepted_volunteers = accepted_volunteers;
+    }
 }
