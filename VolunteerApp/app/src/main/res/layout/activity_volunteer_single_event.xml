@@ -76,6 +76,15 @@
         android:layout_marginStart="77dp"
         android:layout_marginTop="247dp" />
 
+    <TextView
+        android:id="@+id/event_status"
+        android:text="Status: Pending"
+        android:layout_marginStart="77dp"
+        android:layout_marginTop="280dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
     <Button
         android:id="@+id/event_signup"
         android:layout_width="wrap_content"
@@ -92,7 +101,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="300dp"
         android:text="LEAVE EVENT"
         android:visibility="gone"/>
 

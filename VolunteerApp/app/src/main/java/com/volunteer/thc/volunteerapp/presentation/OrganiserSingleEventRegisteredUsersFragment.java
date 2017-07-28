@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -22,6 +23,8 @@ import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -34,6 +37,7 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
     private ArrayList<Volunteer> mVolunteers = new ArrayList<>();
     private RecyclerView mRegisteredUsersRecView;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private String eventID;
 
     @Nullable
     @Override
@@ -42,11 +46,13 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_registered_users, container, false);
 
         mRegisteredUsers = (ArrayList) getArguments().getStringArrayList("registered_users");
+        eventID = getArguments().getString("eventID");
         mRegisteredUsersRecView = (RecyclerView) view.findViewById(R.id.RecViewRegUsers);
         mRegisteredUsersRecView.setHasFixedSize(true);
 
 
         for (final String volunteerID : mRegisteredUsers) {
+            mVolunteers = new ArrayList<>();
             mDatabase.child("users").child("volunteers").child(volunteerID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -55,7 +61,7 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mRegisteredUsers.get(mRegisteredUsers.size() - 1), volunteerID)) {
 
-                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, "reg");
+                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", eventID);
                         mRegisteredUsersRecView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         mRegisteredUsersRecView.setLayoutManager(linearLayoutManager);
@@ -68,9 +74,6 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
                 }
             });
         }
-
-
-
 
         return view;
     }

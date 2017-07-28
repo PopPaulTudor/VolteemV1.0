@@ -4,8 +4,12 @@
 
 
     <RelativeLayout
+        android:id="@+id/item_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@drawable/volunteer_background"
+        android:stateListAnimator="@animator/volunteer_selection">
+
     <TextView
         android:id="@+id/name_volunteer_element"
         android:layout_width="wrap_content"
@@ -23,13 +27,61 @@
         android:text="500"
         android:layout_alignBaseline="@+id/name_volunteer_element"
         android:layout_marginLeft="200dp" />
+        
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:id="@+id/expandable_item"
+            android:layout_margin="16dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/exp_phone_volunteer_element">
+
+            <TextView
+                android:id="@+id/volunteer_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:text="City: Cluj-Napoca" />
+
+            <TextView
+                android:id="@+id/volunteer_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:text="Age: 25" />
+
+            <TextView
+                android:id="@+id/volunteer_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:text="Phone number: 0777777777" />
+
+            <TextView
+                android:id="@+id/volunteer_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:text="Email: volunteer@app.com" />
+
+            <Button
+                android:id="@+id/accept_volunteer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Accept Volunteer"
+                android:visibility="gone"/>
+
+        </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="20dp"
         android:background="@android:color/darker_gray"
+        android:layout_below="@+id/expandable_item"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"/>
 

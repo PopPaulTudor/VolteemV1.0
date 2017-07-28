@@ -29,6 +29,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
 
     private ArrayList<String> mAcceptedUsers = new ArrayList<>();
     private ArrayList<Volunteer> mVolunteers = new ArrayList<>();
+    private String eventID;
     private RecyclerView mAcceptedUsersList;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -40,11 +41,13 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
 
 
         mAcceptedUsers = (ArrayList) getArguments().getStringArrayList("accepted_users");
+        eventID = getArguments().getString("eventID");
         mAcceptedUsersList = (RecyclerView) view.findViewById(R.id.RecViewAccUsers);
         mAcceptedUsersList.setHasFixedSize(true);
 
 
         for (final String volunteerID : mAcceptedUsers) {
+            mVolunteers = new ArrayList<>();
             mDatabase.child("users").child("volunteers").child(volunteerID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -53,7 +56,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mAcceptedUsers.get(mAcceptedUsers.size() - 1), volunteerID)) {
 
-                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, "accept");
+                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", eventID);
                         mAcceptedUsersList.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         mAcceptedUsersList.setLayoutManager(linearLayoutManager);
@@ -66,7 +69,6 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
                 }
             });
         }
-
 
         return view;
 

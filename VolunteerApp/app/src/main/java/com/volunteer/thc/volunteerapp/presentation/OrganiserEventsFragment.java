@@ -48,10 +48,6 @@ public class OrganiserEventsFragment extends Fragment {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private List<Event> mEventsList = new ArrayList<>();
-    private ArrayList<String> mEventIDs = new ArrayList<>();
-    private Organiser organiser = new Organiser();
-    private ValueEventListener mSingleEventListener;
-    private int indexOfEvent = 1;
     private RecyclerView recyclerView;
     private ProgressDialog mProgressDialog;
 
@@ -72,19 +68,45 @@ public class OrganiserEventsFragment extends Fragment {
             }
         });
 
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mEventsList = new ArrayList<>();
+        loadEvents();
+    }
+
+    private void loadEvents() {
         mProgressDialog = ProgressDialog.show(getActivity(), "Getting events...", "", true);
 
         if(isNetworkAvailable()) {
 
-            mDatabase.child("users").child("organisers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            mDatabase.child("events").orderByChild("created_by").equalTo(user.getUid())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    organiser = dataSnapshot.getValue(Organiser.class);
-                    mEventIDs = organiser.getEvents();
-                    if (mEventIDs == null) {
+                    for (DataSnapshot event : dataSnapshot.getChildren()) {
 
-                        mProgressDialog.dismiss();
+                        Event currentEvent = event.getValue(Event.class);
+                        ArrayList<String> reg_users = new ArrayList<>();
+
+                        for (DataSnapshot registered_users : event.child("registered_users").getChildren()) {
+                            reg_users.add(registered_users.child("user").getValue().toString());
+                        }
+                        currentEvent.setRegistered_volunteers(reg_users);
+                        reg_users = new ArrayList<>();
+                        for (DataSnapshot accepted_users : event.child("accepted_users").getChildren()) {
+                            reg_users.add(accepted_users.child("user").getValue().toString());
+                        }
+                        currentEvent.setAccepted_volunteers(reg_users);
+                        mEventsList.add(currentEvent);
+                    }
+
+                    if(mEventsList.isEmpty()) {
+                        
                         Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
                         snackbar.setAction("Add", new View.OnClickListener() {
                             @Override
@@ -95,62 +117,18 @@ public class OrganiserEventsFragment extends Fragment {
                         snackbar.show();
 
                     } else {
-                        getSingleEvent(0);
-                        Activity activity = getActivity();
-                        if(activity != null) {
-                            SharedPreferences prefs = activity.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                            prefs.edit().putInt("lastID", mEventIDs.size()).apply();
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-            mSingleEventListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    String name, location, date, type, description, deadline, created_by, eventID;
-                    int size;
-                    ArrayList<String> registeredUsers = new ArrayList<>();
-                    ArrayList<String> acceptedUsers = new ArrayList<>();
-
-                    created_by = dataSnapshot.child("created_by").getValue().toString();
-                    eventID = dataSnapshot.child("eventID").getValue().toString();
-                    name = dataSnapshot.child("name").getValue().toString();
-                    location = dataSnapshot.child("location").getValue().toString();
-                    size = Integer.parseInt(dataSnapshot.child("size").getValue().toString());
-                    date = dataSnapshot.child("date").getValue().toString();
-                    type = dataSnapshot.child("type").getValue().toString();
-                    description = dataSnapshot.child("description").getValue().toString();
-                    deadline = dataSnapshot.child("deadline").getValue().toString();
-
-                    for (DataSnapshot registered_users : dataSnapshot.child("registered_users").getChildren()) {
-
-                        registeredUsers.add(registered_users.child("user").getValue().toString());
-                    }
-
-                    for (DataSnapshot registered_users : dataSnapshot.child("accepted_users").getChildren()) {
-
-                        acceptedUsers.add(registered_users.child("user").getValue().toString());
-                    }
-
-                    mEventsList.add(new Event(created_by, name, location, date, type, eventID, description, deadline, size, registeredUsers, acceptedUsers));
-
-                    if (indexOfEvent < mEventIDs.size()) {
-                        getSingleEvent(indexOfEvent);
-                        ++indexOfEvent;
-                    } else {
 
                         mProgressDialog.dismiss();
                         OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         recyclerView.setLayoutManager(linearLayoutManager);
+
+                        Activity activity = getActivity();
+                        if(activity != null) {
+                            SharedPreferences prefs = activity.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+                            prefs.edit().putInt("lastID", mEventsList.size()).apply();
+                        }
                     }
                 }
 
@@ -159,25 +137,20 @@ public class OrganiserEventsFragment extends Fragment {
 
                     Log.e("Read", "error");
                 }
-            };
+            });
 
         } else {
 
             mProgressDialog.dismiss();
             Toast.makeText(getActivity(), "No internet connection.", Toast.LENGTH_LONG).show();
         }
-        return view;
-    }
-
-    public void getSingleEvent(int index) {
-
-        mDatabase.child("events").child(mEventIDs.get(index)).addListenerForSingleValueEvent(mSingleEventListener);
     }
 
     public void openCreateEventFragment(){
 
         mFragmentTransaction = getFragmentManager().beginTransaction();
         mFragmentTransaction.replace(R.id.main_container, new CreateEventFragment());
+        mFragmentTransaction.addToBackStack("createEvent");
         mFragmentTransaction.commit();
     }
 

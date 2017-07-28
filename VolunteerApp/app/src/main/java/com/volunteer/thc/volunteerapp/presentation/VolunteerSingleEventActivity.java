@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 
 public class VolunteerSingleEventActivity extends AppCompatActivity {
 
-    private TextView mEventName, mEventLocation, mEventDate, mEventType, mEventDescription, mEventDeadline, mEventSize;
+    private TextView mEventName, mEventLocation, mEventDate, mEventType, mEventDescription, mEventDeadline, mEventSize, mStatus;
     private Event currentEvent;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -55,6 +56,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventDescription = (TextView) findViewById(R.id.event_description);
         mEventDeadline = (TextView) findViewById(R.id.event_deadline);
         mEventSize = (TextView) findViewById(R.id.event_size);
+        mStatus = (TextView) findViewById(R.id.event_status);
 
         mSignupForEvent = (Button) findViewById(R.id.event_signup);
         mLeaveEvent = (Button) findViewById(R.id.event_leave);
@@ -72,8 +74,25 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         if(prefs.getInt("cameFrom", 1) == 1) {
             mSignupForEvent.setVisibility(View.VISIBLE);
         } else {
+            mStatus.setVisibility(View.VISIBLE);
             mLeaveEvent.setVisibility(View.VISIBLE);
         }
+
+        mDatabase.child("events").child(currentEvent.getEventID()).child("accepted_users").orderByChild("user")
+                .startAt(user.getUid()).endAt(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() != null){
+                    mStatus.setText("Status: Accepted");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
         mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
