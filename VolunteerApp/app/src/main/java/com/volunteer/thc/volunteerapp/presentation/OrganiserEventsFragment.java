@@ -65,7 +65,6 @@ public class OrganiserEventsFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewOrgEvents);
         recyclerView.setHasFixedSize(true);
-
         mAddEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
