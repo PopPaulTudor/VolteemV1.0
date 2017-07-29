@@ -83,7 +83,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             @Override
             public void onClick(View view) {
                 mDatabase.child("events").child(eventID).child("registered_users").orderByChild("user")
-                        .startAt(volunteerIDs.get(position)).endAt(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
+                        .equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot data: dataSnapshot.getChildren()){

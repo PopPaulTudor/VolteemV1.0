@@ -43,8 +43,6 @@ import java.util.List;
 
 public class OrganiserEventsFragment extends Fragment {
 
-    private FloatingActionButton mAddEvent;
-    private FragmentTransaction mFragmentTransaction;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private List<Event> mEventsList = new ArrayList<>();
@@ -56,18 +54,14 @@ public class OrganiserEventsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_organiserevents, container, false);
-
-        mAddEvent = (FloatingActionButton) view.findViewById(R.id.add_event);
-
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewOrgEvents);
         recyclerView.setHasFixedSize(true);
-        mAddEvent.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.add_event).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openCreateEventFragment();
             }
         });
-
         return view;
     }
 
@@ -105,8 +99,10 @@ public class OrganiserEventsFragment extends Fragment {
                         mEventsList.add(currentEvent);
                     }
 
+                    mProgressDialog.dismiss();
+
                     if(mEventsList.isEmpty()) {
-                        
+
                         Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
                         snackbar.setAction("Add", new View.OnClickListener() {
                             @Override
@@ -118,7 +114,6 @@ public class OrganiserEventsFragment extends Fragment {
 
                     } else {
 
-                        mProgressDialog.dismiss();
                         OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -148,7 +143,7 @@ public class OrganiserEventsFragment extends Fragment {
 
     public void openCreateEventFragment(){
 
-        mFragmentTransaction = getFragmentManager().beginTransaction();
+        FragmentTransaction mFragmentTransaction = getFragmentManager().beginTransaction();
         mFragmentTransaction.replace(R.id.main_container, new CreateEventFragment());
         mFragmentTransaction.addToBackStack("createEvent");
         mFragmentTransaction.commit();

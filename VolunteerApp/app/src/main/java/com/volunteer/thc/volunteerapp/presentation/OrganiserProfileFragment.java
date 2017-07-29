@@ -109,7 +109,7 @@ public class OrganiserProfileFragment extends Fragment{
 
                     if(validateForm()) {
                         if (!currentCompany.equals(organiser.getCompany())) {
-                            mDatabase.child("users").child("organisers").child(user.getUid()).child("firstname").setValue(currentCompany);
+                            mDatabase.child("users").child("organisers").child(user.getUid()).child("company").setValue(currentCompany);
                             organiser.setCompany(currentCompany);
                         }
 
