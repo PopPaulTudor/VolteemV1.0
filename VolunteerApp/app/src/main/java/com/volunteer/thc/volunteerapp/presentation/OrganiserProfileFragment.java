@@ -32,7 +32,6 @@ public class OrganiserProfileFragment extends Fragment{
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private TextView mUserCompany;
     private EditText mEmail, mCompany, mPhone, mCity;
     private Button mEditSave, mCancel;
     private ProgressDialog mDialog;
@@ -45,7 +44,6 @@ public class OrganiserProfileFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_organiserprofile, container, false);
 
         organiser = new Organiser();
-        mUserCompany = (TextView) view.findViewById(R.id.user_company);
         mEmail = (EditText) view.findViewById(R.id.edit_email);
         mCompany = (EditText) view.findViewById(R.id.edit_company);
         mCity = (EditText) view.findViewById(R.id.edit_city);
@@ -70,7 +68,6 @@ public class OrganiserProfileFragment extends Fragment{
 
                 organiser = dataSnapshot.getValue(Organiser.class);
 
-                mUserCompany.setText("Hello " + organiser.getCompany() + "!");
                 mCompany.setText(organiser.getCompany());
                 mEmail.setText(organiser.getEmail());
                 mPhone.setText(organiser.getPhone());
