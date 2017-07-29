@@ -27,8 +27,12 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organisersingleevent);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         mCurrentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
+
+        getSupportActionBar().setTitle(mCurrentEvent.getName());
 
         Bundle bundle = new Bundle();
         bundle.putSerializable("currentEvent", mCurrentEvent);

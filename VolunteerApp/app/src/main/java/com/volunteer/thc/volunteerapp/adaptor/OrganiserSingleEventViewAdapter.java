@@ -15,8 +15,8 @@ import com.volunteer.thc.volunteerapp.presentation.OrganiserSingleEventRegistere
 public class OrganiserSingleEventViewAdapter extends FragmentPagerAdapter {
 
     private Fragment mEventInfo;
-    private Fragment mRegisteredUsers = new OrganiserSingleEventRegisteredUsersFragment();
-    private Fragment mAcceptedUsers = new OrganiserSingleEventAcceptedUsersFragment();
+    private Fragment mRegisteredUsers;
+    private Fragment mAcceptedUsers;
 
     public OrganiserSingleEventViewAdapter(FragmentManager fm, Fragment mEventInfo, Fragment mRegisteredUsers, Fragment mAcceptedUsers) {
         super(fm);

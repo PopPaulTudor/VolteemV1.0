@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
@@ -36,10 +37,8 @@ public class MainActivity extends AppCompatActivity
 
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseAuth Auth = FirebaseAuth.getInstance();
-    private FragmentTransaction mFragmentTransaction;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private TextView mUserStatus;
-    private ValueEventListener mStatusListener;
     private SharedPreferences prefs;
 
 
@@ -65,7 +64,7 @@ public class MainActivity extends AppCompatActivity
 
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
-        mStatusListener = (new ValueEventListener() {
+        ValueEventListener mStatusListener = (new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -161,14 +160,11 @@ public class MainActivity extends AppCompatActivity
 
                 String userstatus = prefs.getString("user_status", null);
                 if (TextUtils.equals(userstatus, "Volunteer")) {
-                    mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    mFragmentTransaction.replace(R.id.main_container, new VolunteerEventsFragment());
+                    replaceFragmentByClass(new VolunteerEventsFragment());
                 } else {
-                    mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    mFragmentTransaction.replace(R.id.main_container, new OrganiserEventsFragment());
+                    replaceFragmentByClass(new OrganiserEventsFragment());
                 }
 
-                mFragmentTransaction.commit();
                 getSupportActionBar().setTitle("Events");
                 item.setChecked(true);
 
@@ -179,11 +175,7 @@ public class MainActivity extends AppCompatActivity
             } else if (id == R.id.user_events) {
 
                 prefs.edit().putInt("cameFrom", 2).commit();
-
-                mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-                mFragmentTransaction.replace(R.id.main_container, new VolunteerMyEventsFragment());
-                mFragmentTransaction.commit();
-
+                replaceFragmentByClass(new VolunteerMyEventsFragment());
                 getSupportActionBar().setTitle("My Events");
                 item.setChecked(true);
 
@@ -195,14 +187,10 @@ public class MainActivity extends AppCompatActivity
                 String userstatus = prefs.getString("user_status", null);
                 if (TextUtils.equals(userstatus, "Volunteer")) {
 
-                    mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    mFragmentTransaction.replace(R.id.main_container, new VolunteerProfileFragment());
-                    mFragmentTransaction.commit();
+                    replaceFragmentByClass(new VolunteerProfileFragment());
                 } else {
 
-                    mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    mFragmentTransaction.replace(R.id.main_container, new OrganiserProfileFragment());
-                    mFragmentTransaction.commit();
+                    replaceFragmentByClass(new OrganiserProfileFragment());
                 }
                 getSupportActionBar().setTitle("Profile");
                 item.setChecked(true);
@@ -212,9 +200,7 @@ public class MainActivity extends AppCompatActivity
 
             } else if (id == R.id.nav_settings) {
 
-                mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-                mFragmentTransaction.replace(R.id.main_container, new SettingsFragment());
-                mFragmentTransaction.commit();
+                replaceFragmentByClass(new SettingsFragment());
                 getSupportActionBar().setTitle("Settings");
                 item.setChecked(true);
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -239,7 +225,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void showEvents(String userstatus) {
+    private void showEvents(String userstatus) {
 
         prefs.edit().putInt("cameFrom", 1).commit();
 
@@ -247,17 +233,18 @@ public class MainActivity extends AppCompatActivity
 
             NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
             Menu navMenu = navView.getMenu();
-
             navMenu.findItem(R.id.user_events).setVisible(true);
+            replaceFragmentByClass(new VolunteerMyEventsFragment());
 
-            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-            mFragmentTransaction.replace(R.id.main_container, new VolunteerEventsFragment());
-            mFragmentTransaction.commit();
         } else {
-            mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-            mFragmentTransaction.replace(R.id.main_container, new OrganiserEventsFragment());
-            mFragmentTransaction.commit();
+            replaceFragmentByClass(new OrganiserEventsFragment());
         }
+    }
+
+    private void replaceFragmentByClass(Fragment fragment) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_container, fragment);
+        fragmentTransaction.commit();
     }
 
     private boolean isNetworkAvailable(){

@@ -61,13 +61,15 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mSignupForEvent = (Button) findViewById(R.id.event_signup);
         mLeaveEvent = (Button) findViewById(R.id.event_leave);
 
-        mEventName.setText(currentEvent.getName());
-        mEventLocation.setText(currentEvent.getLocation());
-        mEventDate.setText(currentEvent.getDate());
-        mEventType.setText(currentEvent.getType());
-        mEventDescription.setText(currentEvent.getDescription());
-        mEventDeadline.setText(currentEvent.getDeadline());
-        mEventSize.setText(currentEvent.getSize()+"");
+        getSupportActionBar().setTitle(currentEvent.getName());
+
+        mEventName.setText("Name: " + currentEvent.getName());
+        mEventLocation.setText("Location: " + currentEvent.getLocation());
+        mEventDate.setText("Date: " + currentEvent.getDate());
+        mEventType.setText("Type: " + currentEvent.getType());
+        mEventDescription.setText("Description: " + currentEvent.getDescription());
+        mEventDeadline.setText("Deadline: " + currentEvent.getDeadline());
+        mEventSize.setText("Volunteers needed: " + currentEvent.getSize()+"");
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 

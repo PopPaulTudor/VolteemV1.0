@@ -37,8 +37,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     private ViewGroup parent;
 
     public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, String eventID){
-        listVolunteer=list;
-        this.classParent=classParent;
+        listVolunteer = list;
+        this.classParent = classParent;
         this.volunteerIDs = volunteerIDs;
         this.eventID = eventID;
     }

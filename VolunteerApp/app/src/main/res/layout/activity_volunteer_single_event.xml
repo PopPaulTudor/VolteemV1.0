@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:focusableInTouchMode="true"
     tools:context="com.volunteer.thc.volunteerapp.presentation.VolunteerSingleEventActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -16,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
@@ -26,7 +29,7 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="73dp" />
+        android:layout_marginTop="100dp" />
 
     <TextView
         android:id="@+id/event_location"
@@ -34,7 +37,7 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="104dp" />
+        android:layout_marginTop="120dp" />
 
     <TextView
         android:id="@+id/event_date"
@@ -42,7 +45,7 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="133dp" />
+        android:layout_marginTop="140dp" />
 
     <TextView
         android:id="@+id/event_type"
@@ -50,7 +53,7 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="161dp" />
+        android:layout_marginTop="160dp" />
 
     <TextView
         android:id="@+id/event_description"
@@ -58,7 +61,7 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="190dp" />
+        android:layout_marginTop="180dp" />
 
     <TextView
         android:id="@+id/event_deadline"
@@ -66,7 +69,7 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="218dp" />
+        android:layout_marginTop="200dp" />
 
     <TextView
         android:id="@+id/event_size"
@@ -74,13 +77,13 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="247dp" />
+        android:layout_marginTop="220dp" />
 
     <TextView
         android:id="@+id/event_status"
         android:text="Status: Pending"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="260dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
@@ -90,7 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="250dp"
         android:layout_weight="1"
         android:text="SIGN UP FOR EVENT"
         android:visibility="gone"/>
@@ -101,7 +104,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="280dp"
         android:text="LEAVE EVENT"
         android:visibility="gone"/>
 
