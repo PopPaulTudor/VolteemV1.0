@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
 
+        navigationView.getMenu().getItem(0).setChecked(true);
+
         View header = navigationView.getHeaderView(0);
         mUserStatus = (TextView) header.findViewById(R.id.nav_header_status);
 

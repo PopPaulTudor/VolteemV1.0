@@ -30,6 +30,7 @@
         android:text="First Name: "
         android:textSize="17sp"
         android:layout_marginStart="10sp"
+        android:textColor="@android:color/black"
         android:layout_below="@+id/volunteer_profileimage"
         android:layout_alignBaseline="@+id/edit_firstname"
         android:layout_alignBottom="@+id/edit_firstname"
@@ -43,6 +44,7 @@
         android:textSize="17sp"
         android:layout_marginStart="10sp"
         android:layout_below="@id/text_first_name"
+        android:textColor="@android:color/black"
         android:layout_alignBaseline="@+id/edit_lastname"
         android:layout_alignBottom="@+id/edit_lastname"
         android:layout_alignParentStart="true" />
@@ -54,6 +56,7 @@
         android:text="Email: "
         android:textSize="17sp"
         android:layout_marginTop="26dp"
+        android:textColor="@android:color/black"
         android:layout_below="@+id/edit_lastname"
         android:layout_alignStart="@+id/text_age" />
 
@@ -65,6 +68,7 @@
         android:textSize="17sp"
         android:layout_marginStart="10sp"
         android:layout_below="@+id/text_email"
+        android:textColor="@android:color/black"
         android:layout_alignBaseline="@+id/edit_age"
         android:layout_alignBottom="@+id/edit_age"
         android:layout_alignParentStart="true" />
@@ -76,6 +80,7 @@
         android:textSize="17sp"
         android:layout_marginStart="10sp"
         android:layout_below="@id/text_age"
+        android:textColor="@android:color/black"
         android:layout_alignBaseline="@+id/edit_phone"
         android:layout_alignBottom="@+id/edit_phone"
         android:layout_alignParentStart="true" />
@@ -87,6 +92,7 @@
         android:textSize="17sp"
         android:layout_marginStart="10sp"
         android:layout_below="@+id/text_city"
+        android:textColor="@android:color/black"
         android:layout_alignBaseline="@+id/edit_city"
         android:layout_alignBottom="@+id/edit_city"
         android:layout_alignParentStart="true" />
