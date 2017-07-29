@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -35,15 +36,15 @@ import java.util.List;
  * Created by Cristi on 6/20/2017.
  */
 
-public class VolunteerEventsFragment extends Fragment {
+public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
 
     private List<Event> mEventsList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private ProgressDialog mProgressDialog;
     private RecyclerView recyclerView;
     private ValueEventListener mRetrieveEvents;
     private ArrayList<String> mUserEvents = new ArrayList<>();
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +55,16 @@ public class VolunteerEventsFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+            }
+        });
+
         return view;
     }
 
@@ -63,20 +74,14 @@ public class VolunteerEventsFragment extends Fragment {
         loadEvents();
     }
 
-    private boolean isUserRegisteredForEvent(String eventID) {
-
-        for(String event: mUserEvents) {
-            if(TextUtils.equals(eventID, event)) {
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public void onRefresh(){
+        loadEvents();
     }
 
     private void loadEvents(){
 
-        mProgressDialog = ProgressDialog.show(getActivity(), "Getting events...", "", true);
-
+        mSwipeRefreshLayout.setRefreshing(true);
         if (isNetworkAvailable()) {
 
             mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -105,12 +110,11 @@ public class VolunteerEventsFragment extends Fragment {
                             mEventsList.add(currentEvent);
                         }
                     }
-                    mProgressDialog.dismiss();
+                    mSwipeRefreshLayout.setRefreshing(false);
                     OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);
-
                 }
 
                 @Override
@@ -121,9 +125,19 @@ public class VolunteerEventsFragment extends Fragment {
 
         } else {
 
-            mProgressDialog.dismiss();
+            mSwipeRefreshLayout.setRefreshing(false);
             Toast.makeText(getActivity(), "No internet connection.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private boolean isUserRegisteredForEvent(String eventID) {
+
+        for(String event: mUserEvents) {
+            if(TextUtils.equals(eventID, event)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isNetworkAvailable(){

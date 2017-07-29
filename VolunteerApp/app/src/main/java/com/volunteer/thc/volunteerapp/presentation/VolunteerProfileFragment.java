@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,11 +33,10 @@ public class VolunteerProfileFragment extends Fragment {
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private TextView mFirstname;
     private EditText mFirstnameEdit, mLastname, mEmail, mAge, mCity, mPhone;
     private Button mEditSave, mCancel;
     private Volunteer volunteer1;
-    private ProgressDialog mDialog;
+    private ProgressBar mProgressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,7 +44,8 @@ public class VolunteerProfileFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_volunteerprofile, container, false);
 
-        mDialog = ProgressDialog.show(getActivity(), "Loading profile", "", true);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         volunteer1 = new Volunteer();
         mFirstnameEdit = (EditText) view.findViewById(R.id.edit_firstname);
@@ -79,7 +80,7 @@ public class VolunteerProfileFragment extends Fragment {
                 mCity.setText(volunteer1.getCity());
                 mAge.setText(volunteer1.getAge());
 
-                mDialog.dismiss();
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override

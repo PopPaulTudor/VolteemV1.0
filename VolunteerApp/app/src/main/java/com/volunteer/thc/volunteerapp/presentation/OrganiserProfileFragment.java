@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +35,7 @@ public class OrganiserProfileFragment extends Fragment{
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private EditText mEmail, mCompany, mPhone, mCity;
     private Button mEditSave, mCancel;
-    private ProgressDialog mDialog;
+    private ProgressBar mProgressBar;
     private Organiser organiser;
 
     @Override
@@ -58,7 +59,9 @@ public class OrganiserProfileFragment extends Fragment{
 
         mEmail.setKeyListener(null);
 
-        mDialog = ProgressDialog.show(getActivity(), "Loading profile", "", false);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
+
+        mProgressBar.setVisibility(View.VISIBLE);
 
         toggleEditOff();
 
@@ -73,7 +76,7 @@ public class OrganiserProfileFragment extends Fragment{
                 mPhone.setText(organiser.getPhone());
                 mCity.setText(organiser.getCity());
 
-                mDialog.dismiss();
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override

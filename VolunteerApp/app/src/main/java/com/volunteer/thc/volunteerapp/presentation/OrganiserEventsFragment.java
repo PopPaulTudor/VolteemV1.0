@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,21 +43,32 @@ import java.util.List;
  * Created by Cristi on 6/17/2017.
  */
 
-public class OrganiserEventsFragment extends Fragment {
+public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private List<Event> mEventsList = new ArrayList<>();
     private RecyclerView recyclerView;
-    private ProgressDialog mProgressDialog;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_organiserevents, container, false);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewOrgEvents);
         recyclerView.setHasFixedSize(true);
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+            }
+        });
+
         view.findViewById(R.id.add_event).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,6 +79,12 @@ public class OrganiserEventsFragment extends Fragment {
     }
 
     @Override
+    public void onRefresh() {
+        mEventsList = new ArrayList<>();
+        loadEvents();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mEventsList = new ArrayList<>();
@@ -73,7 +92,8 @@ public class OrganiserEventsFragment extends Fragment {
     }
 
     private void loadEvents() {
-        mProgressDialog = ProgressDialog.show(getActivity(), "Getting events...", "", true);
+
+        mSwipeRefreshLayout.setRefreshing(true);
 
         if(isNetworkAvailable()) {
 
@@ -99,7 +119,7 @@ public class OrganiserEventsFragment extends Fragment {
                         mEventsList.add(currentEvent);
                     }
 
-                    mProgressDialog.dismiss();
+                    mSwipeRefreshLayout.setRefreshing(false);
 
                     if(mEventsList.isEmpty()) {
 
@@ -136,7 +156,7 @@ public class OrganiserEventsFragment extends Fragment {
 
         } else {
 
-            mProgressDialog.dismiss();
+            mSwipeRefreshLayout.setRefreshing(false);
             Toast.makeText(getActivity(), "No internet connection.", Toast.LENGTH_LONG).show();
         }
     }

@@ -149,7 +149,6 @@ public class VolunteerRegisterFragment extends Fragment {
                     }
 
                 });
-
     }
 
     private boolean validateForm() {

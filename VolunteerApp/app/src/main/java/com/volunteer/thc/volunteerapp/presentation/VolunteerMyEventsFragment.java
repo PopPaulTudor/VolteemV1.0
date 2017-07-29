@@ -43,7 +43,7 @@ public class VolunteerMyEventsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_volunteerevents, container, false);
+        View view = inflater.inflate(R.layout.fragment_volunteer_my_events, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);

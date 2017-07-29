@@ -4,8 +4,14 @@
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.volunteer.thc.volunteerapp.presentation.VolunteerProfileFragment">
+    tools:context="com.volunteer.thc.volunteerapp.presentation.OrganiserProfileFragment">
 
+    <ProgressBar
+        android:id="@+id/indeterminateBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp"/>
 
     <ImageView
         android:layout_width="match_parent"
@@ -13,6 +19,7 @@
         android:background="@color/green"
         android:id="@+id/volunteer_backimage"
         />
+
     <ImageView
         android:layout_width="120sp"
         android:layout_height="120sp"
@@ -30,8 +37,8 @@
         android:layout_height="wrap_content"
         android:text="Company: "
         android:textSize="17sp"
-        android:layout_alignBaseline="@+id/edit_company"
         android:textColor="@android:color/black"
+        android:layout_alignBaseline="@+id/edit_company"
         android:layout_alignBottom="@+id/edit_company"
         android:layout_alignStart="@+id/text_email" />
 

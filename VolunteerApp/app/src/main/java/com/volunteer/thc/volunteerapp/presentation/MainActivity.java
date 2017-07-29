@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +41,6 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private TextView mUserStatus;
     private SharedPreferences prefs;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity
             NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
             Menu navMenu = navView.getMenu();
             navMenu.findItem(R.id.user_events).setVisible(true);
-            replaceFragmentByClass(new VolunteerMyEventsFragment());
+            replaceFragmentByClass(new VolunteerEventsFragment());
 
         } else {
             replaceFragmentByClass(new OrganiserEventsFragment());
