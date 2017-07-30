@@ -118,6 +118,14 @@
                 android:visibility="visible" />
     </android.support.design.widget.TextInputLayout>
 
+            <Spinner
+                android:id="@+id/gender"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:prompt="@string/spinner_title">
+
+            </Spinner>
+
             <Button
                 android:id="@+id/register_user"
                 style="?android:textAppearanceSmall"

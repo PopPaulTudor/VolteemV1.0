@@ -10,8 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -26,6 +29,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
@@ -42,6 +48,9 @@ public class VolunteerRegisterFragment extends Fragment {
     private Button mRegister, mBack;
     private Intent intent, intent_back;
     private ProgressDialog mProgressDialog;
+    private Spinner spinner;
+    private List<String> gender = new ArrayList<>();
+    private String mGender;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,6 +58,7 @@ public class VolunteerRegisterFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_volunteerregister, container, false);
 
+        spinner = (Spinner) view.findViewById(R.id.gender);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         mEmail = (EditText) view.findViewById(R.id.email);
@@ -62,6 +72,28 @@ public class VolunteerRegisterFragment extends Fragment {
         mBack = (Button) view.findViewById(R.id.back);
         intent = new Intent(getActivity(), MainActivity.class);
         intent_back = new Intent(getActivity(), LoginActivity.class);
+
+        gender.add("Gender");
+        gender.add("Male");
+        gender.add("Female");
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity() ,android.R.layout.simple_spinner_item, gender);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selected = spinner.getSelectedItem().toString();
+                if(!TextUtils.equals(selected,"Gender")){
+                    mGender = selected;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,7 +149,7 @@ public class VolunteerRegisterFragment extends Fragment {
                             String user_city = mCity.getText().toString();
                             String user_phone = mPhone.getText().toString();
 
-                            Volunteer volunteer1 = new Volunteer(user_firstname,user_lastname,email,user_age,user_city,user_phone);
+                            Volunteer volunteer1 = new Volunteer(user_firstname,user_lastname,email,user_age,user_city,user_phone,mGender);
 
                             mDatabase.child("users").child("volunteers").child(userID).setValue(volunteer1);
 
@@ -156,6 +188,7 @@ public class VolunteerRegisterFragment extends Fragment {
         boolean valid;
         valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mFirstname) &&
                 editTextIsValid(mLastname) && editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity));
+        valid &= !TextUtils.isEmpty(mGender);
         return valid;
     }
 
@@ -166,12 +199,17 @@ public class VolunteerRegisterFragment extends Fragment {
             mEditText.requestFocus();
             return false;
         } else {
-            if (mEditText == mPassword && text.length() < 6) {
-                mEditText.setError("Your password must be at least 6 characters long.");
-                mEditText.requestFocus();
-                return false;
+            if(mEditText == mEmail && !text.contains("@")){
+                mEditText.setError("Please enter a valid email address.");
+
             } else {
-                mEditText.setError(null);
+                if (mEditText == mPassword && text.length() < 6) {
+                    mEditText.setError("Your password must be at least 6 characters long.");
+                    mEditText.requestFocus();
+                    return false;
+                } else {
+                    mEditText.setError(null);
+                }
             }
         }
         return true;

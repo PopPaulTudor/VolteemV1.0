@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,7 +35,7 @@ public class VolunteerMyEventsFragment extends Fragment {
     private List<Event> mEventsList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private ProgressDialog mProgressDialog;
+    private ProgressBar mProgressBar;
     private RecyclerView recyclerView;
     private ValueEventListener mRetrieveEvents;
     private ArrayList<String> mUserEvents = new ArrayList<>();
@@ -47,6 +48,7 @@ public class VolunteerMyEventsFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
 
         return view;
     }
@@ -58,8 +60,7 @@ public class VolunteerMyEventsFragment extends Fragment {
     }
 
     private void loadEvents(){
-        mProgressDialog = ProgressDialog.show(getActivity(), "Getting events...", "", true);
-
+        mProgressBar.setVisibility(View.VISIBLE);
         mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -86,7 +87,7 @@ public class VolunteerMyEventsFragment extends Fragment {
                         mEventsList.add(currentEvent);
                     }
                 }
-                mProgressDialog.dismiss();
+                mProgressBar.setVisibility(View.GONE);
                 OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
                 recyclerView.setAdapter(adapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());

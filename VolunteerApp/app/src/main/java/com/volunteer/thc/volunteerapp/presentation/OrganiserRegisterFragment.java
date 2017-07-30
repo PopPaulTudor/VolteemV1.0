@@ -164,12 +164,17 @@ public class OrganiserRegisterFragment extends Fragment{
             mEditText.requestFocus();
             return false;
         } else {
-            if (mEditText == mPassword && text.length() < 6) {
-                mEditText.setError("Your password must be at least 6 characters long.");
-                mEditText.requestFocus();
-                return false;
+            if(mEditText == mEmail && !text.contains("@")){
+                mEditText.setError("Please enter a valid email address.");
+
             } else {
-                mEditText.setError(null);
+                if (mEditText == mPassword && text.length() < 6) {
+                    mEditText.setError("Your password must be at least 6 characters long.");
+                    mEditText.requestFocus();
+                    return false;
+                } else {
+                    mEditText.setError(null);
+                }
             }
         }
         return true;

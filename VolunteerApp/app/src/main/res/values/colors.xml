@@ -5,7 +5,8 @@
     <color name="colorAccent">#FF4081</color>
     <color name="floatingButtonBackgroundTint">#81C784</color>
     <color name="green">#65ba69</color>
-    <color name="selected_volunteer_background">#f2f2f2</color>
-    <color name="volunteer_background">#ffffff</color>
+    <color name="selected_volunteer_background">#fdeac6</color>
+    <color name="volunteer_background">#fef7e9</color>
     <color name="green1">#16f702</color>
+    <color name="crem">#fef5e4</color>
 </resources>

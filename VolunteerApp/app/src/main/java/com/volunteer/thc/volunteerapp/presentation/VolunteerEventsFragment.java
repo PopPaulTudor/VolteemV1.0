@@ -2,6 +2,8 @@ package com.volunteer.thc.volunteerapp.presentation;
 
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -14,8 +16,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -56,6 +62,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
         recyclerView.setHasFixedSize(true);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.colorPrimary);
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.post(new Runnable() {
@@ -65,6 +72,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
             }
         });
 
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -127,6 +135,32 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
             mSwipeRefreshLayout.setRefreshing(false);
             Toast.makeText(getActivity(), "No internet connection.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.search_menu, menu);
+
+        ComponentName cn = new ComponentName(getActivity(), VolunteerSearchableActivity.class);
+
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
+        searchView.setIconifiedByDefault(false);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.app_bar_search:
+                getActivity().onSearchRequested();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

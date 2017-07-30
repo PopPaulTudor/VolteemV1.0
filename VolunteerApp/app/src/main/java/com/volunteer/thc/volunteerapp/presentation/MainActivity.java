@@ -19,7 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,8 +39,9 @@ public class MainActivity extends AppCompatActivity
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseAuth Auth = FirebaseAuth.getInstance();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private TextView mUserStatus;
+    private TextView mUserStatus, mUserName;
     private SharedPreferences prefs;
+    private ImageView mGender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,9 @@ public class MainActivity extends AppCompatActivity
         navigationView.getMenu().getItem(0).setChecked(true);
 
         View header = navigationView.getHeaderView(0);
+
+        mGender = (ImageView) header.findViewById(R.id.nav_header_image);
+        mUserName = (TextView) header.findViewById(R.id.nav_header_name);
         mUserStatus = (TextView) header.findViewById(R.id.nav_header_status);
 
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
@@ -78,11 +82,30 @@ public class MainActivity extends AppCompatActivity
                     editor.apply();
                     userstatus = "Volunteer";
 
+                    String gender = dataSnapshot.child("gender").getValue().toString();
+                    String firstname = dataSnapshot.child("firstname").getValue().toString();
+                    String lastname = dataSnapshot.child("lastname").getValue().toString();
+                    editor.putString("name", firstname + " " + lastname);
+                    editor.commit();
+                    mUserName.setText(firstname + " " + lastname);
+                    if (TextUtils.equals(gender, "Male")) {
+                        editor.putString("gender", "Male");
+                        editor.commit();
+                        mGender.setImageResource(R.drawable.ic_user_male);
+                    } else {
+                        editor.putString("gender", "Female");
+                        editor.commit();
+                        mGender.setImageResource(R.drawable.ic_user_female);
+                    }
+
                 } else {
                     mUserStatus.setText("Organiser");
                     editor.putString("user_status", "Organiser");
                     editor.apply();
+                    mUserName.setText(user.getEmail());
                     userstatus = "Organiser";
+                    editor.putString("gender", "Organiser");
+                    mGender.setImageResource(R.drawable.ic_organiser);
                 }
                 showEvents(userstatus);
             }
@@ -99,8 +122,24 @@ public class MainActivity extends AppCompatActivity
 
             mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mStatusListener);
             mDatabase.removeEventListener(mStatusListener);
+
         } else {
 
+            String gender = prefs.getString("gender", null);
+            String name = prefs.getString("name", null);
+            if (TextUtils.equals(userstatus, "Volunteer")) {
+
+                if (TextUtils.equals(gender, "Male")) {
+                    mGender.setImageResource(R.drawable.ic_user_male);
+                    mUserName.setText(name);
+                } else {
+                    mGender.setImageResource(R.drawable.ic_user_female);
+                    mUserName.setText(name);
+                }
+            } else {
+                mGender.setImageResource(R.drawable.ic_organiser);
+                mUserName.setText(user.getEmail());
+            }
             mUserStatus.setText(userstatus);
             showEvents(userstatus);
         }
@@ -123,29 +162,6 @@ public class MainActivity extends AppCompatActivity
                 getFragmentManager().popBackStack();
             }
         }
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -213,6 +229,8 @@ public class MainActivity extends AppCompatActivity
                 Auth.signOut();
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("user_status", null);
+                editor.putString("name", null);
+                editor.putString("gender", null);
                 editor.apply();
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);

@@ -2,6 +2,8 @@ package com.volunteer.thc.volunteerapp.presentation;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -10,13 +12,18 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -34,7 +41,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
 import com.volunteer.thc.volunteerapp.model.Event;
-import com.volunteer.thc.volunteerapp.model.Organiser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +67,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
         recyclerView.setHasFixedSize(true);
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.colorPrimary);
 
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
@@ -75,6 +82,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                 openCreateEventFragment();
             }
         });
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -89,6 +97,32 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
         super.onResume();
         mEventsList = new ArrayList<>();
         loadEvents();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.search_menu, menu);
+
+        ComponentName cn = new ComponentName(getActivity(), OrganiserSearchableActivity.class);
+
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
+        searchView.setIconifiedByDefault(false);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.app_bar_search:
+                getActivity().onSearchRequested();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void loadEvents() {
@@ -163,10 +197,13 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
     public void openCreateEventFragment(){
 
-        FragmentTransaction mFragmentTransaction = getFragmentManager().beginTransaction();
-        mFragmentTransaction.replace(R.id.main_container, new CreateEventFragment());
-        mFragmentTransaction.addToBackStack("createEvent");
-        mFragmentTransaction.commit();
+        FragmentManager fragmentManager = getFragmentManager();
+        if(fragmentManager != null) {
+            FragmentTransaction mFragmentTransaction = fragmentManager.beginTransaction();
+            mFragmentTransaction.replace(R.id.main_container, new CreateEventFragment());
+            mFragmentTransaction.addToBackStack("createEvent");
+            mFragmentTransaction.commit();
+        }
     }
 
     private boolean isNetworkAvailable(){

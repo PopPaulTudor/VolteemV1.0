@@ -11,13 +11,13 @@ import java.util.Map;
  */
 public class Volunteer {
 
-    private String firstname, lastname, email, city, phone, age, experience;
+    private String firstname, lastname, email, city, phone, age, experience, gender;
 
     public Volunteer(){ ///constructor is empty to be able to call dataSnapshot on this class
 
     }
 
-    public Volunteer(String firstname, String lastname, String email, String age, String city, String phone){
+    public Volunteer(String firstname, String lastname, String email, String age, String city, String phone, String gender){
 
         this.firstname = firstname;
         this.lastname = lastname;
@@ -26,7 +26,7 @@ public class Volunteer {
         this.city = city;
         this.phone = phone;
         this.experience = ""+0;
-
+        this.gender = gender;
     }
 
     public Map<String, Object> toMap() {
@@ -38,6 +38,7 @@ public class Volunteer {
         result.put("firstname", firstname);
         result.put("lastname", lastname);
         result.put("phone", phone);
+        result.put("gender", gender);
 
         return result;
     }
@@ -96,5 +97,13 @@ public class Volunteer {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }
