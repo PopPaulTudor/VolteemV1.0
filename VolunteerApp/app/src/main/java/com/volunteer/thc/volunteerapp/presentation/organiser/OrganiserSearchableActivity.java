@@ -1,13 +1,12 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.organiser;
 
 import android.app.SearchManager;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -65,7 +64,7 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
                         String eventName = event.child("name").getValue().toString();
                         eventName = eventName.toLowerCase();
 
-                        if(eventName.contains(query)) {
+                        if (eventName.contains(query)) {
 
                             Event currentEvent = event.getValue(Event.class);
                             ArrayList<String> reg_users = new ArrayList<>();
@@ -84,7 +83,7 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
                     }
                     mProgressBar.setVisibility(View.GONE);
 
-                    if(mResultEvents.isEmpty()) {
+                    if (mResultEvents.isEmpty()) {
 
                         mNoResultText.setVisibility(View.VISIBLE);
                     } else {
@@ -105,7 +104,7 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onSupportNavigateUp(){
+    public boolean onSupportNavigateUp() {
         finish();
         return true;
     }

@@ -1,16 +1,13 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,7 +39,7 @@ import java.util.List;
  * Created by Cristi on 6/20/2017.
  */
 
-public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private List<Event> mEventsList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -77,17 +74,17 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         loadEvents();
     }
 
     @Override
-    public void onRefresh(){
+    public void onRefresh() {
         loadEvents();
     }
 
-    private void loadEvents(){
+    private void loadEvents() {
 
         mSwipeRefreshLayout.setRefreshing(true);
         if (isNetworkAvailable()) {
@@ -166,15 +163,15 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
     private boolean isUserRegisteredForEvent(String eventID) {
 
-        for(String event: mUserEvents) {
-            if(TextUtils.equals(eventID, event)) {
+        for (String event : mUserEvents) {
+            if (TextUtils.equals(eventID, event)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean isNetworkAvailable(){
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

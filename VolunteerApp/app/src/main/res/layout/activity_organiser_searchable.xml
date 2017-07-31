@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     android:focusableInTouchMode="true"
     android:background="@drawable/background6"
-    tools:context="com.volunteer.thc.volunteerapp.presentation.OrganiserSingleEventActivity">
+    tools:context="com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity">
 
     <ProgressBar
         android:id="@+id/indeterminateBar"

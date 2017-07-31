@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -29,6 +29,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.presentation.LoginActivity;
+import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +78,7 @@ public class VolunteerRegisterFragment extends Fragment {
         gender.add("Gender");
         gender.add("Male");
         gender.add("Female");
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity() ,android.R.layout.simple_spinner_item, gender);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, gender);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -84,7 +86,7 @@ public class VolunteerRegisterFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String selected = spinner.getSelectedItem().toString();
-                if(!TextUtils.equals(selected,"Gender")){
+                if (!TextUtils.equals(selected, "Gender")) {
                     mGender = selected;
                 }
             }
@@ -98,10 +100,10 @@ public class VolunteerRegisterFragment extends Fragment {
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validateForm()){
+                if (validateForm()) {
                     mProgressDialog = ProgressDialog.show(getActivity(), "Registering", "", true);
                 }
-                createAccount(mEmail.getText().toString(),mPassword.getText().toString());
+                createAccount(mEmail.getText().toString(), mPassword.getText().toString());
             }
         });
 
@@ -119,7 +121,7 @@ public class VolunteerRegisterFragment extends Fragment {
     private void createAccount(final String email, String password) {
 
         Log.d("TAG", "CreateAccount: " + email);
-        if(!validateForm()){
+        if (!validateForm()) {
             return;
         }
 
@@ -129,8 +131,8 @@ public class VolunteerRegisterFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
-                        if(task.isSuccessful()){
-                            Log.d(TAG,"createUserwithEmail:Succes");
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "createUserwithEmail:Succes");
 
 
                             mPhone.setVisibility(View.GONE);
@@ -149,13 +151,13 @@ public class VolunteerRegisterFragment extends Fragment {
                             String user_city = mCity.getText().toString();
                             String user_phone = mPhone.getText().toString();
 
-                            Volunteer volunteer1 = new Volunteer(user_firstname,user_lastname,email,user_age,user_city,user_phone,mGender);
+                            Volunteer volunteer1 = new Volunteer(user_firstname, user_lastname, email, user_age, user_city, user_phone, mGender);
 
                             mDatabase.child("users").child("volunteers").child(userID).setValue(volunteer1);
 
                             UserProfileChangeRequest mProfileUpdate = new UserProfileChangeRequest.Builder()
-                                .setDisplayName(user_firstname)
-                                .build();
+                                    .setDisplayName(user_firstname)
+                                    .build();
 
                             user.updateProfile(mProfileUpdate);
                             user.sendEmailVerification();
@@ -169,7 +171,7 @@ public class VolunteerRegisterFragment extends Fragment {
                                 mEmail.setError("Email address is already in use.");
                                 mEmail.requestFocus();
                             } else {
-                                if(task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                     mEmail.setError("Please enter a valid email address.");
                                     mEmail.requestFocus();
                                 } else {
@@ -194,12 +196,12 @@ public class VolunteerRegisterFragment extends Fragment {
 
     private boolean editTextIsValid(EditText mEditText) {
         String text = mEditText.getText().toString();
-        if(TextUtils.isEmpty(text)) {
+        if (TextUtils.isEmpty(text)) {
             mEditText.setError("This field can not be empty.");
             mEditText.requestFocus();
             return false;
         } else {
-            if(mEditText == mEmail && !text.contains("@")){
+            if (mEditText == mEmail && !text.contains("@")) {
                 mEditText.setError("Please enter a valid email address.");
 
             } else {

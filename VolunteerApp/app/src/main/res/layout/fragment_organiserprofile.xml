@@ -4,144 +4,134 @@
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.volunteer.thc.volunteerapp.presentation.OrganiserProfileFragment">
+    tools:context="com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserProfileFragment">
 
     <ProgressBar
         android:id="@+id/indeterminateBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="200dp"/>
+        android:layout_marginTop="200dp" />
 
     <ImageView
+        android:id="@+id/volunteer_backimage"
         android:layout_width="match_parent"
         android:layout_height="120sp"
-        android:background="@color/green"
-        android:id="@+id/volunteer_backimage"
-        />
+        android:background="@color/green" />
 
     <ImageView
+        android:id="@+id/organiser_profileimage"
         android:layout_width="120sp"
         android:layout_height="120sp"
-        android:id="@+id/organiser_profileimage"
-        android:foregroundGravity="center"
-        android:src="@drawable/profile_picture"
-        android:background="@color/volunteer_background"
-        android:layout_marginTop="57dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="57dp"
+        android:background="@color/volunteer_background"
+        android:foregroundGravity="center"
+        android:src="@drawable/profile_picture" />
 
-    <TextView
-        android:id="@+id/text_company"
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Company: "
-        android:textSize="17sp"
-        android:textColor="@android:color/black"
-        android:layout_alignBaseline="@+id/edit_company"
-        android:layout_alignBottom="@+id/edit_company"
-        android:layout_alignStart="@+id/text_email" />
+        android:layout_below="@+id/organiser_profileimage">
 
-    <TextView
-        android:id="@+id/text_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Email: "
-        android:textSize="17sp"
-        android:layout_marginStart="10sp"
-        android:textColor="@android:color/black"
-        android:layout_below="@+id/text_company"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="46sp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/text_phone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Phone: "
-        android:textSize="17sp"
-        android:layout_marginStart="10sp"
-        android:layout_below="@+id/text_email"
-        android:textColor="@android:color/black"
-        android:layout_alignBaseline="@+id/edit_phone"
-        android:layout_alignBottom="@+id/edit_phone"
-        android:layout_alignParentStart="true" />
+            <TextView
+                android:id="@+id/text_company"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/edit_company"
+                android:layout_alignBottom="@+id/edit_company"
+                android:layout_alignStart="@+id/text_email"
+                android:text="Company: "
+                android:textColor="@android:color/black"
+                android:textSize="17sp" />
 
-    <TextView
-        android:id="@+id/text_city"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="City: "
-        android:textSize="17sp"
-        android:layout_marginStart="10sp"
-        android:layout_below="@id/text_phone"
-        android:textColor="@android:color/black"
-        android:layout_alignBaseline="@+id/edit_city"
-        android:layout_alignBottom="@+id/edit_city"
-        android:layout_alignParentStart="true" />
+            <TextView
+                android:id="@+id/text_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/text_company"
+                android:layout_marginStart="10sp"
+                android:layout_marginTop="46sp"
+                android:text="Email: "
+                android:textColor="@android:color/black"
+                android:textSize="17sp" />
 
-    <EditText
-        android:id="@+id/edit_company"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:layout_marginTop="23dp"
-        android:layout_below="@+id/organiser_profileimage"
-        android:layout_toEndOf="@+id/text_company" />
+            <TextView
+                android:id="@+id/text_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/edit_phone"
+                android:layout_alignBottom="@+id/edit_phone"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/text_email"
+                android:layout_marginStart="10sp"
+                android:text="Phone: "
+                android:textColor="@android:color/black"
+                android:textSize="17sp" />
 
-    <EditText
-        android:id="@+id/edit_email"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        android:layout_alignBaseline="@+id/text_email"
-        android:layout_alignBottom="@+id/text_email"
-        android:layout_alignStart="@+id/edit_phone" />
+            <TextView
+                android:id="@+id/text_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/edit_city"
+                android:layout_alignBottom="@+id/edit_city"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/text_phone"
+                android:layout_marginStart="10sp"
+                android:text="City: "
+                android:textColor="@android:color/black"
+                android:textSize="17sp" />
 
-    <EditText
-        android:id="@+id/edit_phone"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="phone"
-        android:layout_below="@+id/edit_email"
-        android:layout_toEndOf="@+id/text_phone" />
+            <EditText
+                android:id="@+id/edit_company"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="23dp"
+                android:layout_toEndOf="@+id/text_company"
+                android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="textPersonName" />
 
-    <EditText
-        android:id="@+id/edit_city"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:layout_below="@+id/edit_phone"
-        android:layout_alignStart="@+id/edit_phone" />
+            <EditText
+                android:id="@+id/edit_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/text_email"
+                android:layout_alignBottom="@+id/text_email"
+                android:layout_alignStart="@+id/edit_phone"
+                android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="textEmailAddress" />
 
-    <Button
-        android:id="@+id/edit_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="20sp"
-        android:layout_below="@+id/edit_city"
-        android:text="EDIT" />
+            <EditText
+                android:id="@+id/edit_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edit_email"
+                android:layout_toEndOf="@+id/text_phone"
+                android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="phone" />
 
-    <Button
-        android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/edit_phone"
-        android:layout_below="@+id/edit_city"
-        android:text="CANCEL"
-        android:focusable="true"
-        android:visibility="gone" />
+            <EditText
+                android:id="@+id/edit_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/edit_phone"
+                android:layout_below="@+id/edit_phone"
+                android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="textPersonName" />
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

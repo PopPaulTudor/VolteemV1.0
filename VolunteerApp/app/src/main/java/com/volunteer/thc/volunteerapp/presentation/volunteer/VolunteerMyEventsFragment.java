@@ -1,9 +1,7 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -59,13 +57,13 @@ public class VolunteerMyEventsFragment extends Fragment {
         loadEvents();
     }
 
-    private void loadEvents(){
+    private void loadEvents() {
         mProgressBar.setVisibility(View.VISIBLE);
         mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mUserEvents = new ArrayList<>();
-                for(DataSnapshot usersSnapshot: dataSnapshot.child("events").getChildren()) {
+                for (DataSnapshot usersSnapshot : dataSnapshot.child("events").getChildren()) {
                     mUserEvents.add(usersSnapshot.getValue().toString());
                 }
                 mDatabase.child("events").addListenerForSingleValueEvent(mRetrieveEvents);
@@ -81,7 +79,7 @@ public class VolunteerMyEventsFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mEventsList = new ArrayList<>();
-                for (DataSnapshot eventSnapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
                     Event currentEvent = eventSnapshot.getValue(Event.class);
                     if (isUserRegisteredForEvent(currentEvent.getEventID())) {
                         mEventsList.add(currentEvent);
@@ -103,8 +101,8 @@ public class VolunteerMyEventsFragment extends Fragment {
 
     private boolean isUserRegisteredForEvent(String eventID) {
 
-        for(String event: mUserEvents) {
-            if(TextUtils.equals(eventID, event)) {
+        for (String event : mUserEvents) {
+            if (TextUtils.equals(eventID, event)) {
                 return true;
             }
         }

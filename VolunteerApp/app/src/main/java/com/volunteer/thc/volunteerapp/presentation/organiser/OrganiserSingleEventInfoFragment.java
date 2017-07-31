@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.organiser;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -52,7 +52,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mType.setText(mCurrentEvent.getType());
         mDescription.setText(mCurrentEvent.getDescription());
         mDeadline.setText(mCurrentEvent.getDeadline());
-        mSize.setText(mCurrentEvent.getSize()+"");
+        mSize.setText(mCurrentEvent.getSize() + "");
 
         mName.setTag(mName.getKeyListener());
         mLocation.setTag(mLocation.getKeyListener());
@@ -69,7 +69,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if(mCancel.getVisibility() == View.GONE){
+                if (mCancel.getVisibility() == View.GONE) {
 
                     mCancel.setVisibility(View.VISIBLE);
                     mEditEvent.setText("SAVE");
@@ -89,7 +89,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                     currentDeadline = mDeadline.getText().toString();
                     currentSize = mSize.getText().toString();
 
-                    if(validateForm()) {
+                    if (validateForm()) {
                         if (!currentName.equals(mCurrentEvent.getName())) {
                             mDatabase.child("events").child(mCurrentEvent.getEventID()).child("name").setValue(currentName);
                             mCurrentEvent.setName(currentName);
@@ -146,7 +146,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 mType.setText(mCurrentEvent.getType());
                 mDescription.setText(mCurrentEvent.getDescription());
                 mDeadline.setText(mCurrentEvent.getDeadline());
-                mSize.setText(mCurrentEvent.getSize()+"");
+                mSize.setText(mCurrentEvent.getSize() + "");
 
                 toggleEditOff();
                 toggleFocusOff();
@@ -159,7 +159,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         return view;
     }
 
-    public void toggleEditOn(){
+    public void toggleEditOn() {
 
         mName.setKeyListener((KeyListener) mName.getTag());
         mLocation.setKeyListener((KeyListener) mLocation.getTag());
@@ -170,7 +170,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mSize.setKeyListener((KeyListener) mSize.getTag());
     }
 
-    public void toggleEditOff(){
+    public void toggleEditOff() {
 
         mName.setKeyListener(null);
         mLocation.setKeyListener(null);
@@ -228,7 +228,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     private boolean editTextIsValid(EditText mEditText) {
 
         String text = mEditText.getText().toString();
-        if(TextUtils.isEmpty(text)) {
+        if (TextUtils.isEmpty(text)) {
             mEditText.setError("This field can not be empty.");
             mEditText.requestFocus();
             return false;

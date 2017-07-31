@@ -1,15 +1,12 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +22,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
-import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
 
@@ -69,11 +65,11 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventType.setText("Type: " + currentEvent.getType());
         mEventDescription.setText("Description: " + currentEvent.getDescription());
         mEventDeadline.setText("Deadline: " + currentEvent.getDeadline());
-        mEventSize.setText("Volunteers needed: " + currentEvent.getSize()+"");
+        mEventSize.setText("Volunteers needed: " + currentEvent.getSize() + "");
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
-        if(prefs.getInt("cameFrom", 1) == 1) {
+        if (prefs.getInt("cameFrom", 1) == 1) {
             mSignupForEvent.setVisibility(View.VISIBLE);
         } else {
             mStatus.setVisibility(View.VISIBLE);
@@ -84,7 +80,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                 .startAt(user.getUid()).endAt(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue() != null){
+                if (dataSnapshot.getValue() != null) {
                     mStatus.setText("Status: Accepted");
                 }
             }
@@ -98,25 +94,25 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
         mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot data: dataSnapshot.getChildren()) {
-                    events.add(data.getValue().toString());
-                }
-            }
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            events.add(data.getValue().toString());
+                        }
+                    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                    }
+                });
 
         mRegisterListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 eventsNumber = (int) dataSnapshot.getChildrenCount();
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
-                        .child(eventsNumber+"").setValue(currentEvent.getEventID());
+                        .child(eventsNumber + "").setValue(currentEvent.getEventID());
                 Toast.makeText(VolunteerSingleEventActivity.this, "Sign up successful!", Toast.LENGTH_LONG).show();
                 finish();
             }
@@ -183,7 +179,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                                 .startAt(user.getUid()).endAt(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                for (DataSnapshot data: dataSnapshot.getChildren()){
+                                for (DataSnapshot data : dataSnapshot.getChildren()) {
                                     mDatabase.child("events").child(currentEvent.getEventID()).child("registered_users").child(data.getKey()).setValue(null);
                                 }
                                 events.remove(currentEvent.getEventID());

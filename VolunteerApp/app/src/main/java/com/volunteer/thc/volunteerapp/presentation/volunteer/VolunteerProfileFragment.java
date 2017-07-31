@@ -1,6 +1,5 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,9 +9,11 @@ import android.text.TextUtils;
 import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -35,11 +36,11 @@ public class VolunteerProfileFragment extends Fragment {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private EditText mFirstnameEdit, mLastname, mEmail, mAge, mCity, mPhone;
-    private Button mEditSave, mCancel;
     private Volunteer volunteer1;
     private ProgressBar mProgressBar;
     private SharedPreferences prefs;
     private TextView mUserName;
+    private MenuItem mEdit, mSave, mCancel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,8 +63,6 @@ public class VolunteerProfileFragment extends Fragment {
         mAge = (EditText) view.findViewById(R.id.edit_age);
         mCity = (EditText) view.findViewById(R.id.edit_city);
         mPhone = (EditText) view.findViewById(R.id.edit_phone);
-        mEditSave = (Button) view.findViewById(R.id.edit_save);
-        mCancel = (Button) view.findViewById(R.id.cancel);
 
         mFirstnameEdit.setTag(mFirstnameEdit.getKeyListener());
         mLastname.setTag(mLastname.getKeyListener());
@@ -101,100 +100,119 @@ public class VolunteerProfileFragment extends Fragment {
         mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mVolunteerProfileListener);
         mDatabase.removeEventListener(mVolunteerProfileListener);
 
-        mEditSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                toggleFocusOn();
-
-                if(mCancel.getVisibility() == View.GONE){
-
-                    mCancel.setVisibility(View.VISIBLE);
-                    mEditSave.setText("SAVE");
-
-                    toggleEditOn();
-
-                } else {
-
-                    String currentFirstName, currentLastName, currentAge, currentCity, currentPhone, fullName = null;
-                    boolean changedName = false;
-                    currentFirstName = mFirstnameEdit.getText().toString();
-                    currentLastName = mLastname.getText().toString();
-                    currentAge = mAge.getText().toString();
-                    currentCity = mCity.getText().toString();
-                    currentPhone = mPhone.getText().toString();
-
-                    if(validateForm()) {
-
-                        fullName = currentFirstName + " " + currentLastName;
-
-                        if (!currentFirstName.equals(volunteer1.getFirstname())) {
-                            mDatabase.child("users").child("volunteers").child(user.getUid()).child("firstname").setValue(currentFirstName);
-                            volunteer1.setFirstname(currentFirstName);
-                            changedName = true;
-                        }
-
-                        if (!currentLastName.equals(volunteer1.getLastname())) {
-                            mDatabase.child("users").child("volunteers").child(user.getUid()).child("lastname").setValue(currentLastName);
-                            volunteer1.setLastname(currentLastName);
-                            changedName = true;
-                        }
-
-                        if (!currentAge.equals(volunteer1.getAge())) {
-                            mDatabase.child("users").child("volunteers").child(user.getUid()).child("age").setValue(currentAge);
-                            volunteer1.setAge(currentAge);
-                        }
-
-                        if (!currentCity.equals(volunteer1.getCity())) {
-                            mDatabase.child("users").child("volunteers").child(user.getUid()).child("city").setValue(currentCity);
-                            volunteer1.setCity(currentCity);
-                        }
-
-                        if (!currentPhone.equals(volunteer1.getPhone())) {
-                            mDatabase.child("users").child("volunteers").child(user.getUid()).child("phone").setValue(currentPhone);
-                            volunteer1.setPhone(currentPhone);
-                        }
-
-                        Toast.makeText(getActivity(), "Changes saved!", Toast.LENGTH_SHORT).show();
-
-                        mCancel.setVisibility(View.GONE);
-                        mEditSave.setText("EDIT");
-                        toggleEditOff();
-                        toggleFocusOff();
-                    }
-
-                    if(changedName) {
-                        mUserName.setText(fullName);
-                        prefs.edit().putString("name", fullName).commit();
-                    }
-                }
-
-            }
-        });
-
-        mCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                mFirstnameEdit.setText(volunteer1.getFirstname());
-                mEmail.setText(volunteer1.getEmail());
-                mLastname.setText(volunteer1.getLastname());
-                mPhone.setText(volunteer1.getPhone());
-                mCity.setText(volunteer1.getCity());
-                mAge.setText(volunteer1.getAge());
-
-                toggleEditOff();
-                toggleFocusOff();
-
-                mEditSave.setText("EDIT");
-                mCancel.setVisibility(View.GONE);
-            }
-        });
-
+        setHasOptionsMenu(true);
         return view;
     }
 
-    public void toggleEditOn(){
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_profile_edit, menu);
+        mEdit = menu.findItem(R.id.action_edit);
+        mSave = menu.findItem(R.id.action_save);
+        mCancel = menu.findItem(R.id.action_cancel);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_edit:
+                onEditItemPressed();
+                mEdit.setVisible(false);
+                mSave.setVisible(true);
+                mCancel.setVisible(true);
+                return true;
+            case R.id.action_save:
+                onSaveItemPressed();
+                mEdit.setVisible(true);
+                mSave.setVisible(false);
+                mCancel.setVisible(false);
+                return true;
+            case R.id.action_cancel:
+                onCancelItemPressed();
+                mEdit.setVisible(true);
+                mSave.setVisible(false);
+                mCancel.setVisible(false);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void onEditItemPressed() {
+        toggleEditOn();
+        toggleFocusOn();
+    }
+
+    private void onSaveItemPressed() {
+
+        String currentFirstName, currentLastName, currentAge, currentCity, currentPhone, fullName = null;
+        boolean changedName = false;
+        currentFirstName = mFirstnameEdit.getText().toString();
+        currentLastName = mLastname.getText().toString();
+        currentAge = mAge.getText().toString();
+        currentCity = mCity.getText().toString();
+        currentPhone = mPhone.getText().toString();
+
+        if (validateForm()) {
+
+            fullName = currentFirstName + " " + currentLastName;
+
+            if (!currentFirstName.equals(volunteer1.getFirstname())) {
+                mDatabase.child("users").child("volunteers").child(user.getUid()).child("firstname").setValue(currentFirstName);
+                volunteer1.setFirstname(currentFirstName);
+                changedName = true;
+            }
+
+            if (!currentLastName.equals(volunteer1.getLastname())) {
+                mDatabase.child("users").child("volunteers").child(user.getUid()).child("lastname").setValue(currentLastName);
+                volunteer1.setLastname(currentLastName);
+                changedName = true;
+            }
+
+            if (!currentAge.equals(volunteer1.getAge())) {
+                mDatabase.child("users").child("volunteers").child(user.getUid()).child("age").setValue(currentAge);
+                volunteer1.setAge(currentAge);
+            }
+
+            if (!currentCity.equals(volunteer1.getCity())) {
+                mDatabase.child("users").child("volunteers").child(user.getUid()).child("city").setValue(currentCity);
+                volunteer1.setCity(currentCity);
+            }
+
+            if (!currentPhone.equals(volunteer1.getPhone())) {
+                mDatabase.child("users").child("volunteers").child(user.getUid()).child("phone").setValue(currentPhone);
+                volunteer1.setPhone(currentPhone);
+            }
+
+            Toast.makeText(getActivity(), "Changes saved!", Toast.LENGTH_SHORT).show();
+
+            toggleEditOff();
+            toggleFocusOff();
+        }
+
+        if (changedName) {
+            mUserName.setText(fullName);
+            prefs.edit().putString("name", fullName).commit();
+        }
+
+    }
+
+    private void onCancelItemPressed() {
+        mFirstnameEdit.setText(volunteer1.getFirstname());
+        mEmail.setText(volunteer1.getEmail());
+        mLastname.setText(volunteer1.getLastname());
+        mPhone.setText(volunteer1.getPhone());
+        mCity.setText(volunteer1.getCity());
+        mAge.setText(volunteer1.getAge());
+
+        toggleEditOff();
+        toggleFocusOff();
+    }
+
+    private void toggleEditOn() {
 
         mFirstnameEdit.setKeyListener((KeyListener) mFirstnameEdit.getTag());
         mLastname.setKeyListener((KeyListener) mLastname.getTag());
@@ -203,7 +221,7 @@ public class VolunteerProfileFragment extends Fragment {
         mCity.setKeyListener((KeyListener) mCity.getTag());
     }
 
-    public void toggleEditOff(){
+    private void toggleEditOff() {
 
         mFirstnameEdit.setKeyListener(null);
         mLastname.setKeyListener(null);
@@ -212,7 +230,7 @@ public class VolunteerProfileFragment extends Fragment {
         mAge.setKeyListener(null);
     }
 
-    public void toggleFocusOn() {
+    private void toggleFocusOn() {
 
         mEmail.setFocusableInTouchMode(true);
         mEmail.setFocusable(true);
@@ -228,7 +246,7 @@ public class VolunteerProfileFragment extends Fragment {
         mCity.setFocusable(true);
     }
 
-    public void toggleFocusOff() {
+    private void toggleFocusOff() {
 
         mEmail.setFocusableInTouchMode(false);
         mEmail.setFocusable(false);
@@ -244,18 +262,18 @@ public class VolunteerProfileFragment extends Fragment {
         mCity.setFocusable(false);
     }
 
-    public boolean validateForm() {
+    private boolean validateForm() {
 
         boolean valid;
         valid = (editTextIsValid(mFirstnameEdit) && editTextIsValid(mLastname) && editTextIsValid(mAge) &&
-                    editTextIsValid(mPhone) && editTextIsValid(mCity));
+                editTextIsValid(mPhone) && editTextIsValid(mCity));
         return valid;
     }
 
     private boolean editTextIsValid(EditText mEditText) {
 
         String text = mEditText.getText().toString();
-        if(TextUtils.isEmpty(text)) {
+        if (TextUtils.isEmpty(text)) {
             mEditText.setError("This field can not be empty.");
             mEditText.requestFocus();
             return false;

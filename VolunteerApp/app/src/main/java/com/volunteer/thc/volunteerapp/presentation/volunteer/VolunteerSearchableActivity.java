@@ -1,9 +1,9 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.app.SearchManager;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -97,7 +97,7 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
                 }
 
                 mProgressBar.setVisibility(View.GONE);
-                if(mResultEvents.isEmpty()) {
+                if (mResultEvents.isEmpty()) {
                     mNoResultText.setVisibility(View.VISIBLE);
                 }
                 OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this);
@@ -114,15 +114,15 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onSupportNavigateUp(){
+    public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
     private boolean isUserRegisteredForEvent(String eventID) {
 
-        for(String event: mUserEvents) {
-            if(TextUtils.equals(eventID, event)) {
+        for (String event : mUserEvents) {
+            if (TextUtils.equals(eventID, event)) {
                 return true;
             }
         }

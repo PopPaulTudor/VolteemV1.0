@@ -40,6 +40,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        getSupportActionBar().hide();
+
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
 
@@ -59,11 +61,11 @@ public class LoginActivity extends AppCompatActivity {
                 if (validateForm()) {
                     mProgressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "", true);
                 }
-                if(isNetworkAvailable()) {
+                if (isNetworkAvailable()) {
                     logIn(mEmail.getText().toString(), mPassword.getText().toString());
                 } else {
                     mProgressDialog.dismiss();
-                    Toast.makeText(LoginActivity.this,"No internet connection.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -71,10 +73,10 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.register).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isNetworkAvailable()) {
+                if (isNetworkAvailable()) {
                     startActivityByClass(RegisterActivity.class);
                 } else {
-                    Toast.makeText(LoginActivity.this,"No internet connection.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -98,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onClick(View view) {
 
                         String email = mResetPasswordEmail.getText().toString();
-                        if(!TextUtils.isEmpty(email)) {
+                        if (!TextUtils.isEmpty(email)) {
 
                             mResetPasswordEmail.setError(null);
                             mBottomSheetDialog.dismiss();
@@ -107,9 +109,9 @@ public class LoginActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
 
-                                            if(task.isSuccessful()) {
+                                            if (task.isSuccessful()) {
                                                 Toast.makeText(LoginActivity.this, "Password email sent. Please check your inbox.", Toast.LENGTH_LONG).show();
-                                            } else{
+                                            } else {
                                                 Toast.makeText(LoginActivity.this, "Reset failed. Verify if the email is written correctly and try again.", Toast.LENGTH_LONG).show();
                                             }
                                         }
@@ -195,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private boolean isNetworkAvailable(){
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

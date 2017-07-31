@@ -1,7 +1,5 @@
 package com.volunteer.thc.volunteerapp.adaptor;
 
-import android.support.transition.TransitionManager;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +17,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.VolunteerSingleEventActivity;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.organiser;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,9 +9,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,9 +20,6 @@ import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Created by Cristi on 7/27/2017.
@@ -74,7 +68,6 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
                 }
             });
         }
-
         return view;
     }
 }

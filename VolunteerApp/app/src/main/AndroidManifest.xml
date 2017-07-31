@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".presentation.OrganiserSingleEventActivity"
+            android:name=".presentation.organiser.OrganiserSingleEventActivity"
             android:label="Event"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
@@ -43,11 +43,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".presentation.VolunteerSingleEventActivity"
+            android:name=".presentation.volunteer.VolunteerSingleEventActivity"
             android:label="@string/title_activity_volunteer_single_event"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".presentation.OrganiserSearchableActivity">
+        <activity android:name=".presentation.organiser.OrganiserSearchableActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
 
@@ -58,7 +58,7 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".presentation.VolunteerSearchableActivity">
+        <activity android:name=".presentation.volunteer.VolunteerSearchableActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
 

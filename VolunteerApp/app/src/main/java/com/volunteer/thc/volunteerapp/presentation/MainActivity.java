@@ -6,19 +6,19 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +31,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserProfileFragment;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerEventsFragment;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerMyEventsFragment;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerProfileFragment;
 
 
 public class MainActivity extends AppCompatActivity
@@ -118,7 +123,7 @@ public class MainActivity extends AppCompatActivity
 
         String userstatus = prefs.getString("user_status", null);
 
-        if(TextUtils.equals(userstatus, null)) {
+        if (TextUtils.equals(userstatus, null)) {
 
             mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mStatusListener);
             mDatabase.removeEventListener(mStatusListener);
@@ -156,7 +161,7 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             int count = getFragmentManager().getBackStackEntryCount();
-            if(count == 0) {
+            if (count == 0) {
                 super.onBackPressed();
             } else {
                 getFragmentManager().popBackStack();
@@ -170,7 +175,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if(isNetworkAvailable()) {
+        if (isNetworkAvailable()) {
 
             if (id == R.id.nav_events) {
 
@@ -249,7 +254,7 @@ public class MainActivity extends AppCompatActivity
 
         prefs.edit().putInt("cameFrom", 1).commit();
 
-        if(TextUtils.equals(userstatus, "Volunteer")) {
+        if (TextUtils.equals(userstatus, "Volunteer")) {
 
             NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
             Menu navMenu = navView.getMenu();
@@ -267,7 +272,7 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
-    private boolean isNetworkAvailable(){
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

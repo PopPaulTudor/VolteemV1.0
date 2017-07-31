@@ -9,6 +9,11 @@
 
     <string name="spinner_title">Gender</string>
 
+    <!-- Strings related to profile edit actions -->
+    <string name="action_edit">Edit</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>

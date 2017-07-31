@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.organiser;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
