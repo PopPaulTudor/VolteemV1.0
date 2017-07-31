@@ -9,4 +9,6 @@
     <color name="volunteer_background">#fef7e9</color>
     <color name="green1">#16f702</color>
     <color name="crem">#fef5e4</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000</color>
 </resources>
