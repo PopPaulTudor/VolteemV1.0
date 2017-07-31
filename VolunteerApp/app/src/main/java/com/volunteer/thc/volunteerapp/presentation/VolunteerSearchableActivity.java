@@ -55,55 +55,62 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
             query = intent.getStringExtra(SearchManager.QUERY);
             getSupportActionBar().setTitle(query);
             query = query.toLowerCase();
-
-            mProgressBar.setVisibility(View.VISIBLE);
-
-            mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot usersSnapshot : dataSnapshot.child("events").getChildren()) {
-                        mUserEvents.add(usersSnapshot.getValue().toString());
-                    }
-                    mDatabase.child("events").addListenerForSingleValueEvent(mRetrieveEvents);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-            mRetrieveEvents = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    mResultEvents = new ArrayList<>();
-                    for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
-
-                        String eventName = eventSnapshot.child("name").getValue().toString();
-                        eventName = eventName.toLowerCase();
-                        Event currentEvent = eventSnapshot.getValue(Event.class);
-                        if (!isUserRegisteredForEvent(currentEvent.getEventID()) && eventName.contains(query)) {
-                            mResultEvents.add(currentEvent);
-                        }
-                    }
-
-                    mProgressBar.setVisibility(View.GONE);
-                    if(mResultEvents.isEmpty()) {
-                        mNoResultText.setVisibility(View.VISIBLE);
-                    } else {
-                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this);
-                        recyclerView.setAdapter(adapter);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(VolunteerSearchableActivity.this);
-                        recyclerView.setLayoutManager(linearLayoutManager);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            };
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadResultEvents();
+    }
+
+    private void loadResultEvents() {
+        mProgressBar.setVisibility(View.VISIBLE);
+
+        mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot usersSnapshot : dataSnapshot.child("events").getChildren()) {
+                    mUserEvents.add(usersSnapshot.getValue().toString());
+                }
+                mDatabase.child("events").addListenerForSingleValueEvent(mRetrieveEvents);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mRetrieveEvents = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mResultEvents = new ArrayList<>();
+                for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
+
+                    String eventName = eventSnapshot.child("name").getValue().toString();
+                    eventName = eventName.toLowerCase();
+                    Event currentEvent = eventSnapshot.getValue(Event.class);
+                    if (!isUserRegisteredForEvent(currentEvent.getEventID()) && eventName.contains(query)) {
+                        mResultEvents.add(currentEvent);
+                    }
+                }
+
+                mProgressBar.setVisibility(View.GONE);
+                if(mResultEvents.isEmpty()) {
+                    mNoResultText.setVisibility(View.VISIBLE);
+                }
+                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this);
+                recyclerView.setAdapter(adapter);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(VolunteerSearchableActivity.this);
+                recyclerView.setLayoutManager(linearLayoutManager);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
 
     @Override

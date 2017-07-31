@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.text.method.KeyListener;
@@ -37,6 +38,8 @@ public class VolunteerProfileFragment extends Fragment {
     private Button mEditSave, mCancel;
     private Volunteer volunteer1;
     private ProgressBar mProgressBar;
+    private SharedPreferences prefs;
+    private TextView mUserName;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +49,11 @@ public class VolunteerProfileFragment extends Fragment {
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
         mProgressBar.setVisibility(View.VISIBLE);
+        prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+
+        NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+        View header = navigationView.getHeaderView(0);
+        mUserName = (TextView) header.findViewById(R.id.nav_header_name);
 
         volunteer1 = new Volunteer();
         mFirstnameEdit = (EditText) view.findViewById(R.id.edit_firstname);
@@ -108,8 +116,8 @@ public class VolunteerProfileFragment extends Fragment {
 
                 } else {
 
-                    String currentFirstName, currentLastName, currentAge, currentCity, currentPhone;
-
+                    String currentFirstName, currentLastName, currentAge, currentCity, currentPhone, fullName = null;
+                    boolean changedName = false;
                     currentFirstName = mFirstnameEdit.getText().toString();
                     currentLastName = mLastname.getText().toString();
                     currentAge = mAge.getText().toString();
@@ -117,14 +125,19 @@ public class VolunteerProfileFragment extends Fragment {
                     currentPhone = mPhone.getText().toString();
 
                     if(validateForm()) {
+
+                        fullName = currentFirstName + " " + currentLastName;
+
                         if (!currentFirstName.equals(volunteer1.getFirstname())) {
                             mDatabase.child("users").child("volunteers").child(user.getUid()).child("firstname").setValue(currentFirstName);
                             volunteer1.setFirstname(currentFirstName);
+                            changedName = true;
                         }
 
                         if (!currentLastName.equals(volunteer1.getLastname())) {
                             mDatabase.child("users").child("volunteers").child(user.getUid()).child("lastname").setValue(currentLastName);
                             volunteer1.setLastname(currentLastName);
+                            changedName = true;
                         }
 
                         if (!currentAge.equals(volunteer1.getAge())) {
@@ -148,6 +161,11 @@ public class VolunteerProfileFragment extends Fragment {
                         mEditSave.setText("EDIT");
                         toggleEditOff();
                         toggleFocusOff();
+                    }
+
+                    if(changedName) {
+                        mUserName.setText(fullName);
+                        prefs.edit().putString("name", fullName).commit();
                     }
                 }
 
