@@ -1,5 +1,6 @@
 package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -126,9 +128,6 @@ public class VolunteerProfileFragment extends Fragment {
                 return true;
             case R.id.action_save:
                 onSaveItemPressed();
-                mEdit.setVisible(true);
-                mSave.setVisible(false);
-                mCancel.setVisible(false);
                 return true;
             case R.id.action_cancel:
                 onCancelItemPressed();
@@ -189,6 +188,10 @@ public class VolunteerProfileFragment extends Fragment {
 
             Toast.makeText(getActivity(), "Changes saved!", Toast.LENGTH_SHORT).show();
 
+            hideKeyboardFrom(getActivity(), getView());
+            mEdit.setVisible(true);
+            mSave.setVisible(false);
+            mCancel.setVisible(false);
             toggleEditOff();
             toggleFocusOff();
         }
@@ -202,14 +205,18 @@ public class VolunteerProfileFragment extends Fragment {
 
     private void onCancelItemPressed() {
         mFirstnameEdit.setText(volunteer1.getFirstname());
-        mEmail.setText(volunteer1.getEmail());
         mLastname.setText(volunteer1.getLastname());
         mPhone.setText(volunteer1.getPhone());
         mCity.setText(volunteer1.getCity());
         mAge.setText(volunteer1.getAge());
-
+        mFirstnameEdit.setError(null);
+        mLastname.setError(null);
+        mPhone.setError(null);
+        mCity.setError(null);
+        mAge.setError(null);
         toggleEditOff();
         toggleFocusOff();
+        hideKeyboardFrom(getActivity(), getView());
     }
 
     private void toggleEditOn() {
@@ -281,5 +288,10 @@ public class VolunteerProfileFragment extends Fragment {
             mEditText.setError(null);
         }
         return true;
+    }
+
+    private void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
