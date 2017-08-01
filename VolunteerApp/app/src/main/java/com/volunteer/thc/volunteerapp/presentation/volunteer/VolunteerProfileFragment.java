@@ -186,7 +186,7 @@ public class VolunteerProfileFragment extends Fragment {
                 volunteer1.setPhone(currentPhone);
             }
 
-            Toast.makeText(getActivity(), "Changes saved!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Saved!", Toast.LENGTH_SHORT).show();
 
             hideKeyboardFrom(getActivity(), getView());
             mEdit.setVisible(true);

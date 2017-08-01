@@ -177,6 +177,7 @@
                 android:layout_alignEnd="@+id/edit_city"
                 android:layout_below="@+id/edit_city"
                 android:ems="10"
+                android:maxLength="13"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:inputType="phone" />
