@@ -109,6 +109,23 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <TextView
+                android:id="@+id/add_image_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add an image to your event: "
+                android:layout_marginStart="15sp"
+                android:textColor="@color/black" />
+
+            <ImageButton
+                android:id="@+id/add_pic_event"
+                android:layout_width="50sp"
+                android:layout_marginStart="10sp"
+                android:layout_height="50sp"
+                android:clickable="true"
+                android:background="@drawable/button_shape"
+                android:src="@drawable/add_pic" />
+
             <Button
                 android:id="@+id/save_event"
                 android:layout_width="match_parent"
@@ -119,11 +136,11 @@
 
             <Button
                 android:id="@+id/cancel_event"
+                style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="CANCEL"
-                style="?android:textAppearanceSmall"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 

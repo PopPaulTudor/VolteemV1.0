@@ -164,7 +164,7 @@ public class OrganiserRegisterFragment extends Fragment {
             mEditText.requestFocus();
             return false;
         } else {
-            if (mEditText == mEmail && !text.contains("@")) {
+            if (mEditText == mEmail && !text.contains("@") && !text.contains(".")) {
                 mEditText.setError("Please enter a valid email address.");
 
             } else {
@@ -177,6 +177,7 @@ public class OrganiserRegisterFragment extends Fragment {
                 }
             }
         }
+
         return true;
     }
 }

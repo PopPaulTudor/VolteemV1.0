@@ -155,7 +155,7 @@ public class OrganiserProfileFragment extends Fragment {
                 organiser.setPhone(currentPhone);
             }
 
-            Toast.makeText(getActivity(), "Changes saved!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Saved!", Toast.LENGTH_SHORT).show();
             toggleEditOff();
             toggleFocusOff();
         }

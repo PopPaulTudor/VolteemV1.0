@@ -201,7 +201,7 @@ public class VolunteerRegisterFragment extends Fragment {
             mEditText.requestFocus();
             return false;
         } else {
-            if (mEditText == mEmail && !text.contains("@")) {
+            if (mEditText == mEmail && !text.contains("@") && !text.contains(".")) {
                 mEditText.setError("Please enter a valid email address.");
 
             } else {
