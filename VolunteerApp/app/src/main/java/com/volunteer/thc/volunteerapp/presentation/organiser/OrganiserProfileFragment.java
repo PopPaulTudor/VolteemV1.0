@@ -1,5 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation.organiser;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -11,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -112,9 +115,6 @@ public class OrganiserProfileFragment extends Fragment {
                 return true;
             case R.id.action_save:
                 onSaveItemPressed();
-                mEdit.setVisible(true);
-                mSave.setVisible(false);
-                mCancel.setVisible(false);
                 return true;
             case R.id.action_cancel:
                 onCancelItemPressed();
@@ -156,8 +156,12 @@ public class OrganiserProfileFragment extends Fragment {
             }
 
             Toast.makeText(getActivity(), "Changes saved!", Toast.LENGTH_SHORT).show();
+            hideKeyboardFrom(getActivity(), getView());
             toggleEditOff();
             toggleFocusOff();
+            mEdit.setVisible(true);
+            mSave.setVisible(false);
+            mCancel.setVisible(false);
         }
     }
 
@@ -166,9 +170,12 @@ public class OrganiserProfileFragment extends Fragment {
         mEmail.setText(organiser.getEmail());
         mPhone.setText(organiser.getPhone());
         mCity.setText(organiser.getCity());
-
+        mCompany.setError(null);
+        mPhone.setError(null);
+        mCity.setError(null);
         toggleEditOff();
         toggleFocusOff();
+        hideKeyboardFrom(getActivity(), getView());
     }
 
     private void toggleEditOn() {
@@ -211,7 +218,7 @@ public class OrganiserProfileFragment extends Fragment {
 
     private boolean validateForm() {
 
-        boolean valid = true;
+        boolean valid;
         valid = (editTextIsValid(mCompany) && editTextIsValid(mCity) && editTextIsValid(mPhone));
         return valid;
     }
@@ -227,5 +234,10 @@ public class OrganiserProfileFragment extends Fragment {
             mEditText.setError(null);
         }
         return true;
+    }
+
+    private void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
