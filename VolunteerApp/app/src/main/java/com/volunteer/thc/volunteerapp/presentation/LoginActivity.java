@@ -30,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "EmailPassword";
     private EditText mEmail, mPassword;
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private ProgressDialog mProgressDialog;
     private Button mSendResetPasswordEmail;
     private EditText mResetPasswordEmail;
@@ -40,32 +39,30 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        getSupportActionBar().hide();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() != null) {
+            Log.w("AuthMethod", "Start activity");
+            startActivityByClass(MainActivity.class);
+        }
 
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
-
-        mAuth = FirebaseAuth.getInstance();
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() != null) {
-                    startActivityByClass(MainActivity.class);
-                }
-            }
-        };
 
         findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (validateForm()) {
                     mProgressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "", true);
-                }
-                if (isNetworkAvailable()) {
-                    logIn(mEmail.getText().toString(), mPassword.getText().toString());
-                } else {
-                    mProgressDialog.dismiss();
-                    Toast.makeText(LoginActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
+                    if (isNetworkAvailable()) {
+                        logIn(mEmail.getText().toString(), mPassword.getText().toString());
+                    } else {
+                        mProgressDialog.dismiss();
+                        Toast.makeText(LoginActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -98,17 +95,15 @@ public class LoginActivity extends AppCompatActivity {
                 mSendResetPasswordEmail.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
                         String email = mResetPasswordEmail.getText().toString();
                         if (!TextUtils.isEmpty(email)) {
-
                             mResetPasswordEmail.setError(null);
                             mBottomSheetDialog.dismiss();
+
                             FirebaseAuth.getInstance().sendPasswordResetEmail(email)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-
                                             if (task.isSuccessful()) {
                                                 Toast.makeText(LoginActivity.this, "Password email sent. Please check your inbox.", Toast.LENGTH_LONG).show();
                                             } else {
@@ -121,20 +116,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthStateListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthStateListener != null) {
-            mAuth.removeAuthStateListener(mAuthStateListener);
-        }
     }
 
     private void logIn(String email, String password) {

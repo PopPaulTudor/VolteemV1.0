@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -68,72 +69,61 @@ public class MainActivity extends AppCompatActivity
         navigationView.getMenu().getItem(0).setChecked(true);
 
         View header = navigationView.getHeaderView(0);
-
         mGender = (ImageView) header.findViewById(R.id.nav_header_image);
         mUserName = (TextView) header.findViewById(R.id.nav_header_name);
         mUserStatus = (TextView) header.findViewById(R.id.nav_header_status);
 
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
-        ValueEventListener mStatusListener = (new ValueEventListener() {
+        ValueEventListener statusListener = (new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 SharedPreferences.Editor editor = prefs.edit();
-                String userstatus;
+                String userType;
                 if (dataSnapshot.hasChildren()) {
-                    mUserStatus.setText("Volunteer");
-                    editor.putString("user_status", "Volunteer");
-                    editor.apply();
-                    userstatus = "Volunteer";
-
+                    userType = "Volunteer";
                     String gender = dataSnapshot.child("gender").getValue().toString();
-                    String firstname = dataSnapshot.child("firstname").getValue().toString();
-                    String lastname = dataSnapshot.child("lastname").getValue().toString();
-                    editor.putString("name", firstname + " " + lastname);
-                    editor.commit();
-                    mUserName.setText(firstname + " " + lastname);
+                    String firstName = dataSnapshot.child("firstname").getValue().toString();
+                    String lastName = dataSnapshot.child("lastname").getValue().toString();
+                    editor.putString("name", firstName + " " + lastName);
+                    mUserName.setText(firstName + " " + lastName);
+
                     if (TextUtils.equals(gender, "Male")) {
                         editor.putString("gender", "Male");
-                        editor.commit();
                         mGender.setImageResource(R.drawable.ic_user_male);
                     } else {
                         editor.putString("gender", "Female");
-                        editor.commit();
                         mGender.setImageResource(R.drawable.ic_user_female);
                     }
-
                 } else {
-                    mUserStatus.setText("Organiser");
-                    editor.putString("user_status", "Organiser");
-                    editor.apply();
+                    userType = "Organiser";
+                    editor.putString("gender", userType);
                     mUserName.setText(user.getEmail());
-                    userstatus = "Organiser";
-                    editor.putString("gender", "Organiser");
                     mGender.setImageResource(R.drawable.ic_organiser);
                 }
-                showEvents(userstatus);
+
+                editor.putString("user_status", userType);
+                editor.apply();
+
+                mUserStatus.setText(userType);
+                showEvents(userType);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e("Cancelled: ", "Cancelled");
+                Log.e("Cancelled: ", "Cancelled \n" + databaseError.getDetails());
             }
         });
 
-        String userstatus = prefs.getString("user_status", null);
-
-        if (TextUtils.equals(userstatus, null)) {
-
-            mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mStatusListener);
-            mDatabase.removeEventListener(mStatusListener);
-
+        String userStatus = prefs.getString("user_status", null);
+        if (userStatus == null) {
+            mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(statusListener);
+            mDatabase.removeEventListener(statusListener); // is this really needed?
         } else {
-
             String gender = prefs.getString("gender", null);
             String name = prefs.getString("name", null);
-            if (TextUtils.equals(userstatus, "Volunteer")) {
 
+            if (TextUtils.equals(userStatus, "Volunteer")) {
                 if (TextUtils.equals(gender, "Male")) {
                     mGender.setImageResource(R.drawable.ic_user_male);
                     mUserName.setText(name);
@@ -145,11 +135,14 @@ public class MainActivity extends AppCompatActivity
                 mGender.setImageResource(R.drawable.ic_organiser);
                 mUserName.setText(user.getEmail());
             }
-            mUserStatus.setText(userstatus);
-            showEvents(userstatus);
+
+            mUserStatus.setText(userStatus);
+            showEvents(userStatus);
         }
 
-        getSupportActionBar().setTitle("Events");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Events");
+        }
         drawer.closeDrawers();
     }
 
@@ -169,68 +162,56 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (isNetworkAvailable()) {
-
+            String actionBarTitle = getActionBar() == null ? "" : String.valueOf(getActionBar().getTitle());
             if (id == R.id.nav_events) {
+                prefs.edit().putInt("cameFrom", 1).apply();
+                String userStatus = prefs.getString("user_status", null);
 
-                prefs.edit().putInt("cameFrom", 1).commit();
-
-                String userstatus = prefs.getString("user_status", null);
-                if (TextUtils.equals(userstatus, "Volunteer")) {
+                if (TextUtils.equals(userStatus, "Volunteer")) {
                     replaceFragmentByClass(new VolunteerEventsFragment());
                 } else {
                     replaceFragmentByClass(new OrganiserEventsFragment());
                 }
 
-                getSupportActionBar().setTitle("Events");
+                actionBarTitle = "Events";
                 item.setChecked(true);
 
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawers();
-
-
             } else if (id == R.id.user_events) {
-
-                prefs.edit().putInt("cameFrom", 2).commit();
+                prefs.edit().putInt("cameFrom", 2).apply();
                 replaceFragmentByClass(new VolunteerMyEventsFragment());
-                getSupportActionBar().setTitle("My Events");
+                actionBarTitle = "My Events";
                 item.setChecked(true);
 
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawers();
-
             } else if (id == R.id.nav_profile) {
-
-                String userstatus = prefs.getString("user_status", null);
-                if (TextUtils.equals(userstatus, "Volunteer")) {
-
+                String userStatus = prefs.getString("user_status", null);
+                if (TextUtils.equals(userStatus, "Volunteer")) {
                     replaceFragmentByClass(new VolunteerProfileFragment());
                 } else {
-
                     replaceFragmentByClass(new OrganiserProfileFragment());
                 }
-                getSupportActionBar().setTitle("Profile");
+
+                actionBarTitle = "Profile";
                 item.setChecked(true);
 
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawers();
-
             } else if (id == R.id.nav_settings) {
-
                 replaceFragmentByClass(new SettingsFragment());
-                getSupportActionBar().setTitle("Settings");
+                actionBarTitle = "Settings";
                 item.setChecked(true);
+
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawers();
-
             } else if (id == R.id.nav_logout) {
-
                 Auth.signOut();
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("user_status", null);
@@ -241,6 +222,10 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
                 finish();
             }
+
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(actionBarTitle);
+            }
         } else {
             Toast.makeText(MainActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
         }
@@ -250,17 +235,14 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void showEvents(String userstatus) {
+    private void showEvents(String userStatus) {
+        prefs.edit().putInt("cameFrom", 1).apply();
 
-        prefs.edit().putInt("cameFrom", 1).commit();
-
-        if (TextUtils.equals(userstatus, "Volunteer")) {
-
+        if (TextUtils.equals(userStatus, "Volunteer")) {
             NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
             Menu navMenu = navView.getMenu();
             navMenu.findItem(R.id.user_events).setVisible(true);
             replaceFragmentByClass(new VolunteerEventsFragment());
-
         } else {
             replaceFragmentByClass(new OrganiserEventsFragment());
         }
