@@ -138,9 +138,13 @@ public class LoginActivity extends AppCompatActivity {
                                     if (exception.getMessage().contains("password")) {
                                         mPassword.setError(exception.getMessage());
                                         mPassword.requestFocus();
-                                    } else if (exception.getMessage().contains("email") || exception.getMessage().contains("account")) {
+                                    } else if (exception.getMessage().contains("email") ||
+                                            exception.getMessage().contains("account") ||
+                                            exception.getMessage().contains("user")) {
                                         mEmail.setError(exception.getMessage());
                                         mEmail.requestFocus();
+                                    } else {
+                                        Log.e(TAG, exception.getMessage());
                                     }
                                 } else {
                                     // In this case there can be any Exception
