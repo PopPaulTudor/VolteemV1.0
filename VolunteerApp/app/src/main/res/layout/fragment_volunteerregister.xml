@@ -1,150 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:orientation="vertical">
 
+	<ScrollView
+		android:id="@+id/login_form"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
 
-    <ScrollView
-        android:id="@+id/login_form"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+		<LinearLayout
+			android:id="@+id/email_login_form"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:paddingLeft="@dimen/register_padding_left"
+			android:paddingRight="@dimen/register_padding_right">
 
-        <LinearLayout
-            android:id="@+id/email_login_form"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+				<AutoCompleteTextView
+					android:id="@+id/email"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:hint="Email"
+					android:inputType="textEmailAddress"
+					android:maxLines="1"
+					android:singleLine="true"/>
 
-                <AutoCompleteTextView
-                    android:id="@+id/email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Email"
-                    android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:singleLine="true" />
+			</android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+				<EditText
+					android:id="@+id/password"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:hint="Password"
+					android:imeActionId="@+id/login"
+					android:imeOptions="actionUnspecified"
+					android:inputType="textPassword"
+					android:maxLines="1"
+					android:singleLine="true"/>
 
-                <EditText
-                    android:id="@+id/password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Password"
-                    android:imeActionId="@+id/login"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:singleLine="true" />
+			</android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+				<EditText
+					android:id="@+id/first_name"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:hint="Firstname"
+					android:visibility="visible"/>
 
-            <EditText
-                android:id="@+id/first_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Firstname"
-                android:visibility="visible" />
+			</android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+				<EditText
+					android:id="@+id/last_name"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ems="10"
+					android:hint="Lastname"
+					android:inputType="textPersonName"
+					android:visibility="visible"/>
 
-            <EditText
-                android:id="@+id/last_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Lastname"
-                android:inputType="textPersonName"
-                android:visibility="visible" />
+			</android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+				<EditText
+					android:id="@+id/user_age"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ems="10"
+					android:hint="Age"
+					android:inputType="number"
+					android:visibility="visible"/>
 
-            <EditText
-                android:id="@+id/user_age"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Age"
-                android:inputType="number"
-                android:visibility="visible" />
+			</android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+				<EditText
+					android:id="@+id/user_phone"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ems="10"
+					android:hint="Phone Number"
+					android:inputType="phone"
+					android:maxLength="13"
+					android:visibility="visible"/>
 
-            <EditText
-                android:id="@+id/user_phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Phone Number"
-                android:maxLength="13"
-                android:inputType="phone"
-                android:visibility="visible" />
+			</android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            <EditText
-                android:id="@+id/user_city"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="City"
-                android:inputType="textPersonName"
-                android:visibility="visible" />
-    </android.support.design.widget.TextInputLayout>
+				<EditText
+					android:id="@+id/user_city"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ems="10"
+					android:hint="City"
+					android:inputType="textPersonName"
+					android:visibility="visible"/>
+			</android.support.design.widget.TextInputLayout>
 
-            <Spinner
-                android:id="@+id/gender"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:prompt="@string/spinner_title">
+			<Spinner
+				android:id="@+id/gender"
+				android:layout_width="match_parent"
+				android:layout_height="40dp"
+				android:layout_marginTop="5dp"
+				android:prompt="@string/spinner_title">
+			</Spinner>
 
-            </Spinner>
+			<Button
+				android:id="@+id/register_user"
+				style="?android:textAppearanceSmall"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="16sp"
+				android:text="REGISTER"
+				android:textStyle="bold"/>
 
-            <Button
-                android:id="@+id/register_user"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16sp"
-                android:text="REGISTER"
-                android:textStyle="bold" />
+			<Button
+				android:id="@+id/back"
+				style="?android:textAppearanceSmall"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="BACK"
+				android:textStyle="bold"/>
 
-            <Button
-                android:id="@+id/back"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="BACK"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-    </ScrollView>
+		</LinearLayout>
+	</ScrollView>
 
 </LinearLayout>

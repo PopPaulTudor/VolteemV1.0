@@ -48,7 +48,7 @@ public class VolunteerRegisterFragment extends Fragment {
     private FirebaseAuth mAuth;
     private EditText mEmail, mPassword, mPhone, mCity, mAge, mFirstname, mLastname;
     private Button mRegister, mBack;
-    private Intent intent, intent_back;
+    private Intent intent;
     private ProgressDialog mProgressDialog;
     private Spinner spinner;
     private List<String> gender = new ArrayList<>();
@@ -73,7 +73,6 @@ public class VolunteerRegisterFragment extends Fragment {
         mRegister = (Button) view.findViewById(R.id.register_user);
         mBack = (Button) view.findViewById(R.id.back);
         intent = new Intent(getActivity(), MainActivity.class);
-        intent_back = new Intent(getActivity(), LoginActivity.class);
 
         gender.add("Gender");
         gender.add("Male");
@@ -93,7 +92,7 @@ public class VolunteerRegisterFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                // do nothing
             }
         });
 
@@ -110,7 +109,7 @@ public class VolunteerRegisterFragment extends Fragment {
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(intent_back);
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 getActivity().finish();
             }
         });
