@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -48,6 +48,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_volunteer_single_event);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         currentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
 
@@ -212,5 +213,11 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

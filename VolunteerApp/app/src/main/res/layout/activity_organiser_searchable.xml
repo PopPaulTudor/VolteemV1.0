@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:focusableInTouchMode="true"
-    android:background="@drawable/background6"
+    android:background="@drawable/background7"
     tools:context="com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity">
 
     <ProgressBar

@@ -12,15 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.Util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
-import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.OrganiserSingleEventActivity;
-import com.volunteer.thc.volunteerapp.presentation.VolunteerSingleEventActivity;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**

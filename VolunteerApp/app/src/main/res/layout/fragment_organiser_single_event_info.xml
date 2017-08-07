@@ -124,22 +124,6 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:id="@+id/edit_event"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="EDIT EVENT"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/cancel_event"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="CANCEL"
-                android:textStyle="bold"
-                android:visibility="gone" />
 
         </LinearLayout>
 
