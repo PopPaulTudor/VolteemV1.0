@@ -67,9 +67,12 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mStartDate.setText(CalendarUtil.getStringDateFromMM(mCurrentEvent.getStartDate()));
         mFinishDate.setText(CalendarUtil.getStringDateFromMM(mCurrentEvent.getFinishDate()));
 
+
         mSize.setText(mCurrentEvent.getSize() + "");
 
-
+        currentStartDate=mCurrentEvent.getStartDate();
+        currentFinishDate=mCurrentEvent.getFinishDate();
+        currentDeadline=mCurrentEvent.getDeadline();
 
         mStartDate.setOnClickListener(setonClickListenerCalendar(mStartDate));
         mFinishDate.setOnClickListener(setonClickListenerCalendar(mFinishDate));
@@ -140,11 +143,11 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             }
 
             if (currentStartDate != mCurrentEvent.getStartDate()) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("date").setValue(currentStartDate);
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("startDate").setValue(currentStartDate);
                 mCurrentEvent.setStartDate(currentStartDate);
             }
             if (currentFinishDate != mCurrentEvent.getFinishDate()) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("date").setValue(currentFinishDate);
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("finishDate").setValue(currentFinishDate);
                 mCurrentEvent.setStartDate(currentFinishDate);
             }
 
@@ -217,6 +220,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mFinishDate.setEnabled(bool);
         mDeadline.setEnabled(bool);
 
+
     }
 
 
@@ -247,7 +251,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    View.OnClickListener setonClickListenerCalendar(final TextView textView) {
+    View.OnClickListener setonClickListenerCalendar(final EditText editText) {
         return new View.OnClickListener() {
 
             @Override
@@ -259,13 +263,13 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
 
                         month++;
-                        textView.setText(dayOfMonth + "/" + month + "/" + year);
+                        editText.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;
-                        myCalendar.set(year, month, dayOfMonth);
-                        if (textView.equals(mStartDate)) currentStartDate = myCalendar.getTimeInMillis();
-                        else if (textView.equals(mFinishDate))
+                        myCalendar.set(year, month, dayOfMonth,0,0,0);
+                        if (editText.equals(mStartDate)) currentStartDate = myCalendar.getTimeInMillis();
+                        else if (editText.equals(mFinishDate))
                             currentFinishDate = myCalendar.getTimeInMillis();
-                        else if (textView.equals(mDeadline))
+                        else if (editText.equals(mDeadline))
                             currentDeadline = myCalendar.getTimeInMillis();
 
 
