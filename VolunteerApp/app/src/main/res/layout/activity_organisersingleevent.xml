@@ -4,8 +4,10 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background7"
     android:fitsSystemWindows="true"
-    tools:context="com.volunteer.thc.volunteerapp.presentation.OrganiserSingleEventActivity">
+    android:focusableInTouchMode="true"
+    tools:context="com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -19,7 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
         </android.support.v7.widget.Toolbar>

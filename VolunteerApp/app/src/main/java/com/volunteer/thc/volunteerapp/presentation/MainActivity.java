@@ -6,19 +6,21 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserProfileFragment;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerEventsFragment;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerMyEventsFragment;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerProfileFragment;
 
 
 public class MainActivity extends AppCompatActivity
@@ -38,9 +45,9 @@ public class MainActivity extends AppCompatActivity
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseAuth Auth = FirebaseAuth.getInstance();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private TextView mUserStatus;
+    private TextView mUserStatus, mUserName;
     private SharedPreferences prefs;
-
+    private ImageView mGender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,50 +69,80 @@ public class MainActivity extends AppCompatActivity
         navigationView.getMenu().getItem(0).setChecked(true);
 
         View header = navigationView.getHeaderView(0);
+        mGender = (ImageView) header.findViewById(R.id.nav_header_image);
+        mUserName = (TextView) header.findViewById(R.id.nav_header_name);
         mUserStatus = (TextView) header.findViewById(R.id.nav_header_status);
 
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
-        ValueEventListener mStatusListener = (new ValueEventListener() {
+        ValueEventListener statusListener = (new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 SharedPreferences.Editor editor = prefs.edit();
-                String userstatus;
+                String userType;
                 if (dataSnapshot.hasChildren()) {
-                    mUserStatus.setText("Volunteer");
-                    editor.putString("user_status", "Volunteer");
-                    editor.apply();
-                    userstatus = "Volunteer";
+                    userType = "Volunteer";
+                    String gender = dataSnapshot.child("gender").getValue().toString();
+                    String firstName = dataSnapshot.child("firstname").getValue().toString();
+                    String lastName = dataSnapshot.child("lastname").getValue().toString();
+                    editor.putString("name", firstName + " " + lastName);
+                    mUserName.setText(firstName + " " + lastName);
 
+                    if (TextUtils.equals(gender, "Male")) {
+                        editor.putString("gender", "Male");
+                        mGender.setImageResource(R.drawable.ic_user_male);
+                    } else {
+                        editor.putString("gender", "Female");
+                        mGender.setImageResource(R.drawable.ic_user_female);
+                    }
                 } else {
-                    mUserStatus.setText("Organiser");
-                    editor.putString("user_status", "Organiser");
-                    editor.apply();
-                    userstatus = "Organiser";
+                    userType = "Organiser";
+                    editor.putString("gender", userType);
+                    mUserName.setText(user.getEmail());
+                    mGender.setImageResource(R.drawable.ic_organiser);
                 }
-                showEvents(userstatus);
+
+                editor.putString("user_status", userType);
+                editor.apply();
+
+                mUserStatus.setText(userType);
+                showEvents(userType);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e("Cancelled: ", "Cancelled");
+                Log.e("Cancelled: ", "Cancelled \n" + databaseError.getDetails());
             }
         });
 
-        String userstatus = prefs.getString("user_status", null);
-
-        if(TextUtils.equals(userstatus, null)) {
-
-            mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mStatusListener);
-            mDatabase.removeEventListener(mStatusListener);
+        String userStatus = prefs.getString("user_status", null);
+        if (userStatus == null) {
+            mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(statusListener);
+            mDatabase.removeEventListener(statusListener); // is this really needed?
         } else {
+            String gender = prefs.getString("gender", null);
+            String name = prefs.getString("name", null);
 
-            mUserStatus.setText(userstatus);
-            showEvents(userstatus);
+            if (TextUtils.equals(userStatus, "Volunteer")) {
+                if (TextUtils.equals(gender, "Male")) {
+                    mGender.setImageResource(R.drawable.ic_user_male);
+                    mUserName.setText(name);
+                } else {
+                    mGender.setImageResource(R.drawable.ic_user_female);
+                    mUserName.setText(name);
+                }
+            } else {
+                mGender.setImageResource(R.drawable.ic_organiser);
+                mUserName.setText(user.getEmail());
+            }
+
+            mUserStatus.setText(userStatus);
+            showEvents(userStatus);
         }
 
-        getSupportActionBar().setTitle("Events");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Events");
+        }
         drawer.closeDrawers();
     }
 
@@ -117,7 +154,7 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             int count = getFragmentManager().getBackStackEntryCount();
-            if(count == 0) {
+            if (count == 0) {
                 super.onBackPressed();
             } else {
                 getFragmentManager().popBackStack();
@@ -125,98 +162,69 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if(isNetworkAvailable()) {
-
+        if (isNetworkAvailable()) {
+            String actionBarTitle = getActionBar() == null ? "" : String.valueOf(getActionBar().getTitle());
             if (id == R.id.nav_events) {
+                prefs.edit().putInt("cameFrom", 1).apply();
+                String userStatus = prefs.getString("user_status", null);
 
-                prefs.edit().putInt("cameFrom", 1).commit();
-
-                String userstatus = prefs.getString("user_status", null);
-                if (TextUtils.equals(userstatus, "Volunteer")) {
+                if (TextUtils.equals(userStatus, "Volunteer")) {
                     replaceFragmentByClass(new VolunteerEventsFragment());
                 } else {
                     replaceFragmentByClass(new OrganiserEventsFragment());
                 }
 
-                getSupportActionBar().setTitle("Events");
+                actionBarTitle = "Events";
                 item.setChecked(true);
 
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawers();
-
-
             } else if (id == R.id.user_events) {
-
-                prefs.edit().putInt("cameFrom", 2).commit();
+                prefs.edit().putInt("cameFrom", 2).apply();
                 replaceFragmentByClass(new VolunteerMyEventsFragment());
-                getSupportActionBar().setTitle("My Events");
+                actionBarTitle = "My Events";
                 item.setChecked(true);
 
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawers();
-
             } else if (id == R.id.nav_profile) {
-
-                String userstatus = prefs.getString("user_status", null);
-                if (TextUtils.equals(userstatus, "Volunteer")) {
-
+                String userStatus = prefs.getString("user_status", null);
+                if (TextUtils.equals(userStatus, "Volunteer")) {
                     replaceFragmentByClass(new VolunteerProfileFragment());
                 } else {
-
                     replaceFragmentByClass(new OrganiserProfileFragment());
                 }
-                getSupportActionBar().setTitle("Profile");
+
+                actionBarTitle = "Profile";
                 item.setChecked(true);
 
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawers();
-
             } else if (id == R.id.nav_settings) {
-
                 replaceFragmentByClass(new SettingsFragment());
-                getSupportActionBar().setTitle("Settings");
+                actionBarTitle = "Settings";
                 item.setChecked(true);
+
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawers();
-
             } else if (id == R.id.nav_logout) {
-
                 Auth.signOut();
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("user_status", null);
+                editor.putString("name", null);
+                editor.putString("gender", null);
                 editor.apply();
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 finish();
+            }
+
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(actionBarTitle);
             }
         } else {
             Toast.makeText(MainActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
@@ -227,17 +235,14 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void showEvents(String userstatus) {
+    private void showEvents(String userStatus) {
+        prefs.edit().putInt("cameFrom", 1).apply();
 
-        prefs.edit().putInt("cameFrom", 1).commit();
-
-        if(TextUtils.equals(userstatus, "Volunteer")) {
-
+        if (TextUtils.equals(userStatus, "Volunteer")) {
             NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
             Menu navMenu = navView.getMenu();
             navMenu.findItem(R.id.user_events).setVisible(true);
-            replaceFragmentByClass(new VolunteerMyEventsFragment());
-
+            replaceFragmentByClass(new VolunteerEventsFragment());
         } else {
             replaceFragmentByClass(new OrganiserEventsFragment());
         }
@@ -249,7 +254,7 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
-    private boolean isNetworkAvailable(){
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

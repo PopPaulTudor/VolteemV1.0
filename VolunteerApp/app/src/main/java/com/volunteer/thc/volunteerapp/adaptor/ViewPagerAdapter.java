@@ -4,9 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.volunteer.thc.volunteerapp.presentation.OrganiserRegisterFragment;
-import com.volunteer.thc.volunteerapp.presentation.RegisterActivity;
-import com.volunteer.thc.volunteerapp.presentation.VolunteerRegisterFragment;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserRegisterFragment;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerRegisterFragment;
 
 /**
  * Created by Cristi on 6/18/2017.

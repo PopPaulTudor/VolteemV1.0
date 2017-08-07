@@ -4,10 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.volunteer.thc.volunteerapp.presentation.OrganiserSingleEventAcceptedUsersFragment;
-import com.volunteer.thc.volunteerapp.presentation.OrganiserSingleEventInfoFragment;
-import com.volunteer.thc.volunteerapp.presentation.OrganiserSingleEventRegisteredUsersFragment;
-
 /**
  * Created by Cristi on 7/27/2017.
  */

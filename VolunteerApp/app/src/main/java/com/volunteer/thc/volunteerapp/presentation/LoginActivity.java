@@ -30,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "EmailPassword";
     private EditText mEmail, mPassword;
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private ProgressDialog mProgressDialog;
     private Button mSendResetPasswordEmail;
     private EditText mResetPasswordEmail;
@@ -40,30 +39,29 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mEmail = (EditText) findViewById(R.id.email);
-        mPassword = (EditText) findViewById(R.id.password);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
         mAuth = FirebaseAuth.getInstance();
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() != null) {
-                    startActivityByClass(MainActivity.class);
-                }
-            }
-        };
+        if (mAuth.getCurrentUser() != null) {
+            startActivityByClass(MainActivity.class);
+        }
+
+        mEmail = (EditText) findViewById(R.id.email);
+        mPassword = (EditText) findViewById(R.id.password);
 
         findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (validateForm()) {
                     mProgressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "", true);
-                }
-                if(isNetworkAvailable()) {
-                    logIn(mEmail.getText().toString(), mPassword.getText().toString());
-                } else {
-                    mProgressDialog.dismiss();
-                    Toast.makeText(LoginActivity.this,"No internet connection.", Toast.LENGTH_LONG).show();
+                    if (isNetworkAvailable()) {
+                        logIn(mEmail.getText().toString(), mPassword.getText().toString());
+                    } else {
+                        mProgressDialog.dismiss();
+                        Toast.makeText(LoginActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -71,10 +69,10 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.register).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isNetworkAvailable()) {
+                if (isNetworkAvailable()) {
                     startActivityByClass(RegisterActivity.class);
                 } else {
-                    Toast.makeText(LoginActivity.this,"No internet connection.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -96,20 +94,18 @@ public class LoginActivity extends AppCompatActivity {
                 mSendResetPasswordEmail.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
                         String email = mResetPasswordEmail.getText().toString();
-                        if(!TextUtils.isEmpty(email)) {
-
+                        if (!TextUtils.isEmpty(email)) {
                             mResetPasswordEmail.setError(null);
                             mBottomSheetDialog.dismiss();
+
                             FirebaseAuth.getInstance().sendPasswordResetEmail(email)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-
-                                            if(task.isSuccessful()) {
+                                            if (task.isSuccessful()) {
                                                 Toast.makeText(LoginActivity.this, "Password email sent. Please check your inbox.", Toast.LENGTH_LONG).show();
-                                            } else{
+                                            } else {
                                                 Toast.makeText(LoginActivity.this, "Reset failed. Verify if the email is written correctly and try again.", Toast.LENGTH_LONG).show();
                                             }
                                         }
@@ -119,20 +115,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthStateListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthStateListener != null) {
-            mAuth.removeAuthStateListener(mAuthStateListener);
-        }
     }
 
     private void logIn(String email, String password) {
@@ -148,16 +130,21 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
+                            startActivityByClass(MainActivity.class);
                         } else {
                             Exception exception = task.getException();
                             if (exception != null) {
                                 if (exception instanceof FirebaseAuthException) {
-                                    if (exception.getMessage().equals("The password is invalid or the user does not have a password.")) {
-                                        mPassword.setError("Wrong password.");
+                                    if (exception.getMessage().contains("password")) {
+                                        mPassword.setError(exception.getMessage());
                                         mPassword.requestFocus();
-                                    } else if (exception.getMessage().equals("The user account has been disabled by an administrator.")) {
-                                        mEmail.setError("Your account has been disabled by an administrator.");
+                                    } else if (exception.getMessage().contains("email") ||
+                                            exception.getMessage().contains("account") ||
+                                            exception.getMessage().contains("user")) {
+                                        mEmail.setError(exception.getMessage());
                                         mEmail.requestFocus();
+                                    } else {
+                                        Log.e(TAG, exception.getMessage());
                                     }
                                 } else {
                                     // In this case there can be any Exception
@@ -195,7 +182,7 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private boolean isNetworkAvailable(){
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

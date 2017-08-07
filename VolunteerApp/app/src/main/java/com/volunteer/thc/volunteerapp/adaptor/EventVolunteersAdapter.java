@@ -1,8 +1,5 @@
 package com.volunteer.thc.volunteerapp.adaptor;
 
-import android.os.Bundle;
-import android.support.transition.TransitionManager;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +10,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,7 +17,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.VolunteerSingleEventActivity;
 
 import java.util.ArrayList;
 
@@ -82,9 +76,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             }
         });
 
-
-
-
         holder.acceptUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,7 +115,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         LinearLayout expandableItem;
         Button acceptUser;
 
-
         EventViewHolder(View itemView) {
             super(itemView);
 
@@ -138,10 +128,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             phoneVolunteer = (TextView) itemView.findViewById(R.id.volunteer_phone);
             emailVolunteer = (TextView) itemView.findViewById(R.id.volunteer_email);
             acceptUser = (Button) itemView.findViewById(R.id.accept_volunteer);
-
         }
     }
-
 }
-
-

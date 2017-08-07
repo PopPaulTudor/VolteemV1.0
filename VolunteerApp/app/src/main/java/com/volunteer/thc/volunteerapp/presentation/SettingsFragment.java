@@ -8,21 +8,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -64,19 +60,19 @@ public class SettingsFragment extends Fragment {
                     public void onClick(View view) {
 
                         String password = mPassword.getText().toString();
-                        if(!TextUtils.isEmpty(password)) {
+                        if (!TextUtils.isEmpty(password)) {
                             AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), password);
                             user.reauthenticate(credential)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            if(task.isSuccessful()) {
+                                            if (task.isSuccessful()) {
                                                 SharedPreferences prefs = getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
                                                 String userstatus = prefs.getString("user_status", null);
 
                                                 Activity activity = getActivity();
 
-                                                if(TextUtils.equals(userstatus, "Volunteer")) {
+                                                if (TextUtils.equals(userstatus, "Volunteer")) {
                                                     mDatabase.child("users").child("volunteers").child(user.getUid()).setValue(null);
                                                 } else {
                                                     mDatabase.child("users").child("organisers").child(user.getUid()).setValue(null);

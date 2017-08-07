@@ -1,15 +1,14 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,7 +33,7 @@ public class VolunteerMyEventsFragment extends Fragment {
     private List<Event> mEventsList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private ProgressDialog mProgressDialog;
+    private ProgressBar mProgressBar;
     private RecyclerView recyclerView;
     private ValueEventListener mRetrieveEvents;
     private ArrayList<String> mUserEvents = new ArrayList<>();
@@ -43,10 +42,11 @@ public class VolunteerMyEventsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_volunteerevents, container, false);
+        View view = inflater.inflate(R.layout.fragment_volunteer_my_events, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
 
         return view;
     }
@@ -57,14 +57,13 @@ public class VolunteerMyEventsFragment extends Fragment {
         loadEvents();
     }
 
-    private void loadEvents(){
-        mProgressDialog = ProgressDialog.show(getActivity(), "Getting events...", "", true);
-
+    private void loadEvents() {
+        mProgressBar.setVisibility(View.VISIBLE);
         mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mUserEvents = new ArrayList<>();
-                for(DataSnapshot usersSnapshot: dataSnapshot.child("events").getChildren()) {
+                for (DataSnapshot usersSnapshot : dataSnapshot.child("events").getChildren()) {
                     mUserEvents.add(usersSnapshot.getValue().toString());
                 }
                 mDatabase.child("events").addListenerForSingleValueEvent(mRetrieveEvents);
@@ -80,13 +79,13 @@ public class VolunteerMyEventsFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mEventsList = new ArrayList<>();
-                for (DataSnapshot eventSnapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
                     Event currentEvent = eventSnapshot.getValue(Event.class);
                     if (isUserRegisteredForEvent(currentEvent.getEventID())) {
                         mEventsList.add(currentEvent);
                     }
                 }
-                mProgressDialog.dismiss();
+                mProgressBar.setVisibility(View.GONE);
                 OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
                 recyclerView.setAdapter(adapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -102,8 +101,8 @@ public class VolunteerMyEventsFragment extends Fragment {
 
     private boolean isUserRegisteredForEvent(String eventID) {
 
-        for(String event: mUserEvents) {
-            if(TextUtils.equals(eventID, event)) {
+        for (String event : mUserEvents) {
+            if (TextUtils.equals(eventID, event)) {
                 return true;
             }
         }

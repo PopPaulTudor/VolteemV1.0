@@ -12,7 +12,9 @@
             android:id="@+id/email_login_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+			android:paddingLeft="@dimen/register_padding_left"
+			android:paddingRight="@dimen/register_padding_right">
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -91,6 +93,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="Phone number "
+                    android:maxLength="13"
                     android:inputType="phone"
                     android:visibility="visible" />
             </android.support.design.widget.TextInputLayout>

@@ -10,8 +10,8 @@
         android:id="@+id/CardElement"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        app:cardBackgroundColor="@color/green"
         android:background="@color/green"
+        app:cardBackgroundColor="@color/green"
         app:cardCornerRadius="10dp">
 
         <RelativeLayout
@@ -22,13 +22,14 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/rectangle"/>
+                android:src="@drawable/rectangle" />
 
             <TextView
                 android:id="@+id/NameCardElement"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/DateCardElement"
+                android:layout_marginStart="10sp"
+                android:layout_marginTop="78dp"
                 android:hint="Electric Castle 2017" />
 
 
@@ -36,7 +37,9 @@
                 android:id="@+id/DateCardElement"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="78dp"
+                android:layout_below="@id/NameCardElement"
+                android:layout_marginBottom="5sp"
+                android:layout_marginStart="10sp"
                 android:hint="13/07/17" />
 
 
@@ -44,7 +47,9 @@
                 android:id="@+id/LocationCardElement"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/DateCardElement"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:layout_alignTop="@+id/NameCardElement"
                 android:layout_marginLeft="250dp"
                 android:hint="Bontida" />
 
