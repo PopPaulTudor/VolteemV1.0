@@ -2,7 +2,6 @@ package com.volunteer.thc.volunteerapp.presentation;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -10,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -38,13 +38,15 @@ import java.util.Calendar;
 
 public class CreateEventFragment extends Fragment {
 
-    private static final int GALLERY_INTENT=1;
-
+    private static final int RESULT_LOAD_IMAGE = 1;
+    private static final int RESULT_OK = 1;
     private EditText mName, mLocation, mType, mDescription, mDeadline, mSize, mStartDate, mFinishDate;
     private ImageView mImage;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private StorageReference mStorageRef;
     private long startDate=-1, finishDate, deadline;
+    final Calendar myCalendar = Calendar.getInstance();
 
 
 
@@ -54,6 +56,7 @@ public class CreateEventFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_createevent, container, false);
 
+        mStorageRef = FirebaseStorage.getInstance().getReference();
         mName = (EditText) view.findViewById(R.id.event_name);
         mLocation = (EditText) view.findViewById(R.id.event_location);
         mStartDate = (EditText) view.findViewById(R.id.event_date_start_create);
@@ -68,18 +71,35 @@ public class CreateEventFragment extends Fragment {
         Button chooseImage = (Button) view.findViewById(R.id.event_add_image);
 
 
-        chooseImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent= new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent,GALLERY_INTENT);
+        /*
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+
+            if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+                Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String picturePath = cursor.getString(columnIndex);
+                cursor.close();
+
+                mImage= (ImageView) getView().findViewById(R.id.event_image);
+                mImage.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+
             }
-        });
+
+        }*/
+
 
         mStartDate.setOnClickListener(setonClickListenerCalendar(mStartDate));
         mFinishDate.setOnClickListener(setonClickListenerCalendar(mFinishDate));
         mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
+
 
         mSaveEvent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,7 +169,7 @@ public class CreateEventFragment extends Fragment {
     }
 
 
-    View.OnClickListener setonClickListenerCalendar(final EditText editText) {
+    View.OnClickListener setonClickListenerCalendar(final TextView textView) {
         return new View.OnClickListener() {
 
             @Override
@@ -161,13 +181,13 @@ public class CreateEventFragment extends Fragment {
 
 
                         month++;
-                        editText.setText(dayOfMonth + "/" + month + "/" + year);
+                        textView.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;
                         myCalendar.set(year, month, dayOfMonth);
-                        if (editText.equals(mStartDate)) startDate = myCalendar.getTimeInMillis();
-                        else if (editText.equals(mFinishDate))
+                        if (textView.equals(mStartDate)) startDate = myCalendar.getTimeInMillis();
+                        else if (textView.equals(mFinishDate))
                             finishDate = myCalendar.getTimeInMillis();
-                        else if (editText.equals(mDeadline))
+                        else if (textView.equals(mDeadline))
                             deadline = myCalendar.getTimeInMillis();
 
 
