@@ -12,11 +12,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
-import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
-import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
+import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.presentation.OrganiserSingleEventActivity;
+import com.volunteer.thc.volunteerapp.presentation.VolunteerSingleEventActivity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -46,7 +50,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
         holder.cardName.setText(EventsList.get(position).getName());
         holder.cardLocation.setText(EventsList.get(position).getLocation());
-        holder.cardDate.setText(EventsList.get(position).getDate());
+        holder.cardDate.setText(CalendarUtil.getStringDateFromMM(EventsList.get(position).getDeadline()));
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,10 +86,11 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         EventViewHolder(View v) {
             super(v);
 
-            cardName = (TextView) v.findViewById(R.id.NameCardElement);
-            cardDate = (TextView) v.findViewById(R.id.DateCardElement);
-            cardLocation = (TextView) v.findViewById(R.id.LocationCardElement);
-            cardView = (CardView) v.findViewById(R.id.CardElement);
+            cardName= (TextView) v.findViewById(R.id.NameCardElement);
+            cardDate= (TextView) v.findViewById(R.id.DateCardElement);
+            cardLocation= (TextView) v.findViewById(R.id.LocationCardElement);
+            cardView= (CardView) v.findViewById(R.id.CardElement);
+
         }
     }
 }

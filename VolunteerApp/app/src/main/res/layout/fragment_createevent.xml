@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    xmlns:tools="http://schemas.android.com/tools"
     android:clickable="true"
+    android:orientation="vertical"
     tools:context="com.volunteer.thc.volunteerapp.presentation.CreateEventFragment">
 
 
@@ -13,136 +13,159 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <android.support.design.widget.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/event_name"
-                    android:inputType="textPersonName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="Name"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/event_location"
-                    android:inputType="textPersonName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="Location"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/event_date"
-                    android:inputType="textPersonName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="Date"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/event_type"
-                    android:inputType="textPersonName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="Type"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/event_description"
-                    android:inputType="textPersonName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="Description"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/event_deadline"
-                    android:inputType="textPersonName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="Deadline"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/event_size"
-                    android:inputType="number"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="Volunteers needed"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <TextView
-                android:id="@+id/add_image_text"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add an image to your event: "
-                android:layout_marginStart="15sp"
-                android:textColor="@color/black" />
+                android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/add_pic_event"
-                android:layout_width="50sp"
-                android:layout_marginStart="10sp"
-                android:layout_height="50sp"
-                android:clickable="true"
-                android:background="@drawable/button_shape"
-                android:src="@drawable/add_pic" />
 
-            <Button
-                android:id="@+id/save_event"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="SAVE"
-                style="?android:textAppearanceSmall"
-                android:textStyle="bold"/>
+                <ImageView
+                    android:id="@+id/event_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:src="@color/colorPrimary" />
 
-            <Button
-                android:id="@+id/cancel_event"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="CANCEL"
-                android:textStyle="bold" />
 
-        </LinearLayout>
+                <Button
+                    android:id="@+id/event_add_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/event_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Name"
+                        android:inputType="textPersonName" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/event_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Location"
+                        android:inputType="textPersonName" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/event_date_start_create"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:ems="10"
+                        android:focusable="false"
+                        android:hint="Start event date " />
+
+
+                </android.support.design.widget.TextInputLayout>
+
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/event_date_finish_create"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:ems="10"
+                        android:focusable="false"
+                        android:hint="Finish event date" />
+
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/event_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Type"
+                        android:inputType="textPersonName" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/event_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Description"
+                        android:inputType="textPersonName" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/event_deadline_create"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:ems="10"
+                        android:focusable="false"
+                        android:hint="Deadline" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/event_size"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Volunteers needed"
+                        android:inputType="number" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:id="@+id/save_event"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="SAVE"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/cancel_event"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="CANCEL"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
 
     </ScrollView>
 </LinearLayout>

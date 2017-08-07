@@ -45,7 +45,6 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
-            Log.w("AuthMethod", "Start activity");
             startActivityByClass(MainActivity.class);
         }
 
@@ -131,16 +130,21 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
+                            startActivityByClass(MainActivity.class);
                         } else {
                             Exception exception = task.getException();
                             if (exception != null) {
                                 if (exception instanceof FirebaseAuthException) {
-                                    if (exception.getMessage().equals("The password is invalid or the user does not have a password.")) {
-                                        mPassword.setError("Wrong password.");
+                                    if (exception.getMessage().contains("password")) {
+                                        mPassword.setError(exception.getMessage());
                                         mPassword.requestFocus();
-                                    } else if (exception.getMessage().equals("The user account has been disabled by an administrator.")) {
-                                        mEmail.setError("Your account has been disabled by an administrator.");
+                                    } else if (exception.getMessage().contains("email") ||
+                                            exception.getMessage().contains("account") ||
+                                            exception.getMessage().contains("user")) {
+                                        mEmail.setError(exception.getMessage());
                                         mEmail.requestFocus();
+                                    } else {
+                                        Log.e(TAG, exception.getMessage());
                                     }
                                 } else {
                                     // In this case there can be any Exception

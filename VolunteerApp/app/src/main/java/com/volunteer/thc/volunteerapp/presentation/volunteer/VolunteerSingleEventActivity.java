@@ -1,14 +1,15 @@
-package com.volunteer.thc.volunteerapp.presentation.volunteer;
+package com.volunteer.thc.volunteerapp.presentation;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.view.ViewCompat;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -23,13 +24,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class VolunteerSingleEventActivity extends AppCompatActivity {
 
-    private TextView mEventName, mEventLocation, mEventDate, mEventType, mEventDescription, mEventDeadline, mEventSize, mStatus;
+    private TextView mEventName, mEventLocation, mEventType, mEventDescription, mEventDeadline, mEventSize, mStatus,mEventStartDate,mEventFinishDate;
     private Event currentEvent;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -45,17 +49,12 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         currentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
-
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle(currentEvent.getName());
-        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
         mEventName = (TextView) findViewById(R.id.event_name);
         mEventLocation = (TextView) findViewById(R.id.event_location);
-        mEventDate = (TextView) findViewById(R.id.event_date);
+        mEventStartDate = (TextView) findViewById(R.id.event_start_date);
+        mEventFinishDate = (TextView) findViewById(R.id.event_finish_date);
         mEventType = (TextView) findViewById(R.id.event_type);
         mEventDescription = (TextView) findViewById(R.id.event_description);
         mEventDeadline = (TextView) findViewById(R.id.event_deadline);
@@ -65,18 +64,20 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mSignupForEvent = (Button) findViewById(R.id.event_signup);
         mLeaveEvent = (Button) findViewById(R.id.event_leave);
 
+        getSupportActionBar().setTitle(currentEvent.getName());
 
         mEventName.setText("Name: " + currentEvent.getName());
         mEventLocation.setText("Location: " + currentEvent.getLocation());
-        mEventDate.setText("Date: " + currentEvent.getDate());
+        mEventStartDate.setText("Event Start Date"+ CalendarUtil.getStringDateFromMM(currentEvent.getStartDate()));
+        mEventFinishDate.setText("Event Finish Date"+ CalendarUtil.getStringDateFromMM(currentEvent.getFinishDate()));
         mEventType.setText("Type: " + currentEvent.getType());
         mEventDescription.setText("Description: " + currentEvent.getDescription());
-        mEventDeadline.setText("Deadline: " + currentEvent.getDeadline());
-        mEventSize.setText("Volunteers needed: " + currentEvent.getSize() + "");
+        mEventDeadline.setText("Deadline: " + CalendarUtil.getStringDateFromMM(currentEvent.getDeadline()));
+        mEventSize.setText("Volunteers needed: " + currentEvent.getSize()+"");
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
-        if (prefs.getInt("cameFrom", 1) == 1) {
+        if(prefs.getInt("cameFrom", 1) == 1) {
             mSignupForEvent.setVisibility(View.VISIBLE);
         } else {
             mStatus.setVisibility(View.VISIBLE);
@@ -87,7 +88,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                 .startAt(user.getUid()).endAt(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
+                if(dataSnapshot.getValue() != null){
                     mStatus.setText("Status: Accepted");
                 }
             }
@@ -101,25 +102,25 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
         mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot data : dataSnapshot.getChildren()) {
-                            events.add(data.getValue().toString());
-                        }
-                    }
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot data: dataSnapshot.getChildren()) {
+                    events.add(data.getValue().toString());
+                }
+            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                    }
-                });
+            }
+        });
 
         mRegisterListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 eventsNumber = (int) dataSnapshot.getChildrenCount();
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
-                        .child(eventsNumber + "").setValue(currentEvent.getEventID());
+                        .child(eventsNumber+"").setValue(currentEvent.getEventID());
                 Toast.makeText(VolunteerSingleEventActivity.this, "Sign up successful!", Toast.LENGTH_LONG).show();
                 finish();
             }
@@ -186,7 +187,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                                 .startAt(user.getUid()).endAt(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                for (DataSnapshot data: dataSnapshot.getChildren()){
                                     mDatabase.child("events").child(currentEvent.getEventID()).child("registered_users").child(data.getKey()).setValue(null);
                                 }
                                 events.remove(currentEvent.getEventID());
@@ -211,11 +212,5 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        finish();
-        return true;
     }
 }

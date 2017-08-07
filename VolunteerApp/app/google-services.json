@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "248971437588-p3ac5a5cmjaamtjs5r0lrllpquredbmc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.volunteer.thc.volunteerapp",
+            "certificate_hash": "70b3b371ac816162b11581b9cc1282ca4d7b1821"
+          }
+        },
+        {
           "client_id": "248971437588-m1ag0d7dsqklij61oq6sgltharnm12oq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -30,6 +38,9 @@
       "api_key": [
         {
           "current_key": "AIzaSyA8eNR7wbLvVIvGngnYR-mcAbuzdkHjEi0"
+        },
+        {
+          "current_key": "AIzaSyDCYmfQ18_cSih4vupo8iiHGAwyD5DOjXg"
         }
       ],
       "services": {

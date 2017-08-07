@@ -40,7 +40,7 @@ public class OrganiserRegisterFragment extends Fragment {
     private FirebaseAuth mAuth;
     private EditText mEmail, mPassword, mPhone, mCity, mCompany;
     private Button mRegister, mBack;
-    private Intent intent, intent_back;
+    private Intent intent;
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -59,7 +59,6 @@ public class OrganiserRegisterFragment extends Fragment {
         mRegister = (Button) view.findViewById(R.id.register_user);
         mBack = (Button) view.findViewById(R.id.back);
         intent = new Intent(getActivity(), MainActivity.class);
-        intent_back = new Intent(getActivity(), LoginActivity.class);
 
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,7 +73,7 @@ public class OrganiserRegisterFragment extends Fragment {
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(intent_back);
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 getActivity().finish();
             }
         });

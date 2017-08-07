@@ -8,7 +8,8 @@ import java.util.ArrayList;
  */
 public class Event implements Serializable{
 
-    private String created_by, name, location, date, type, description, deadline, eventID;
+    private String created_by, name, location, type, description, eventID;
+    private long startDate,finishDate,deadline;
     private int size;
     private ArrayList<String> registered_volunteers;
     private ArrayList<String> accepted_volunteers;
@@ -17,12 +18,13 @@ public class Event implements Serializable{
 
     }
 
-    public Event (String created_by, String name, String location, String date, String type, String eventID,
-                  String description, String deadline, int size) {
+    public Event (String created_by, String name, String location, long startDate,long finishDate, String type, String eventID,
+                  String description, long deadline, int size) {
         this.created_by = created_by;
         this.name = name;
         this.location = location;
-        this.date = date;
+        this.startDate =startDate;
+        this.finishDate=finishDate;
         this.type = type;
         this.description = description;
         this.deadline = deadline;
@@ -32,13 +34,30 @@ public class Event implements Serializable{
         this.accepted_volunteers = new ArrayList<>();
     }
 
-    public Event (String created_by, String name, String location, String date, String type, String eventID,
-                  String description, String deadline, int size, ArrayList<String> registered_volunteers, ArrayList<String> accepted_volunteers) {
+    public long getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(long startDate) {
+        this.startDate = startDate;
+    }
+
+    public long getFinishDate() {
+        return finishDate;
+    }
+
+    public void setFinishDate(long finishDate) {
+        this.finishDate = finishDate;
+    }
+
+    public Event (String created_by, String name, String location, long startDate,long finishDate, String type, String eventID,
+                  String description, long deadline, int size, ArrayList<String> registered_volunteers, ArrayList<String> accepted_volunteers) {
         this.created_by = created_by;
         this.name = name;
         this.location = location;
-        this.date = date;
         this.type = type;
+        this.finishDate=finishDate;
+        this.startDate=startDate;
         this.description = description;
         this.deadline = deadline;
         this.size = size;
@@ -71,13 +90,6 @@ public class Event implements Serializable{
         this.location = location;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
 
     public String getType() {
         return type;
@@ -95,11 +107,11 @@ public class Event implements Serializable{
         this.description = description;
     }
 
-    public String getDeadline() {
+    public long getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(String deadline) {
+    public void setDeadline(long deadline) {
         this.deadline = deadline;
     }
 

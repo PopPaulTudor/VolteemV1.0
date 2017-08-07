@@ -8,4 +8,12 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="design_navigation_icon_size" tools:override="true">35sp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
+
+	<dimen name="register_padding_left">10dp</dimen>
+	<dimen name="register_padding_right">10dp</dimen>
+
+	<!-- Text related dimensions -->
+	<dimen name="login_page_text_size_small">16sp</dimen>
+    <dimen name="login_page_text_size_normal">18sp</dimen>
+	<dimen name="login_page_text_size_big">20sp</dimen>
 </resources>
