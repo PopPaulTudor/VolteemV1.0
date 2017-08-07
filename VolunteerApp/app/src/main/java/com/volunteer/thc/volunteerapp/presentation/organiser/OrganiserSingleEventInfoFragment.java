@@ -39,7 +39,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private EditText mName, mLocation, mStartDate, mType, mDescription, mDeadline, mSize, mFinishDate;
     private MenuItem mEdit, mSave, mCancel;
-    long currentStartDate, currentFinishDate, currentDeadline;
+    private long currentStartDate, currentFinishDate, currentDeadline;
 
 
     @Nullable
@@ -68,13 +68,13 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mFinishDate.setText(CalendarUtil.getStringDateFromMM(mCurrentEvent.getFinishDate()));
 
         mSize.setText(mCurrentEvent.getSize() + "");
-
-
+        currentStartDate = mCurrentEvent.getStartDate();
+        currentFinishDate = mCurrentEvent.getStartDate();
+        currentDeadline = mCurrentEvent.getDeadline();
 
         mStartDate.setOnClickListener(setonClickListenerCalendar(mStartDate));
         mFinishDate.setOnClickListener(setonClickListenerCalendar(mFinishDate));
         mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
-
 
         toggleEdit(false);
 
@@ -127,7 +127,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         currentSize = mSize.getText().toString();
 
 
-
         if (validateForm()) {
             if (!currentName.equals(mCurrentEvent.getName())) {
                 mDatabase.child("events").child(mCurrentEvent.getEventID()).child("name").setValue(currentName);
@@ -140,12 +139,12 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             }
 
             if (currentStartDate != mCurrentEvent.getStartDate()) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("date").setValue(currentStartDate);
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("startDate").setValue(currentStartDate);
                 mCurrentEvent.setStartDate(currentStartDate);
             }
             if (currentFinishDate != mCurrentEvent.getFinishDate()) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("date").setValue(currentFinishDate);
-                mCurrentEvent.setStartDate(currentFinishDate);
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("finishDate").setValue(currentFinishDate);
+                mCurrentEvent.setFinishDate(currentFinishDate);
             }
 
             if (!currentType.equals(mCurrentEvent.getType())) {
