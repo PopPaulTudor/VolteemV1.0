@@ -33,6 +33,7 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
         mCurrentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
 
         getSupportActionBar().setTitle(mCurrentEvent.getName());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle bundle = new Bundle();
         bundle.putSerializable("currentEvent", mCurrentEvent);
@@ -55,5 +56,11 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mViewPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

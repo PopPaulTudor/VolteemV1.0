@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -51,12 +52,14 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     private List<Event> mEventsList = new ArrayList<>();
     private RecyclerView recyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SearchView searchView;
+    private View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_organiserevents, container, false);
+        view = inflater.inflate(R.layout.fragment_organiserevents, container, false);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewOrgEvents);
         recyclerView.setHasFixedSize(true);
@@ -103,10 +106,24 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
         ComponentName cn = new ComponentName(getActivity(), OrganiserSearchableActivity.class);
 
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
         searchView.setIconifiedByDefault(false);
+        searchView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                searchView.clearFocus();
+                hideKeyboardFrom(view);
+            }
+
+            @Override
+            public void onViewAttachedToWindow(View v) {
+
+            }
+        });
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -184,7 +201,6 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                     });
 
         } else {
-
             mSwipeRefreshLayout.setRefreshing(false);
             Toast.makeText(getActivity(), "No internet connection.", Toast.LENGTH_LONG).show();
         }
@@ -206,5 +222,10 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    private void hideKeyboardFrom(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -43,7 +45,13 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         currentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
+
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setTitle(currentEvent.getName());
+        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
         mEventName = (TextView) findViewById(R.id.event_name);
         mEventLocation = (TextView) findViewById(R.id.event_location);
@@ -57,7 +65,6 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mSignupForEvent = (Button) findViewById(R.id.event_signup);
         mLeaveEvent = (Button) findViewById(R.id.event_leave);
 
-        getSupportActionBar().setTitle(currentEvent.getName());
 
         mEventName.setText("Name: " + currentEvent.getName());
         mEventLocation.setText("Location: " + currentEvent.getLocation());
@@ -204,5 +211,11 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

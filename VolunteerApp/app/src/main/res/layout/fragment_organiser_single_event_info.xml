@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <ScrollView
         android:id="@+id/create_event"
@@ -19,10 +20,10 @@
 
                 <EditText
                     android:id="@+id/event_name"
-                    android:inputType="textPersonName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Name"/>
+                    android:hint="Name"
+                    android:inputType="textPersonName" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -32,10 +33,10 @@
 
                 <EditText
                     android:id="@+id/event_location"
-                    android:inputType="textPersonName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Location"/>
+                    android:hint="Location"
+                    android:inputType="textPersonName" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -45,10 +46,10 @@
 
                 <EditText
                     android:id="@+id/event_date"
-                    android:inputType="textPersonName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Date"/>
+                    android:hint="Date"
+                    android:inputType="textPersonName" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -58,10 +59,10 @@
 
                 <EditText
                     android:id="@+id/event_type"
-                    android:inputType="textPersonName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Type"/>
+                    android:hint="Type"
+                    android:inputType="textPersonName" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -71,10 +72,10 @@
 
                 <EditText
                     android:id="@+id/event_description"
-                    android:inputType="textPersonName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Description"/>
+                    android:hint="Description"
+                    android:inputType="textPersonName" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -84,10 +85,10 @@
 
                 <EditText
                     android:id="@+id/event_deadline"
-                    android:inputType="textPersonName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Deadline"/>
+                    android:hint="Deadline"
+                    android:inputType="textPersonName" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -97,29 +98,12 @@
 
                 <EditText
                     android:id="@+id/event_size"
-                    android:inputType="number"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Volunteers needed"/>
+                    android:hint="Volunteers needed"
+                    android:inputType="number" />
 
             </android.support.design.widget.TextInputLayout>
-
-            <Button
-                android:id="@+id/edit_event"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="EDIT EVENT"
-                style="?android:textAppearanceSmall"
-                android:textStyle="bold"/>
-
-            <Button
-                android:id="@+id/cancel_event"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="CANCEL"
-                android:visibility="gone"
-                style="?android:textAppearanceSmall"
-                android:textStyle="bold"/>
 
         </LinearLayout>
 

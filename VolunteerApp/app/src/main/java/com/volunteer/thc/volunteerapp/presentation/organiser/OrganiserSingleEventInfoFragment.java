@@ -1,13 +1,20 @@
 package com.volunteer.thc.volunteerapp.presentation.organiser;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.text.method.KeyListener;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -26,7 +33,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     private Event mCurrentEvent = new Event();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private EditText mName, mLocation, mDate, mType, mDescription, mDeadline, mSize;
-    private Button mEditEvent, mCancel;
+    private MenuItem mEdit, mSave, mCancel;
 
     @Nullable
     @Override
@@ -35,7 +42,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_info, container, false);
 
         mCurrentEvent = (Event) getArguments().getSerializable("currentEvent");
-
         mName = (EditText) view.findViewById(R.id.event_name);
         mLocation = (EditText) view.findViewById(R.id.event_location);
         mDate = (EditText) view.findViewById(R.id.event_date);
@@ -43,8 +49,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mDescription = (EditText) view.findViewById(R.id.event_description);
         mDeadline = (EditText) view.findViewById(R.id.event_deadline);
         mSize = (EditText) view.findViewById(R.id.event_size);
-        mEditEvent = (Button) view.findViewById(R.id.edit_event);
-        mCancel = (Button) view.findViewById(R.id.cancel_event);
 
         mName.setText(mCurrentEvent.getName());
         mLocation.setText(mCurrentEvent.getLocation());
@@ -65,101 +69,130 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         toggleEditOff();
         toggleFocusOff();
 
-        mEditEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (mCancel.getVisibility() == View.GONE) {
-
-                    mCancel.setVisibility(View.VISIBLE);
-                    mEditEvent.setText("SAVE");
-
-                    toggleFocusOn();
-                    toggleEditOn();
-
-                } else {
-
-                    String currentName, currentLocation, currentDate, currentType, currentDescription, currentDeadline, currentSize;
-
-                    currentName = mName.getText().toString();
-                    currentLocation = mLocation.getText().toString();
-                    currentDate = mDate.getText().toString();
-                    currentType = mType.getText().toString();
-                    currentDescription = mDescription.getText().toString();
-                    currentDeadline = mDeadline.getText().toString();
-                    currentSize = mSize.getText().toString();
-
-                    if (validateForm()) {
-                        if (!currentName.equals(mCurrentEvent.getName())) {
-                            mDatabase.child("events").child(mCurrentEvent.getEventID()).child("name").setValue(currentName);
-                            mCurrentEvent.setName(currentName);
-                        }
-
-                        if (!currentLocation.equals(mCurrentEvent.getLocation())) {
-                            mDatabase.child("events").child(mCurrentEvent.getEventID()).child("location").setValue(currentLocation);
-                            mCurrentEvent.setLocation(currentLocation);
-                        }
-
-                        if (!currentDate.equals(mCurrentEvent.getDate())) {
-                            mDatabase.child("events").child(mCurrentEvent.getEventID()).child("date").setValue(currentDate);
-                            mCurrentEvent.setDate(currentDate);
-                        }
-
-                        if (!currentType.equals(mCurrentEvent.getType())) {
-                            mDatabase.child("events").child(mCurrentEvent.getEventID()).child("type").setValue(currentType);
-                            mCurrentEvent.setType(currentType);
-                        }
-
-                        if (!currentDescription.equals(mCurrentEvent.getDescription())) {
-                            mDatabase.child("events").child(mCurrentEvent.getEventID()).child("description").setValue(currentDescription);
-                            mCurrentEvent.setDescription(currentDescription);
-                        }
-
-                        if (!currentDeadline.equals(mCurrentEvent.getDeadline())) {
-                            mDatabase.child("events").child(mCurrentEvent.getEventID()).child("deadline").setValue(currentDescription);
-                            mCurrentEvent.setDeadline(currentDeadline);
-                        }
-
-                        if (!currentSize.equals(mCurrentEvent.getSize())) {
-                            mDatabase.child("events").child(mCurrentEvent.getEventID()).child("size").setValue(Integer.parseInt(currentSize));
-                            mCurrentEvent.setSize(Integer.parseInt(currentSize));
-                        }
-
-                        Toast.makeText(getActivity(), "Event updated!", Toast.LENGTH_LONG).show();
-
-                        mCancel.setVisibility(View.GONE);
-                        mEditEvent.setText("EDIT EVENT");
-                        toggleEditOff();
-                        toggleFocusOff();
-                    }
-                }
-            }
-        });
-
-        mCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                mName.setText(mCurrentEvent.getName());
-                mLocation.setText(mCurrentEvent.getLocation());
-                mDate.setText(mCurrentEvent.getDate());
-                mType.setText(mCurrentEvent.getType());
-                mDescription.setText(mCurrentEvent.getDescription());
-                mDeadline.setText(mCurrentEvent.getDeadline());
-                mSize.setText(mCurrentEvent.getSize() + "");
-
-                toggleEditOff();
-                toggleFocusOff();
-
-                mEditEvent.setText("EDIT");
-                mCancel.setVisibility(View.GONE);
-            }
-        });
-
+        setHasOptionsMenu(true);
         return view;
     }
 
-    public void toggleEditOn() {
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_profile_edit, menu);
+        mEdit = menu.findItem(R.id.action_edit);
+        mSave = menu.findItem(R.id.action_save);
+        mCancel = menu.findItem(R.id.action_cancel);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_edit:
+                onEditItemPressed();
+                return true;
+            case R.id.action_save:
+                onSaveItemPressed();
+                return true;
+            case R.id.action_cancel:
+                onCancelItemPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void onEditItemPressed() {
+        toggleEditOn();
+        toggleFocusOn();
+        mEdit.setVisible(false);
+        mSave.setVisible(true);
+        mCancel.setVisible(true);
+    }
+
+    private void onSaveItemPressed() {
+        String currentName, currentLocation, currentDate, currentType, currentDescription, currentDeadline, currentSize;
+
+        currentName = mName.getText().toString();
+        currentLocation = mLocation.getText().toString();
+        currentDate = mDate.getText().toString();
+        currentType = mType.getText().toString();
+        currentDescription = mDescription.getText().toString();
+        currentDeadline = mDeadline.getText().toString();
+        currentSize = mSize.getText().toString();
+
+        if (validateForm()) {
+            if (!currentName.equals(mCurrentEvent.getName())) {
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("name").setValue(currentName);
+                mCurrentEvent.setName(currentName);
+            }
+
+            if (!currentLocation.equals(mCurrentEvent.getLocation())) {
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("location").setValue(currentLocation);
+                mCurrentEvent.setLocation(currentLocation);
+            }
+
+            if (!currentDate.equals(mCurrentEvent.getDate())) {
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("date").setValue(currentDate);
+                mCurrentEvent.setDate(currentDate);
+            }
+
+            if (!currentType.equals(mCurrentEvent.getType())) {
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("type").setValue(currentType);
+                mCurrentEvent.setType(currentType);
+            }
+
+            if (!currentDescription.equals(mCurrentEvent.getDescription())) {
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("description").setValue(currentDescription);
+                mCurrentEvent.setDescription(currentDescription);
+            }
+
+            if (!currentDeadline.equals(mCurrentEvent.getDeadline())) {
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("deadline").setValue(currentDescription);
+                mCurrentEvent.setDeadline(currentDeadline);
+            }
+
+            if (!currentSize.equals(mCurrentEvent.getSize())) {
+                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("size").setValue(Integer.parseInt(currentSize));
+                mCurrentEvent.setSize(Integer.parseInt(currentSize));
+            }
+
+            Toast.makeText(getActivity(), "Event updated!", Toast.LENGTH_LONG).show();
+
+            hideKeyboardFrom(getActivity(), getView());
+            mEdit.setVisible(true);
+            mSave.setVisible(false);
+            mCancel.setVisible(false);
+            toggleEditOff();
+            toggleFocusOff();
+        }
+    }
+
+    private void onCancelItemPressed() {
+        mEdit.setVisible(true);
+        mSave.setVisible(false);
+        mCancel.setVisible(false);
+
+        mName.setText(mCurrentEvent.getName());
+        mLocation.setText(mCurrentEvent.getLocation());
+        mDate.setText(mCurrentEvent.getDate());
+        mType.setText(mCurrentEvent.getType());
+        mDescription.setText(mCurrentEvent.getDescription());
+        mDeadline.setText(mCurrentEvent.getDeadline());
+        mSize.setText(mCurrentEvent.getSize() + "");
+
+        mName.setError(null);
+        mLocation.setError(null);
+        mDate.setError(null);
+        mType.setError(null);
+        mDescription.setError(null);
+        mDeadline.setError(null);
+        mSize.setError(null);
+
+        toggleEditOff();
+        toggleFocusOff();
+    }
+
+    private void toggleEditOn() {
 
         mName.setKeyListener((KeyListener) mName.getTag());
         mLocation.setKeyListener((KeyListener) mLocation.getTag());
@@ -170,7 +203,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mSize.setKeyListener((KeyListener) mSize.getTag());
     }
 
-    public void toggleEditOff() {
+    private void toggleEditOff() {
 
         mName.setKeyListener(null);
         mLocation.setKeyListener(null);
@@ -181,7 +214,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mSize.setKeyListener(null);
     }
 
-    public void toggleFocusOn() {
+    private void toggleFocusOn() {
 
         mName.setFocusableInTouchMode(true);
         mName.setFocusable(true);
@@ -199,7 +232,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mSize.setFocusable(true);
     }
 
-    public void toggleFocusOff() {
+    private void toggleFocusOff() {
 
         mName.setFocusableInTouchMode(false);
         mName.setFocusable(false);
@@ -217,7 +250,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mSize.setFocusable(false);
     }
 
-    public boolean validateForm() {
+    private boolean validateForm() {
 
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mDate) &&
@@ -236,5 +269,10 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             mEditText.setError(null);
         }
         return true;
+    }
+
+    private void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

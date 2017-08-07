@@ -34,4 +34,8 @@
     <string name="title_activity_volunteer_single_event">VolunteerSingleEventActivity</string>
     <string name="app_label">VolunteerApp</string>
     <string name="search_hint">Search events</string>
+    <string name="notifications">NOTIFICATIONS</string>
+    <string name="change_password">Change Password</string>
+    <string name="about">About</string>
+    <string name="delete_account">Delete Account</string>
 </resources>
