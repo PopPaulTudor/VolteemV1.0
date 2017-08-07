@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
@@ -37,8 +38,9 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     private Event mCurrentEvent = new Event();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private EditText mName, mLocation, mStartDate, mType, mDescription, mDeadline, mSize, mFinishDate;
-    private long field = 0;
     private MenuItem mEdit, mSave, mCancel;
+    long currentStartDate, currentFinishDate, currentDeadline;
+
 
     @Nullable
     @Override
@@ -67,16 +69,14 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
         mSize.setText(mCurrentEvent.getSize() + "");
 
-        mName.setTag(mName.getKeyListener());
-        mLocation.setTag(mLocation.getKeyListener());
-        mStartDate.setTag(mStartDate.getKeyListener());
-        mType.setTag(mType.getKeyListener());
-        mDescription.setTag(mDescription.getKeyListener());
-        mDeadline.setTag(mDeadline.getKeyListener());
-        mSize.setTag(mSize.getKeyListener());
 
-        toggleEditOff();
-        toggleFocusOff();
+
+        mStartDate.setOnClickListener(setonClickListenerCalendar(mStartDate));
+        mFinishDate.setOnClickListener(setonClickListenerCalendar(mFinishDate));
+        mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
+
+
+        toggleEdit(false);
 
         setHasOptionsMenu(true);
         return view;
@@ -110,16 +110,15 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     }
 
     private void onEditItemPressed() {
-        toggleFocusOn();
-        toggleEditOn();
+        toggleEdit(true);
         mEdit.setVisible(false);
         mSave.setVisible(true);
         mCancel.setVisible(true);
     }
 
+
     private void onSaveItemPressed() {
         String currentName, currentLocation, currentType, currentDescription, currentSize;
-        long currentStartDate, currentFinishDate, currentDeadline;
 
         currentName = mName.getText().toString();
         currentLocation = mLocation.getText().toString();
@@ -127,12 +126,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         currentDescription = mDescription.getText().toString();
         currentSize = mSize.getText().toString();
 
-        mStartDate.setOnClickListener(setonClickListenerCalendar());
-        currentStartDate = field;
-        mFinishDate.setOnClickListener(setonClickListenerCalendar());
-        currentFinishDate = field;
-        mDeadline.setOnClickListener(setonClickListenerCalendar());
-        currentDeadline = field;
+
 
         if (validateForm()) {
             if (!currentName.equals(mCurrentEvent.getName())) {
@@ -179,8 +173,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             mEdit.setVisible(true);
             mSave.setVisible(false);
             mCancel.setVisible(false);
-            toggleEditOff();
-            toggleFocusOff();
+            toggleEdit(false);
             hideKeyboardFrom(getActivity(),getView());
         }
     }
@@ -205,75 +198,28 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mSize.setError(null);
         mFinishDate.setError(null);
 
-        toggleEditOff();
-        toggleFocusOff();
+        toggleEdit(false);
         mEdit.setVisible(true);
         mCancel.setVisible(false);
         mSave.setVisible(false);
         hideKeyboardFrom(getActivity(),getView());
     }
 
-    public void toggleEditOn() {
 
-        mName.setKeyListener((KeyListener) mName.getTag());
-        mLocation.setKeyListener((KeyListener) mLocation.getTag());
-        mStartDate.setKeyListener((KeyListener) mStartDate.getTag());
-        mFinishDate.setKeyListener((KeyListener) mFinishDate.getTag());
-        mType.setKeyListener((KeyListener) mType.getTag());
-        mDescription.setKeyListener((KeyListener) mDescription.getTag());
-        mDeadline.setKeyListener((KeyListener) mDeadline.getTag());
-        mSize.setKeyListener((KeyListener) mSize.getTag());
+    public void toggleEdit(boolean bool) {
+
+        mName.setEnabled(bool);
+        mLocation.setEnabled(bool);
+        mType.setEnabled(bool);
+        mDescription.setEnabled(bool);
+        mSize.setEnabled(bool);
+        mStartDate.setEnabled(bool);
+        mFinishDate.setEnabled(bool);
+        mDeadline.setEnabled(bool);
+
     }
 
-    public void toggleEditOff() {
 
-        mName.setKeyListener(null);
-        mLocation.setKeyListener(null);
-        mStartDate.setKeyListener(null);
-        mFinishDate.setKeyListener(null);
-        mType.setKeyListener(null);
-        mDescription.setKeyListener(null);
-        mDeadline.setKeyListener(null);
-        mSize.setKeyListener(null);
-    }
-
-    public void toggleFocusOn() {
-
-        mName.setFocusableInTouchMode(true);
-        mName.setFocusable(true);
-        mLocation.setFocusableInTouchMode(true);
-        mLocation.setFocusable(true);
-        mStartDate.setFocusableInTouchMode(true);
-        mStartDate.setFocusable(true);
-        mFinishDate.setFocusableInTouchMode(true);
-        mFinishDate.setFocusable(true);
-        mType.setFocusableInTouchMode(true);
-        mType.setFocusable(true);
-        mDescription.setFocusableInTouchMode(true);
-        mDescription.setFocusable(true);
-        mDeadline.setFocusableInTouchMode(true);
-        mDeadline.setFocusable(true);
-        mSize.setFocusableInTouchMode(true);
-        mSize.setFocusable(true);
-    }
-
-    public void toggleFocusOff() {
-
-        mName.setFocusableInTouchMode(false);
-        mName.setFocusable(false);
-        mLocation.setFocusableInTouchMode(false);
-        mLocation.setFocusable(false);
-        mStartDate.setFocusableInTouchMode(false);
-        mStartDate.setFocusable(false);
-        mType.setFocusableInTouchMode(false);
-        mType.setFocusable(false);
-        mDescription.setFocusableInTouchMode(false);
-        mDescription.setFocusable(false);
-        mDeadline.setFocusableInTouchMode(false);
-        mDeadline.setFocusable(false);
-        mSize.setFocusableInTouchMode(false);
-        mSize.setFocusable(false);
-    }
 
     public boolean validateForm() {
 
@@ -301,21 +247,27 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    View.OnClickListener setonClickListenerCalendar() {
-        final Calendar myCalendar = Calendar.getInstance();
+    View.OnClickListener setonClickListenerCalendar(final TextView textView) {
         return new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-
+                final Calendar myCalendar = Calendar.getInstance();
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
+
                         month++;
-                        mStartDate.setText(dayOfMonth + "/" + month + "/" + year);
+                        textView.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;
                         myCalendar.set(year, month, dayOfMonth);
-                        field = myCalendar.getTimeInMillis();
+                        if (textView.equals(mStartDate)) currentStartDate = myCalendar.getTimeInMillis();
+                        else if (textView.equals(mFinishDate))
+                            currentFinishDate = myCalendar.getTimeInMillis();
+                        else if (textView.equals(mDeadline))
+                            currentDeadline = myCalendar.getTimeInMillis();
+
 
                     }
                 }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
@@ -323,4 +275,5 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             }
         };
     }
+
 }
