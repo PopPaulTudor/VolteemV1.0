@@ -27,66 +27,76 @@
         android:id="@+id/event_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="100dp" />
+        android:layout_marginTop="100dp"
+        android:text="TextView" />
 
     <TextView
         android:id="@+id/event_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="120dp" />
+        android:layout_marginTop="120dp"
+        android:text="TextView" />
 
     <TextView
-        android:id="@+id/event_date"
+        android:id="@+id/event_start_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="140dp" />
+        android:layout_marginTop="140dp"
+        android:text="TextView" />
 
     <TextView
         android:id="@+id/event_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="160dp" />
+        android:layout_marginTop="160dp"
+        android:text="TextView" />
 
     <TextView
         android:id="@+id/event_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="180dp" />
+        android:layout_marginTop="180dp"
+        android:text="TextView" />
 
     <TextView
         android:id="@+id/event_deadline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="200dp" />
+        android:layout_marginTop="200dp"
+        android:text="TextView" />
 
     <TextView
         android:id="@+id/event_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:layout_marginStart="77dp"
-        android:layout_marginTop="220dp" />
+        android:layout_marginTop="220dp"
+        android:text="TextView" />
+
 
     <TextView
         android:id="@+id/event_status"
-        android:text="Status: Pending"
-        android:layout_marginStart="77dp"
-        android:layout_marginTop="260dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:layout_marginStart="77dp"
+        android:layout_marginTop="260dp"
+        android:text="Status: Pending"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/event_finish_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Finish date"
+        android:layout_marginTop="140dp"
+        android:layout_marginLeft="200dp"
+        />
 
     <Button
         android:id="@+id/event_signup"
@@ -96,17 +106,17 @@
         android:layout_marginTop="250dp"
         android:layout_weight="1"
         android:text="SIGN UP FOR EVENT"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/event_leave"
         android:layout_width="155dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_marginStart="77dp"
         android:layout_marginTop="280dp"
+        android:layout_weight="1"
         android:text="LEAVE EVENT"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 
 </android.support.design.widget.CoordinatorLayout>

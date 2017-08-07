@@ -24,14 +24,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class VolunteerSingleEventActivity extends AppCompatActivity {
 
-    private TextView mEventName, mEventLocation, mEventDate, mEventType, mEventDescription, mEventDeadline, mEventSize, mStatus;
+    private TextView mEventName, mEventLocation, mEventType, mEventDescription, mEventDeadline, mEventSize, mStatus,mEventStartDate,mEventFinishDate;
     private Event currentEvent;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -51,7 +53,8 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
         mEventName = (TextView) findViewById(R.id.event_name);
         mEventLocation = (TextView) findViewById(R.id.event_location);
-        mEventDate = (TextView) findViewById(R.id.event_date);
+        mEventStartDate = (TextView) findViewById(R.id.event_start_date);
+        mEventFinishDate = (TextView) findViewById(R.id.event_finish_date);
         mEventType = (TextView) findViewById(R.id.event_type);
         mEventDescription = (TextView) findViewById(R.id.event_description);
         mEventDeadline = (TextView) findViewById(R.id.event_deadline);
@@ -65,10 +68,11 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
         mEventName.setText("Name: " + currentEvent.getName());
         mEventLocation.setText("Location: " + currentEvent.getLocation());
-        mEventDate.setText("Date: " + currentEvent.getDate());
+        mEventStartDate.setText("Event Start Date"+ CalendarUtil.getStringDateFromMM(currentEvent.getStartDate()));
+        mEventFinishDate.setText("Event Finish Date"+ CalendarUtil.getStringDateFromMM(currentEvent.getFinishDate()));
         mEventType.setText("Type: " + currentEvent.getType());
         mEventDescription.setText("Description: " + currentEvent.getDescription());
-        mEventDeadline.setText("Deadline: " + currentEvent.getDeadline());
+        mEventDeadline.setText("Deadline: " + CalendarUtil.getStringDateFromMM(currentEvent.getDeadline()));
         mEventSize.setText("Volunteers needed: " + currentEvent.getSize()+"");
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);

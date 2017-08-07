@@ -12,7 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.OrganiserSingleEventActivity;
@@ -48,7 +50,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
         holder.cardName.setText(EventsList.get(position).getName());
         holder.cardLocation.setText(EventsList.get(position).getLocation());
-        holder.cardDate.setText(EventsList.get(position).getDate());
+        holder.cardDate.setText(CalendarUtil.getStringDateFromMM(EventsList.get(position).getDeadline()));
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +90,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
             cardDate= (TextView) v.findViewById(R.id.DateCardElement);
             cardLocation= (TextView) v.findViewById(R.id.LocationCardElement);
             cardView= (CardView) v.findViewById(R.id.CardElement);
+
         }
     }
 }

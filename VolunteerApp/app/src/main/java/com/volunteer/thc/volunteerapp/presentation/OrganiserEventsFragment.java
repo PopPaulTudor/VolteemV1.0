@@ -7,23 +7,19 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +28,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
 import com.volunteer.thc.volunteerapp.model.Event;
-import com.volunteer.thc.volunteerapp.model.Organiser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,64 +70,64 @@ public class OrganiserEventsFragment extends Fragment {
     private void loadEvents() {
         mProgressDialog = ProgressDialog.show(getActivity(), "Getting events...", "", true);
 
-        if(isNetworkAvailable()) {
+        if (isNetworkAvailable()) {
 
             mDatabase.child("events").orderByChild("created_by").equalTo(user.getUid())
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    for (DataSnapshot event : dataSnapshot.getChildren()) {
+                            for (DataSnapshot event : dataSnapshot.getChildren()) {
 
-                        Event currentEvent = event.getValue(Event.class);
-                        ArrayList<String> reg_users = new ArrayList<>();
+                                Event currentEvent = event.getValue(Event.class);
+                                ArrayList<String> reg_users = new ArrayList<>();
 
-                        for (DataSnapshot registered_users : event.child("registered_users").getChildren()) {
-                            reg_users.add(registered_users.child("user").getValue().toString());
-                        }
-                        currentEvent.setRegistered_volunteers(reg_users);
-                        reg_users = new ArrayList<>();
-                        for (DataSnapshot accepted_users : event.child("accepted_users").getChildren()) {
-                            reg_users.add(accepted_users.child("user").getValue().toString());
-                        }
-                        currentEvent.setAccepted_volunteers(reg_users);
-                        mEventsList.add(currentEvent);
-                    }
-
-                    mProgressDialog.dismiss();
-
-                    if(mEventsList.isEmpty()) {
-
-                        Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
-                        snackbar.setAction("Add", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                openCreateEventFragment();
+                                for (DataSnapshot registered_users : event.child("registered_users").getChildren()) {
+                                    reg_users.add(registered_users.child("user").getValue().toString());
+                                }
+                                currentEvent.setRegistered_volunteers(reg_users);
+                                reg_users = new ArrayList<>();
+                                for (DataSnapshot accepted_users : event.child("accepted_users").getChildren()) {
+                                    reg_users.add(accepted_users.child("user").getValue().toString());
+                                }
+                                currentEvent.setAccepted_volunteers(reg_users);
+                                mEventsList.add(currentEvent);
                             }
-                        });
-                        snackbar.show();
 
-                    } else {
+                            mProgressDialog.dismiss();
 
-                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
-                        recyclerView.setAdapter(adapter);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                        recyclerView.setLayoutManager(linearLayoutManager);
+                            if (mEventsList.isEmpty()) {
 
-                        Activity activity = getActivity();
-                        if(activity != null) {
-                            SharedPreferences prefs = activity.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                            prefs.edit().putInt("lastID", mEventsList.size()).apply();
+                                Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
+                                snackbar.setAction("Add", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        openCreateEventFragment();
+                                    }
+                                });
+                                snackbar.show();
+
+                            } else {
+
+                                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
+                                recyclerView.setAdapter(adapter);
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                recyclerView.setLayoutManager(linearLayoutManager);
+
+                                Activity activity = getActivity();
+                                if (activity != null) {
+                                    SharedPreferences prefs = activity.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+                                    prefs.edit().putInt("lastID", mEventsList.size()).apply();
+                                }
+                            }
                         }
-                    }
-                }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                    Log.e("Read", "error");
-                }
-            });
+                            Log.e("Read", "error");
+                        }
+                    });
 
         } else {
 
@@ -141,7 +136,7 @@ public class OrganiserEventsFragment extends Fragment {
         }
     }
 
-    public void openCreateEventFragment(){
+    public void openCreateEventFragment() {
 
         FragmentTransaction mFragmentTransaction = getFragmentManager().beginTransaction();
         mFragmentTransaction.replace(R.id.main_container, new CreateEventFragment());
@@ -149,7 +144,7 @@ public class OrganiserEventsFragment extends Fragment {
         mFragmentTransaction.commit();
     }
 
-    private boolean isNetworkAvailable(){
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
