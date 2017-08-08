@@ -2,6 +2,7 @@ package com.volunteer.thc.volunteerapp.presentation;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -9,14 +10,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,17 +37,12 @@ import java.util.Calendar;
 
 public class CreateEventFragment extends Fragment {
 
-    private static final int RESULT_LOAD_IMAGE = 1;
-    private static final int RESULT_OK = 1;
+    private static final int GALLERY_INTENT = 1;
     private EditText mName, mLocation, mType, mDescription, mDeadline, mSize, mStartDate, mFinishDate;
     private ImageView mImage;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private StorageReference mStorageRef;
-    private long startDate=-1, finishDate, deadline;
-    final Calendar myCalendar = Calendar.getInstance();
-
-
+    private long startDate = -1, finishDate, deadline;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,7 +50,6 @@ public class CreateEventFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_createevent, container, false);
 
-        mStorageRef = FirebaseStorage.getInstance().getReference();
         mName = (EditText) view.findViewById(R.id.event_name);
         mLocation = (EditText) view.findViewById(R.id.event_location);
         mStartDate = (EditText) view.findViewById(R.id.event_date_start_create);
@@ -70,36 +63,18 @@ public class CreateEventFragment extends Fragment {
         Button mCancel = (Button) view.findViewById(R.id.cancel_event);
         Button chooseImage = (Button) view.findViewById(R.id.event_add_image);
 
-
-        /*
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-
-            if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-                Cursor cursor = getActivity().getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String picturePath = cursor.getString(columnIndex);
-                cursor.close();
-
-                mImage= (ImageView) getView().findViewById(R.id.event_image);
-                mImage.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-
+        chooseImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, GALLERY_INTENT);
             }
-
-        }*/
-
+        });
 
         mStartDate.setOnClickListener(setonClickListenerCalendar(mStartDate));
         mFinishDate.setOnClickListener(setonClickListenerCalendar(mFinishDate));
         mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
-
 
         mSaveEvent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,12 +89,12 @@ public class CreateEventFragment extends Fragment {
                     int size = Integer.parseInt(mSize.getText().toString());
                     String eventID = mDatabase.child("events").push().getKey();
 
-
                     Event new_event = new Event(user.getUid(), name, location, startDate, finishDate, type, eventID, description, deadline, size);
                     mDatabase.child("events").child(eventID).setValue(new_event);
                     SharedPreferences prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
                     mDatabase.child("users").child("organisers").child(user.getUid()).child("events")
                             .child(prefs.getInt("lastID", 0) + "").setValue(eventID);
+                    mDatabase.child("events").child(eventID).child("validity").setValue("valid");
 
                     ///TODO: increase number of organiser's events
 
@@ -150,8 +125,9 @@ public class CreateEventFragment extends Fragment {
     public boolean validateForm() {
 
         boolean valid;
-        valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mType) &&
-                editTextIsValid(mDescription) && editTextIsValid(mDeadline) && editTextIsValid(mSize));
+        valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mStartDate) &&
+                editTextIsValid(mFinishDate) && editTextIsValid(mType) && editTextIsValid(mDescription) &&
+                editTextIsValid(mDeadline) && editTextIsValid(mSize));
         return valid;
     }
 
@@ -168,8 +144,7 @@ public class CreateEventFragment extends Fragment {
         return true;
     }
 
-
-    View.OnClickListener setonClickListenerCalendar(final TextView textView) {
+    View.OnClickListener setonClickListenerCalendar(final EditText editText) {
         return new View.OnClickListener() {
 
             @Override
@@ -179,17 +154,15 @@ public class CreateEventFragment extends Fragment {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
-
                         month++;
-                        textView.setText(dayOfMonth + "/" + month + "/" + year);
+                        editText.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;
                         myCalendar.set(year, month, dayOfMonth);
-                        if (textView.equals(mStartDate)) startDate = myCalendar.getTimeInMillis();
-                        else if (textView.equals(mFinishDate))
+                        if (editText.equals(mStartDate)) startDate = myCalendar.getTimeInMillis();
+                        else if (editText.equals(mFinishDate))
                             finishDate = myCalendar.getTimeInMillis();
-                        else if (textView.equals(mDeadline))
+                        else if (editText.equals(mDeadline))
                             deadline = myCalendar.getTimeInMillis();
-
 
                     }
                 }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
@@ -197,5 +170,4 @@ public class CreateEventFragment extends Fragment {
             }
         };
     }
-
 }

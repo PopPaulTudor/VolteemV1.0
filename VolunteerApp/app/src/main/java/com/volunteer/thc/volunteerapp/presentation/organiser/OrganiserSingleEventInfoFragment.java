@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.text.method.KeyListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,10 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
@@ -40,7 +37,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     private EditText mName, mLocation, mStartDate, mType, mDescription, mDeadline, mSize, mFinishDate;
     private MenuItem mEdit, mSave, mCancel;
     private long currentStartDate, currentFinishDate, currentDeadline;
-
 
     @Nullable
     @Override
@@ -116,7 +112,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mCancel.setVisible(true);
     }
 
-
     private void onSaveItemPressed() {
         String currentName, currentLocation, currentType, currentDescription, currentSize;
 
@@ -125,7 +120,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         currentType = mType.getText().toString();
         currentDescription = mDescription.getText().toString();
         currentSize = mSize.getText().toString();
-
 
         if (validateForm()) {
             if (!currentName.equals(mCurrentEvent.getName())) {
@@ -173,7 +167,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             mSave.setVisible(false);
             mCancel.setVisible(false);
             toggleEdit(false);
-            hideKeyboardFrom(getActivity(),getView());
+            hideKeyboardFrom(getActivity(), getView());
         }
     }
 
@@ -201,9 +195,8 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mEdit.setVisible(true);
         mCancel.setVisible(false);
         mSave.setVisible(false);
-        hideKeyboardFrom(getActivity(),getView());
+        hideKeyboardFrom(getActivity(), getView());
     }
-
 
     public void toggleEdit(boolean bool) {
 
@@ -217,8 +210,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mDeadline.setEnabled(bool);
 
     }
-
-
 
     public boolean validateForm() {
 
@@ -246,7 +237,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    View.OnClickListener setonClickListenerCalendar(final TextView textView) {
+    View.OnClickListener setonClickListenerCalendar(final EditText editText) {
         return new View.OnClickListener() {
 
             @Override
@@ -256,17 +247,16 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
-
                         month++;
-                        textView.setText(dayOfMonth + "/" + month + "/" + year);
+                        editText.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;
                         myCalendar.set(year, month, dayOfMonth);
-                        if (textView.equals(mStartDate)) currentStartDate = myCalendar.getTimeInMillis();
-                        else if (textView.equals(mFinishDate))
+                        if (editText.equals(mStartDate))
+                            currentStartDate = myCalendar.getTimeInMillis();
+                        else if (editText.equals(mFinishDate))
                             currentFinishDate = myCalendar.getTimeInMillis();
-                        else if (textView.equals(mDeadline))
+                        else if (editText.equals(mDeadline))
                             currentDeadline = myCalendar.getTimeInMillis();
-
 
                     }
                 }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
@@ -274,5 +264,4 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             }
         };
     }
-
 }
