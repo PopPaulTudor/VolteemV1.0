@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,8 +14,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,6 +42,7 @@ import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.CreateEventFragment;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -53,13 +57,13 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     private RecyclerView recyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView searchView;
-    private View view;
+    private Calendar date = Calendar.getInstance();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.fragment_organiserevents, container, false);
+        View view = inflater.inflate(R.layout.fragment_organiserevents, container, false);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewOrgEvents);
         recyclerView.setHasFixedSize(true);
@@ -114,7 +118,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
             @Override
             public void onViewDetachedFromWindow(View v) {
                 searchView.clearFocus();
-                hideKeyboardFrom(view);
+                hideKeyboardFrom(getView());
             }
 
             @Override
@@ -149,20 +153,46 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
                             for (DataSnapshot event : dataSnapshot.getChildren()) {
+                                if(TextUtils.equals(event.child("validity").getValue().toString(), "valid"))
+                                {
+                                    Event currentEvent = event.getValue(Event.class);
+                                    ArrayList<String> reg_users = new ArrayList<>();
 
-                                Event currentEvent = event.getValue(Event.class);
-                                ArrayList<String> reg_users = new ArrayList<>();
+                                    for (DataSnapshot registered_users : event.child("registered_users").getChildren()) {
+                                        reg_users.add(registered_users.child("user").getValue().toString());
+                                    }
+                                    currentEvent.setRegistered_volunteers(reg_users);
+                                    reg_users = new ArrayList<>();
+                                    for (DataSnapshot accepted_users : event.child("accepted_users").getChildren()) {
+                                        reg_users.add(accepted_users.child("user").getValue().toString());
+                                    }
+                                    currentEvent.setAccepted_volunteers(reg_users);
+                                    if (currentEvent.getFinishDate() < date.getTimeInMillis()) {
+                                        mDatabase.child("events").child(currentEvent.getEventID()).child("validity").setValue("expired");
+                                        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                                        alert.setTitle("Event finished");
+                                        alert.setCancelable(false);
+                                        alert.setMessage("One of your events, " + currentEvent.getName() + ", has finished. " +
+                                                "If you have any feedback to give about any of the volunteers, please tap on the \"" +
+                                                "Give feedback\" button.");
+                                        alert.setPositiveButton("DONE", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
 
-                                for (DataSnapshot registered_users : event.child("registered_users").getChildren()) {
-                                    reg_users.add(registered_users.child("user").getValue().toString());
+                                            }
+                                        });
+                                        alert.setNegativeButton("GIVE FEEDBACK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        });
+                                        alert.show();
+
+                                    } else {
+                                        mEventsList.add(currentEvent);
+                                    }
                                 }
-                                currentEvent.setRegistered_volunteers(reg_users);
-                                reg_users = new ArrayList<>();
-                                for (DataSnapshot accepted_users : event.child("accepted_users").getChildren()) {
-                                    reg_users.add(accepted_users.child("user").getValue().toString());
-                                }
-                                currentEvent.setAccepted_volunteers(reg_users);
-                                mEventsList.add(currentEvent);
                             }
 
                             mSwipeRefreshLayout.setRefreshing(false);

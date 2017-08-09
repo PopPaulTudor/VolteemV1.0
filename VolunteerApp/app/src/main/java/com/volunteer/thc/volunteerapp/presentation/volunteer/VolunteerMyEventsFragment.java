@@ -2,13 +2,18 @@ package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,6 +27,7 @@ import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
 import com.volunteer.thc.volunteerapp.model.Event;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -37,13 +43,19 @@ public class VolunteerMyEventsFragment extends Fragment {
     private RecyclerView recyclerView;
     private ValueEventListener mRetrieveEvents;
     private ArrayList<String> mUserEvents = new ArrayList<>();
+    private Calendar date = Calendar.getInstance();
+    private RatingBar ratingBar;
+    private View alertView;
+    private TextView noStarsText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_volunteer_my_events, container, false);
-
+        alertView = inflater.inflate(R.layout.volunteer_alert_dialog, null);
+        ratingBar = (RatingBar) alertView.findViewById(R.id.ratingBar);
+        noStarsText = (TextView) alertView.findViewById(R.id.noStarsText);
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
         mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
@@ -82,7 +94,37 @@ public class VolunteerMyEventsFragment extends Fragment {
                 for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
                     Event currentEvent = eventSnapshot.getValue(Event.class);
                     if (isUserRegisteredForEvent(currentEvent.getEventID())) {
-                        mEventsList.add(currentEvent);
+                        if (currentEvent.getFinishDate() < date.getTimeInMillis()) {
+
+                            final AlertDialog alert = new AlertDialog.Builder(getActivity())
+                                    .setView(alertView)
+                                    .setTitle("Event finished")
+                                    .setMessage("One of the events you volunteered for, " + currentEvent.getName() + ", has finished. " +
+                                            "Please give the event organiser a rating. ")
+                                    .setCancelable(false)
+                                    .setPositiveButton("DONE", null)
+                                    .create();
+
+                            alert.show();
+                            alert.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    int starsCount = (int) ratingBar.getRating();
+                                    Log.w("rating", starsCount + "");
+                                    if (starsCount > 0) {
+                                        alert.dismiss();
+                                        Toast.makeText(getActivity(), "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
+                                        //TODO: update organiser's rating
+                                        //Problem: what if 2 or more users want to change the rating at the same time?
+                                    } else {
+                                        noStarsText.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            });
+
+                        } else {
+                            mEventsList.add(currentEvent);
+                        }
                     }
                 }
                 mProgressBar.setVisibility(View.GONE);

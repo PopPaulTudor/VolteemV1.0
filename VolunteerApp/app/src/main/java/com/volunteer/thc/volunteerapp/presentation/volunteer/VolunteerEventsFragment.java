@@ -33,6 +33,7 @@ import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
 import com.volunteer.thc.volunteerapp.model.Event;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -48,6 +49,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     private ValueEventListener mRetrieveEvents;
     private ArrayList<String> mUserEvents = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Calendar date = Calendar.getInstance();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -111,7 +113,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                     for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
 
                         Event currentEvent = eventSnapshot.getValue(Event.class);
-                        if (!isUserRegisteredForEvent(currentEvent.getEventID())) {
+                        if (!isUserRegisteredForEvent(currentEvent.getEventID()) && (currentEvent.getDeadline() > date.getTimeInMillis())) {
                             mEventsList.add(currentEvent);
                         }
                     }
