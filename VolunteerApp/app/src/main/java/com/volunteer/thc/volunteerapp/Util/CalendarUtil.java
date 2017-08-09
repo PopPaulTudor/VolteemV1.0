@@ -15,9 +15,8 @@ public final class CalendarUtil {
         Calendar calendar= Calendar.getInstance();
         calendar.setTimeInMillis(date);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/M/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         dateFormat.setTimeZone(calendar.getTimeZone());
         return dateFormat.format(calendar.getTime());
     }
-
 }
