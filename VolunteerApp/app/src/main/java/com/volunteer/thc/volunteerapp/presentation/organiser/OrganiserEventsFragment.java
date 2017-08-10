@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,6 +59,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView searchView;
     private Calendar date = Calendar.getInstance();
+    private TextView noEvents;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,7 +69,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewOrgEvents);
         recyclerView.setHasFixedSize(true);
-
+        noEvents = (TextView) view.findViewById(R.id.no_events_text);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.colorPrimary);
 
@@ -199,6 +201,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
                             if (mEventsList.isEmpty()) {
 
+                                noEvents.setVisibility(View.VISIBLE);
                                 Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
                                 snackbar.setAction("Add", new View.OnClickListener() {
                                     @Override

@@ -39,4 +39,5 @@
     <string name="about">About</string>
     <string name="delete_account">Delete Account</string>
     <string name="no_stars">Please give us your feedback.</string>
+    <string name="no_events">No events to show.</string>
 </resources>

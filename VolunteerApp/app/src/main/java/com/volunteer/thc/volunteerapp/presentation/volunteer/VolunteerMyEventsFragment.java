@@ -46,7 +46,7 @@ public class VolunteerMyEventsFragment extends Fragment {
     private Calendar date = Calendar.getInstance();
     private RatingBar ratingBar;
     private View alertView;
-    private TextView noStarsText;
+    private TextView noStarsText, noEvents;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,7 +59,7 @@ public class VolunteerMyEventsFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
         mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
-
+        noEvents = (TextView) view.findViewById(R.id.no_events_text);
         return view;
     }
 
@@ -126,6 +126,9 @@ public class VolunteerMyEventsFragment extends Fragment {
                             mEventsList.add(currentEvent);
                         }
                     }
+                }
+                if(mEventsList.isEmpty()) {
+                    noEvents.setVisibility(View.VISIBLE);
                 }
                 mProgressBar.setVisibility(View.GONE);
                 OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());

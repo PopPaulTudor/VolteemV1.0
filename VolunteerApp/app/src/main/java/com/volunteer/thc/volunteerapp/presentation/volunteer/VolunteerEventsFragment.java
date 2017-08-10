@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,6 +51,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     private ArrayList<String> mUserEvents = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Calendar date = Calendar.getInstance();
+    private TextView noEvents;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,7 +61,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
-
+        noEvents = (TextView) view.findViewById(R.id.no_events_text);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.colorPrimary);
 
@@ -116,6 +118,9 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                         if (!isUserRegisteredForEvent(currentEvent.getEventID()) && (currentEvent.getDeadline() > date.getTimeInMillis())) {
                             mEventsList.add(currentEvent);
                         }
+                    }
+                    if(mEventsList.isEmpty()) {
+                        noEvents.setVisibility(View.VISIBLE);
                     }
                     mSwipeRefreshLayout.setRefreshing(false);
                     OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
