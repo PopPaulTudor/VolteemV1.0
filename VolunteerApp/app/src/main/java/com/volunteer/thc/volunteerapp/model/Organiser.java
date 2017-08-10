@@ -9,7 +9,9 @@ import java.util.Map;
  */
 public class Organiser {
 
-    private String email, company, eventsnumber, city, rating, experience, phone;
+    private String email, company, city, phone;
+    private int eventsnumber, experience;
+    private double rating;
     private ArrayList<String> events;
 
     public Organiser(){
@@ -19,28 +21,13 @@ public class Organiser {
     public Organiser(String email, String company, String city, String phone) {
         this.email = email;
         this.company = company;
-        this.eventsnumber = ""+0;
+        this.eventsnumber = 0;
         this.city = city;
-        this.rating = ""+0;
-        this.experience = ""+0;
+        this.rating = 0;
+        this.experience = 0;
         this.phone = phone;
         this.events = new ArrayList<>();
     }
-
-    public Map<String, Object> toMap() {
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("company", company);
-        result.put("city", city);
-        result.put("email", email);
-        result.put("experience", experience);
-        result.put("rating", rating);
-        result.put("eventsnumber", eventsnumber);
-        result.put("phone", phone);
-        result.put("events", events);
-
-        return result;
-    }
-
 
     public String getCompany() {
         return company;
@@ -50,11 +37,11 @@ public class Organiser {
         this.company = company;
     }
 
-    public String getEventsnumber() {
+    public int getEventsnumber() {
         return eventsnumber;
     }
 
-    public void setEventsnumber(String eventsnumber) {
+    public void setEventsnumber(int eventsnumber) {
         this.eventsnumber = eventsnumber;
     }
 
@@ -66,15 +53,15 @@ public class Organiser {
         this.city = city;
     }
 
-    public String getRating() {
+    public double getRating() {
         return rating;
     }
 
-    public void setRating(String rating) {
+    public void setRating(double rating) {
         this.rating = rating;
     }
 
-    public String getExperience() {
+    public int getExperience() {
         return experience;
     }
 

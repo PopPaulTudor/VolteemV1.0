@@ -47,6 +47,7 @@ public class VolunteerMyEventsFragment extends Fragment {
     private RatingBar ratingBar;
     private View alertView;
     private TextView noStarsText, noEvents;
+    private boolean anyEventsExpired = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,10 +93,28 @@ public class VolunteerMyEventsFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mEventsList = new ArrayList<>();
                 for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
-                    Event currentEvent = eventSnapshot.getValue(Event.class);
+                    final Event currentEvent = eventSnapshot.getValue(Event.class);
                     if (isUserRegisteredForEvent(currentEvent.getEventID())) {
                         if (currentEvent.getFinishDate() < date.getTimeInMillis()) {
 
+                            anyEventsExpired = true;
+                            mUserEvents.remove(currentEvent.getEventID());
+                            mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    int experience =  (int) dataSnapshot.child("experience").getValue();
+                                    int past_events_nr = (int) dataSnapshot.child("past_events").getChildrenCount();
+                                    mDatabase.child("users").child("volunteers").child(user.getUid()).child("past_events")
+                                            .child(past_events_nr+"").setValue(currentEvent.getEventID());
+                                    mDatabase.child("users").child("volunteers").child(user.getUid()).child("experience")
+                                            .setValue(experience + (currentEvent.getSize()*5));
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
                             final AlertDialog alert = new AlertDialog.Builder(getActivity())
                                     .setView(alertView)
                                     .setTitle("Event finished")
@@ -126,6 +145,9 @@ public class VolunteerMyEventsFragment extends Fragment {
                             mEventsList.add(currentEvent);
                         }
                     }
+                }
+                if(anyEventsExpired) {
+                    mDatabase.child("users").child("volunteers").child(user.getUid()).child("events").setValue(mUserEvents);
                 }
                 if(mEventsList.isEmpty()) {
                     noEvents.setVisibility(View.VISIBLE);

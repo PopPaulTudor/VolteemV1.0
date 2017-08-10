@@ -87,7 +87,7 @@ public class VolunteerProfileFragment extends Fragment {
                 mLastname.setText(volunteer1.getLastname());
                 mPhone.setText(volunteer1.getPhone());
                 mCity.setText(volunteer1.getCity());
-                mAge.setText(volunteer1.getAge());
+                mAge.setText(volunteer1.getAge()+"");
 
                 mProgressBar.setVisibility(View.GONE);
             }
@@ -147,11 +147,12 @@ public class VolunteerProfileFragment extends Fragment {
 
     private void onSaveItemPressed() {
 
-        String currentFirstName, currentLastName, currentAge, currentCity, currentPhone, fullName = null;
+        String currentFirstName, currentLastName, currentCity, currentPhone, fullName = null;
+        int currentAge;
         boolean changedName = false;
         currentFirstName = mFirstnameEdit.getText().toString();
         currentLastName = mLastname.getText().toString();
-        currentAge = mAge.getText().toString();
+        currentAge = Integer.parseInt(mAge.getText().toString());
         currentCity = mCity.getText().toString();
         currentPhone = mPhone.getText().toString();
 
@@ -171,7 +172,7 @@ public class VolunteerProfileFragment extends Fragment {
                 changedName = true;
             }
 
-            if (!currentAge.equals(volunteer1.getAge())) {
+            if (currentAge != volunteer1.getAge()) {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("age").setValue(currentAge);
                 volunteer1.setAge(currentAge);
             }

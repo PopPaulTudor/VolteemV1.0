@@ -11,13 +11,14 @@ import java.util.Map;
  */
 public class Volunteer {
 
-    private String firstname, lastname, email, city, phone, age, experience, gender;
+    private String firstname, lastname, email, city, phone, gender;
+    private int age, experience;
 
     public Volunteer(){ ///constructor is empty to be able to call dataSnapshot on this class
 
     }
 
-    public Volunteer(String firstname, String lastname, String email, String age, String city, String phone, String gender){
+    public Volunteer(String firstname, String lastname, String email, int age, String city, String phone, String gender){
 
         this.firstname = firstname;
         this.lastname = lastname;
@@ -25,22 +26,8 @@ public class Volunteer {
         this.age = age;
         this.city = city;
         this.phone = phone;
-        this.experience = ""+0;
+        this.experience = 0;
         this.gender = gender;
-    }
-
-    public Map<String, Object> toMap() {
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("age", age);
-        result.put("city", city);
-        result.put("email", email);
-        result.put("experience", experience);
-        result.put("firstname", firstname);
-        result.put("lastname", lastname);
-        result.put("phone", phone);
-        result.put("gender", gender);
-
-        return result;
     }
 
     public String getEmail() {
@@ -67,19 +54,19 @@ public class Volunteer {
         this.lastname = lastname;
     }
 
-    public String getExperience() {
+    public int getExperience() {
         return experience;
     }
 
-    public void setExperience(String experience) {
+    public void setExperience(int experience) {
         this.experience = experience;
     }
 
-    public String getAge() {
+    public int getAge() {
         return age;
     }
 
-    public void setAge(String age) {
+    public void setAge(int age) {
         this.age = age;
     }
 

@@ -146,7 +146,7 @@ public class VolunteerRegisterFragment extends Fragment {
                             String userID = user.getUid();
                             String user_firstname = mFirstname.getText().toString();
                             String user_lastname = mLastname.getText().toString();
-                            String user_age = mAge.getText().toString();
+                            int user_age = Integer.parseInt(mAge.getText().toString());
                             String user_city = mCity.getText().toString();
                             String user_phone = mPhone.getText().toString();
 

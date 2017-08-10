@@ -62,7 +62,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         }else{
             holder.phoneVolunteer.setText("Phone: " + listVolunteer.get(position).getPhone());
             holder.acceptUser.setVisibility(View.VISIBLE);
-            holder.expPhoneVolunteer.setText(listVolunteer.get(position).getExperience());
+            holder.expPhoneVolunteer.setText(listVolunteer.get(position).getExperience()+"");
         }
 
         final boolean isExpanded = position==mExpandedPosition;
