@@ -157,7 +157,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                             for (DataSnapshot event : dataSnapshot.getChildren()) {
                                 if(TextUtils.equals(event.child("validity").getValue().toString(), "valid"))
                                 {
-                                    Event currentEvent = event.getValue(Event.class);
+                                    final Event currentEvent = event.getValue(Event.class);
                                     ArrayList<String> reg_users = new ArrayList<>();
 
                                     for (DataSnapshot registered_users : event.child("registered_users").getChildren()) {
@@ -170,6 +170,19 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                     }
                                     currentEvent.setAccepted_volunteers(reg_users);
                                     if (currentEvent.getFinishDate() < date.getTimeInMillis()) {
+                                        mDatabase.child("users").child("organisers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                long experience = dataSnapshot.child("experience").getValue(Long.class);
+                                                mDatabase.child("users").child("organisers").child(user.getUid()).child("experience")
+                                                        .setValue(experience + (currentEvent.getSize() * 10));
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
                                         mDatabase.child("events").child(currentEvent.getEventID()).child("validity").setValue("expired");
                                         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
                                         alert.setTitle("Event finished");

@@ -1,11 +1,5 @@
 package com.volunteer.thc.volunteerapp.model;
 
-import com.google.firebase.database.Exclude;
-
-import java.util.HashMap;
-import java.util.Map;
-
-
 /**
  * Created by Cristi on 6/14/2017.
  */
@@ -14,11 +8,11 @@ public class Volunteer {
     private String firstname, lastname, email, city, phone, gender;
     private int age, experience;
 
-    public Volunteer(){ ///constructor is empty to be able to call dataSnapshot on this class
+    public Volunteer() { ///constructor is empty to be able to call dataSnapshot on this class
 
     }
 
-    public Volunteer(String firstname, String lastname, String email, int age, String city, String phone, String gender){
+    public Volunteer(String firstname, String lastname, String email, int age, String city, String phone, String gender) {
 
         this.firstname = firstname;
         this.lastname = lastname;

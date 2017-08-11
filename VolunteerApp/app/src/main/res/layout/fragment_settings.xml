@@ -9,67 +9,71 @@
         android:id="@+id/notification_button"
         android:layout_width="match_parent"
         android:layout_height="40sp"
-        android:text="@string/notifications"
-        android:background="@color/white"
-        android:textColor="@color/black"
-        android:padding="5sp"
-        android:gravity="center_vertical"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:padding="5sp"
+        android:text="@string/notifications"
+        android:textColor="@color/black" />
+
     <Button
         android:id="@+id/change_pass_button"
         android:layout_width="match_parent"
         android:layout_height="40sp"
-        android:text="@string/change_password"
-        android:gravity="center_vertical"
-        android:background="@color/white"
-        android:textAllCaps="true"
-        android:textColor="@color/black"
-        android:padding="5sp"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/notification_button"
-        android:layout_alignParentStart="true" />
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:padding="5sp"
+        android:text="@string/change_password"
+        android:textAllCaps="true"
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/about_button"
         android:layout_width="match_parent"
         android:layout_height="40sp"
-        android:text="@string/about"
-        android:background="@color/white"
-        android:textColor="@color/black"
-        android:padding="5sp"
-        android:gravity="center_vertical"
-        android:layout_below="@+id/change_pass_button"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="68dp" />
+        android:layout_below="@+id/change_pass_button"
+        android:layout_marginTop="68dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:padding="5sp"
+        android:text="@string/about"
+        android:textColor="@color/black" />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="40sp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/about_button"
         android:background="@color/white"
-        android:textColor="@color/black"
-        android:text="Facebook"
         android:gravity="center_vertical"
         android:padding="5sp"
-        android:layout_below="@+id/about_button"
-        android:layout_alignParentStart="true" />
+        android:text="Facebook"
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/button_delete_account"
         android:layout_width="match_parent"
         android:layout_height="40sp"
-        android:text="@string/delete_account"
-        android:background="@color/white"
-        android:textColor="@color/colorAccent"
-        android:layout_marginBottom="22dp"
         android:layout_above="@+id/text_settings"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="22dp"
+        android:background="@color/white"
+        android:text="@string/delete_account"
+        android:textColor="@color/colorAccent" />
+
     <TextView
         android:id="@+id/text_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="-- App Name --"
-        android:textSize="22sp"
-        android:textColor="@color/green1"
-        android:layout_marginBottom="25dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:text="-- App Name --"
+        android:textColor="@color/green1"
+        android:textSize="22sp" />
+
 </RelativeLayout>

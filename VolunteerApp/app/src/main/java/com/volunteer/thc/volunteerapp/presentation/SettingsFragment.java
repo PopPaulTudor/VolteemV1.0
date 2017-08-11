@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,7 +34,7 @@ import com.volunteer.thc.volunteerapp.R;
 public class SettingsFragment extends Fragment {
 
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private EditText mPassword;
+    private EditText mPassword, mOldPassword, mNewPassword;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
@@ -41,6 +42,57 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
+        view.findViewById(R.id.change_pass_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(getActivity());
+                View parentView = inflater.inflate(R.layout.change_password_bottom_sheet_design, null);
+                mBottomSheetDialog.setContentView(parentView);
+                BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
+                mBottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension
+                        (TypedValue.COMPLEX_UNIT_DIP, 250, getResources().getDisplayMetrics()));
+                mBottomSheetDialog.show();
+
+                mOldPassword = (EditText) parentView.findViewById(R.id.oldPassword);
+                mNewPassword = (EditText) parentView.findViewById(R.id.newPassword);
+
+                parentView.findViewById(R.id.change_password).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        String old_password = mOldPassword.getText().toString();
+                        final String new_password = mNewPassword.getText().toString();
+                        if (!TextUtils.isEmpty(old_password) && valid(new_password)) {
+                            Toast.makeText(getActivity(), "Changing password...", Toast.LENGTH_SHORT).show();
+                            AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), old_password);
+                            user.reauthenticate(credential)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                user.updatePassword(new_password).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        mBottomSheetDialog.dismiss();
+                                                        if(task.isSuccessful()) {
+                                                            Toast.makeText(getActivity(), "Password changed!", Toast.LENGTH_SHORT).show();
+                                                        } else {
+                                                            Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+                                                });
+                                            } else {
+                                                mBottomSheetDialog.dismiss();
+                                                Toast.makeText(getActivity(), "Authentication failed. Check if your password is correct and try again.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
+            }
+        });
 
         view.findViewById(R.id.button_delete_account).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,8 +143,13 @@ public class SettingsFragment extends Fragment {
                 });
             }
         });
-
         return view;
     }
 
+    private boolean valid(String password) {
+        if (password.length() < 6) {
+            return false;
+        }
+        return true;
+    }
 }
