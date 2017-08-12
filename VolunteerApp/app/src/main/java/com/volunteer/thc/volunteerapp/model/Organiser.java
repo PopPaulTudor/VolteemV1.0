@@ -11,7 +11,7 @@ public class Organiser {
 
     private String email, company, city, phone;
     private int eventsnumber, experience;
-    private double rating;
+    private OrganiserRating org_rating;
     private ArrayList<String> events;
 
     public Organiser(){
@@ -23,7 +23,7 @@ public class Organiser {
         this.company = company;
         this.eventsnumber = 0;
         this.city = city;
-        this.rating = 0;
+        this.org_rating = new OrganiserRating();
         this.experience = 0;
         this.phone = phone;
         this.events = new ArrayList<>();
@@ -53,12 +53,12 @@ public class Organiser {
         this.city = city;
     }
 
-    public double getRating() {
-        return rating;
+    public OrganiserRating getOrg_rating() {
+        return org_rating;
     }
 
-    public void setRating(double rating) {
-        this.rating = rating;
+    public void setOrg_rating(OrganiserRating org_rating) {
+        this.org_rating = org_rating;
     }
 
     public int getExperience() {

@@ -83,6 +83,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
         view.findViewById(R.id.add_event).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO: after testing is over: remember to only allow organisers which verified their email address to add events
                 openCreateEventFragment();
             }
         });
