@@ -5,7 +5,6 @@ import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -13,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -113,22 +113,30 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
         ComponentName cn = new ComponentName(getActivity(), OrganiserSearchableActivity.class);
 
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        final SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
         searchView.setIconifiedByDefault(false);
-        searchView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+        searchView.clearFocus();
 
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                searchView.clearFocus();
-                hideKeyboardFrom(getView());
-            }
+        MenuItem searchMenu = menu.findItem(R.id.app_bar_search);
+        MenuItemCompat.setOnActionExpandListener(searchMenu,
+                new MenuItemCompat.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        item.getActionView().clearFocus();
+                        return true;  // Return true to collapse action view
+                    }
 
-            @Override
-            public void onViewAttachedToWindow(View v) {
-
-            }
-        });
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        //get focus
+                        item.getActionView().requestFocus();
+                        //get input method
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+                        return true;  // Return true to expand action view
+                    }
+                });
     }
 
 
@@ -156,8 +164,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
                             for (DataSnapshot event : dataSnapshot.getChildren()) {
-                                if(TextUtils.equals(event.child("validity").getValue().toString(), "valid"))
-                                {
+                                if (TextUtils.equals(event.child("validity").getValue().toString(), "valid")) {
                                     final Event currentEvent = event.getValue(Event.class);
                                     ArrayList<String> reg_users = new ArrayList<>();
 
@@ -224,20 +231,12 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                     }
                                 });
                                 snackbar.show();
-
-                            } else {
-
-                                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
-                                recyclerView.setAdapter(adapter);
-                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                                recyclerView.setLayoutManager(linearLayoutManager);
-
-                                Activity activity = getActivity();
-                                if (activity != null) {
-                                    SharedPreferences prefs = activity.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                                    prefs.edit().putInt("lastID", mEventsList.size()).apply();
-                                }
                             }
+
+                            OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
+                            recyclerView.setAdapter(adapter);
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                            recyclerView.setLayoutManager(linearLayoutManager);
                         }
 
                         @Override
@@ -269,10 +268,5 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
-    }
-
-    private void hideKeyboardFrom(View view) {
-        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

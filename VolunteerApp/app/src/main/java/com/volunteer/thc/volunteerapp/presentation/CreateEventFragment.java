@@ -1,5 +1,6 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -20,8 +22,11 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
@@ -81,21 +86,34 @@ public class CreateEventFragment extends Fragment {
 
                 if (validateForm()) {
 
+                    hideKeyboardFrom(getActivity(), getView());
                     String name = mName.getText().toString();
                     String location = mLocation.getText().toString();
                     String type = mType.getText().toString();
                     String description = mDescription.getText().toString();
                     int size = Integer.parseInt(mSize.getText().toString());
-                    String eventID = mDatabase.child("events").push().getKey();
+                    final String eventID = mDatabase.child("events").push().getKey();
+
+                    mDatabase.child("users").child("organisers").child(user.getUid())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    int lastevent = (int) dataSnapshot.child("events").getChildrenCount();
+                                    int eventsNr = dataSnapshot.child("eventsnumber").getValue(Integer.class);
+                                    mDatabase.child("users").child("organisers").child(user.getUid()).child("events")
+                                            .child(lastevent+"").setValue(eventID);
+                                    mDatabase.child("users").child("organisers").child(user.getUid()).child("eventsnumber").setValue(eventsNr+1);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
 
                     Event new_event = new Event(user.getUid(), name, location, startDate, finishDate, type, eventID, description, deadline, size);
                     mDatabase.child("events").child(eventID).setValue(new_event);
-                    SharedPreferences prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                    mDatabase.child("users").child("organisers").child(user.getUid()).child("events")
-                            .child(prefs.getInt("lastID", 0) + "").setValue(eventID);
                     mDatabase.child("events").child(eventID).child("validity").setValue("valid");
-
-                    ///TODO: increase number of organiser's events
 
                     returnToEvents();
                     Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -149,6 +167,11 @@ public class CreateEventFragment extends Fragment {
             mEditText.setError(null);
         }
         return true;
+    }
+
+    private void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     View.OnClickListener setonClickListenerCalendar(final EditText editText) {
