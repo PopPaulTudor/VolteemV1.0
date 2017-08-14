@@ -104,6 +104,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
             mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    mUserEvents = new ArrayList<>();
                     for (DataSnapshot usersSnapshot : dataSnapshot.child("events").getChildren()) {
                         mUserEvents.add(usersSnapshot.getValue().toString());
                     }

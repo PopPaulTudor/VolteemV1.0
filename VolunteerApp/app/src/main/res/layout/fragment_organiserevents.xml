@@ -29,7 +29,7 @@
         android:layout_marginLeft="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
         android:src="@drawable/add"
-        app:backgroundTint="@color/floatingButtonBackgroundTint" />
+        app:backgroundTint="@color/colorPrimary" />
 
     <TextView
         android:id="@+id/no_events_text"
