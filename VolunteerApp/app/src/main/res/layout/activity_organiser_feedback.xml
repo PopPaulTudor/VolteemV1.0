@@ -19,9 +19,30 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:drawableTop="@drawable/ic_checked"
-        android:text="We're all done!"
+        android:text="We're all done"
         android:textColor="@android:color/black"
         android:textSize="20sp"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Your feedback is much appreciated."
+        android:layout_marginTop="135dp"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Tap on the above icon to go back to events."
+        android:layout_marginTop="165dp"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:visibility="gone"/>
 
 </android.support.design.widget.CoordinatorLayout>

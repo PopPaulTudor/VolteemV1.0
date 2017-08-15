@@ -125,10 +125,11 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                     for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
                         boolean isUserAccepted = false;
                         final Event currentEvent = eventSnapshot.getValue(Event.class);
-                        if (!isUserRegisteredForEvent(currentEvent.getEventID()) && (currentEvent.getDeadline() > date.getTimeInMillis())) {
+                        boolean isUserRegistered = isUserRegisteredForEvent(currentEvent.getEventID());
+                        if (!isUserRegistered && (currentEvent.getDeadline() > date.getTimeInMillis())) {
                             mEventsList.add(currentEvent);
                         } else {
-                            if (currentEvent.getFinishDate() < date.getTimeInMillis()) {
+                            if (isUserRegistered && currentEvent.getFinishDate() < date.getTimeInMillis()) {
                                 anyEventsExpired = true;
                                 mUserEvents.remove(currentEvent.getEventID());
                                 for (DataSnapshot accepted_users : eventSnapshot.child("accepted_users").getChildren()) {

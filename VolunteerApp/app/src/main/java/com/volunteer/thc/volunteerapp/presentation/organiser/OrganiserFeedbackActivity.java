@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -23,13 +24,27 @@ public class OrganiserFeedbackActivity extends AppCompatActivity {
     private ArrayList<Volunteer> mVolunteers;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private RecyclerView mAcceptedUsersList;
-    private static TextView done;
+    private static TextView done, text1, text2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organiser_feedback);
+        text1 = (TextView) findViewById(R.id.text1);
+        text2 = (TextView) findViewById(R.id.text2);
         done = (TextView) findViewById(R.id.done);
+        done.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    if (motionEvent.getRawY() >= done.getTotalPaddingTop()) {
+                        finish();
+                        return true;
+                    }
+                }
+                return true;
+            }
+        });
         String eventName = getIntent().getStringExtra("name");
         final ArrayList<String> mAcceptedUsers = getIntent().getStringArrayListExtra("volunteers");
         getSupportActionBar().setTitle(eventName);
@@ -64,6 +79,8 @@ public class OrganiserFeedbackActivity extends AppCompatActivity {
 
     public static void showDoneIcon() {
         done.setVisibility(View.VISIBLE);
+        text1.setVisibility(View.VISIBLE);
+        text2.setVisibility(View.VISIBLE);
     }
 
     @Override
