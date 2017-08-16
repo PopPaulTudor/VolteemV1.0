@@ -3,9 +3,12 @@ package com.volunteer.thc.volunteerapp.presentation.organiser;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,7 +38,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     private Event mCurrentEvent = new Event();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private EditText mName, mLocation, mStartDate, mType, mDescription, mDeadline, mSize, mFinishDate;
-    private MenuItem mEdit, mSave, mCancel;
+    private MenuItem mEdit, mSave, mCancel, mDelete;
     private long currentStartDate, currentFinishDate, currentDeadline;
 
     @Nullable
@@ -81,11 +84,12 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_profile_edit, menu);
+        inflater.inflate(R.menu.menu_event_edit, menu);
 
         mEdit = menu.findItem(R.id.action_edit);
         mSave = menu.findItem(R.id.action_save);
         mCancel = menu.findItem(R.id.action_cancel);
+        mDelete = menu.findItem(R.id.action_delete);
     }
 
     @Override
@@ -100,6 +104,8 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             case R.id.action_cancel:
                 onCancelItemPressed();
                 return true;
+            case R.id.action_delete:
+                onDeleteItemPressed();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -110,6 +116,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mEdit.setVisible(false);
         mSave.setVisible(true);
         mCancel.setVisible(true);
+        mDelete.setVisible(false);
     }
 
     private void onSaveItemPressed() {
@@ -166,6 +173,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             mEdit.setVisible(true);
             mSave.setVisible(false);
             mCancel.setVisible(false);
+            mDelete.setVisible(true);
             toggleEdit(false);
             hideKeyboardFrom(getActivity(), getView());
         }
@@ -195,7 +203,31 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mEdit.setVisible(true);
         mCancel.setVisible(false);
         mSave.setVisible(false);
+        mDelete.setVisible(true);
         hideKeyboardFrom(getActivity(), getView());
+    }
+
+    private void onDeleteItemPressed() {
+        final AlertDialog deleteDialog = new AlertDialog.Builder(getActivity())
+                .setTitle("Are you sure?")
+                .setMessage("Are you sure you want to delete this event? You will not be able to undo this action.")
+                .setCancelable(false)
+                .setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mDatabase.child("events").child(mCurrentEvent.getEventID()).setValue(null);
+                        Toast.makeText(getActivity(), "Event deleted.", Toast.LENGTH_SHORT).show();
+                        getActivity().finish();
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .create();
+        deleteDialog.show();
     }
 
     public void toggleEdit(boolean bool) {

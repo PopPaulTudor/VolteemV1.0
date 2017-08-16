@@ -234,7 +234,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.search_menu, menu);
+        inflater.inflate(R.menu.menu_search, menu);
 
         ComponentName cn = new ComponentName(getActivity(), VolunteerSearchableActivity.class);
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);

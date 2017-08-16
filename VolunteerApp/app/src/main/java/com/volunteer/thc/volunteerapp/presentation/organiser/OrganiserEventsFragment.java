@@ -107,7 +107,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.search_menu, menu);
+        inflater.inflate(R.menu.menu_search, menu);
 
         ComponentName cn = new ComponentName(getActivity(), OrganiserSearchableActivity.class);
 
