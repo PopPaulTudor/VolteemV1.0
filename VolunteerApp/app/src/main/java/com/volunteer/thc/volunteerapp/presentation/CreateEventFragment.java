@@ -181,8 +181,8 @@ public class CreateEventFragment extends Fragment {
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mStartDate) &&
                 editTextIsValid(mFinishDate) && editTextIsValid(mType) && editTextIsValid(mDescription) &&
-                editTextIsValid(mDeadline) && editTextIsValid(mSize));
-        if (valid && (deadline > finishDate) && (uri != null)) {
+                editTextIsValid(mDeadline) && editTextIsValid(mSize)&& (uri != null));
+        if (valid && (deadline > finishDate) ) {
             Toast.makeText(getActivity(), "The deadline can not be after the finish date.", Toast.LENGTH_SHORT).show();
             return false;
         }
