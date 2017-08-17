@@ -54,7 +54,7 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
                     volunteer = dataSnapshot.getValue(Volunteer.class);
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mRegisteredUsers.get(mRegisteredUsers.size() - 1), volunteerID)) {
-
+                        quicksort(0, mVolunteers.size() - 1);
                         EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", eventID);
                         mRegisteredUsersRecView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -69,5 +69,30 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
             });
         }
         return view;
+    }
+
+    private void quicksort(int inf, int sup) {
+        int i = inf, j = sup, pivot = mVolunteers.get((i + j) / 2).getExperience();
+        Volunteer auxVolunteer;
+        String auxString;
+        while (i <= j) {
+            while (i < sup && mVolunteers.get(i).getExperience() > pivot) ++i;
+            while (j > inf && mVolunteers.get(j).getExperience() < pivot) --j;
+            if (i <= j) {
+
+                auxVolunteer = mVolunteers.get(i);
+                mVolunteers.set(i, mVolunteers.get(j));
+                mVolunteers.set(j, auxVolunteer);
+
+                auxString = mRegisteredUsers.get(i);
+                mRegisteredUsers.set(i, mRegisteredUsers.get(j));
+                mRegisteredUsers.set(j, auxString);
+
+                ++i;
+                --j;
+            }
+        }
+        if (inf < j) quicksort(inf, j);
+        if (i < sup) quicksort(i, sup);
     }
 }

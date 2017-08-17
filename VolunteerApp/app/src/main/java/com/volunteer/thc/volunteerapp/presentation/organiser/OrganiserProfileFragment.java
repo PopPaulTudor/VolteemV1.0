@@ -126,18 +126,12 @@ public class OrganiserProfileFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_edit:
                 onEditItemPressed();
-                mEdit.setVisible(false);
-                mSave.setVisible(true);
-                mCancel.setVisible(true);
                 return true;
             case R.id.action_save:
                 onSaveItemPressed();
                 return true;
             case R.id.action_cancel:
                 onCancelItemPressed();
-                mEdit.setVisible(true);
-                mSave.setVisible(false);
-                mCancel.setVisible(false);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -145,6 +139,9 @@ public class OrganiserProfileFragment extends Fragment {
     }
 
     private void onEditItemPressed() {
+        mEdit.setVisible(false);
+        mSave.setVisible(true);
+        mCancel.setVisible(true);
         toggleFocusOn();
         toggleEditOn();
     }
@@ -183,6 +180,9 @@ public class OrganiserProfileFragment extends Fragment {
     }
 
     private void onCancelItemPressed() {
+        mEdit.setVisible(true);
+        mSave.setVisible(false);
+        mCancel.setVisible(false);
         mCompany.setText(organiser.getCompany());
         mEmail.setText(organiser.getEmail());
         mPhone.setText(organiser.getPhone());

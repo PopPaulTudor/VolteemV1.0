@@ -40,4 +40,5 @@
     <string name="delete_account">Delete Account</string>
     <string name="no_stars">Please give us your feedback.</string>
     <string name="no_events">No events to show.</string>
+    <string name="action_delete">Delete</string>
 </resources>

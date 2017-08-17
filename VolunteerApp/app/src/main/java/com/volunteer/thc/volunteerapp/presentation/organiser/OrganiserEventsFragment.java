@@ -1,10 +1,10 @@
 package com.volunteer.thc.volunteerapp.presentation.organiser;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -57,7 +57,6 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     private List<Event> mEventsList = new ArrayList<>();
     private RecyclerView recyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private SearchView searchView;
     private Calendar date = Calendar.getInstance();
     private TextView noEvents;
 
@@ -108,7 +107,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.search_menu, menu);
+        inflater.inflate(R.menu.menu_search, menu);
 
         ComponentName cn = new ComponentName(getActivity(), OrganiserSearchableActivity.class);
 
@@ -207,6 +206,10 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                         alert.setNegativeButton("GIVE FEEDBACK", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
+                                                Intent intent = new Intent(getActivity(), OrganiserFeedbackActivity.class);
+                                                intent.putExtra("name", currentEvent.getName());
+                                                intent.putExtra("volunteers", currentEvent.getAccepted_volunteers());
+                                                startActivity(intent);
                                                 dialogInterface.dismiss();
                                             }
                                         });

@@ -104,6 +104,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
             mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    mUserEvents = new ArrayList<>();
                     for (DataSnapshot usersSnapshot : dataSnapshot.child("events").getChildren()) {
                         mUserEvents.add(usersSnapshot.getValue().toString());
                     }
@@ -124,10 +125,11 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                     for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
                         boolean isUserAccepted = false;
                         final Event currentEvent = eventSnapshot.getValue(Event.class);
-                        if (!isUserRegisteredForEvent(currentEvent.getEventID()) && (currentEvent.getDeadline() > date.getTimeInMillis())) {
+                        boolean isUserRegistered = isUserRegisteredForEvent(currentEvent.getEventID());
+                        if (!isUserRegistered && (currentEvent.getDeadline() > date.getTimeInMillis())) {
                             mEventsList.add(currentEvent);
                         } else {
-                            if (currentEvent.getFinishDate() < date.getTimeInMillis()) {
+                            if (isUserRegistered && currentEvent.getFinishDate() < date.getTimeInMillis()) {
                                 anyEventsExpired = true;
                                 mUserEvents.remove(currentEvent.getEventID());
                                 for (DataSnapshot accepted_users : eventSnapshot.child("accepted_users").getChildren()) {
@@ -232,7 +234,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.search_menu, menu);
+        inflater.inflate(R.menu.menu_search, menu);
 
         ComponentName cn = new ComponentName(getActivity(), VolunteerSearchableActivity.class);
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
