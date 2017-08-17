@@ -2,6 +2,7 @@ package com.volunteer.thc.volunteerapp.presentation.organiser;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -18,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,8 +27,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Organiser;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by Cristi on 6/19/2017.
@@ -40,6 +47,9 @@ public class OrganiserProfileFragment extends Fragment {
     private ProgressBar mProgressBar;
     private Organiser organiser;
     private MenuItem mSave, mEdit, mCancel;
+    private CircleImageView circleImageView;
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,6 +62,7 @@ public class OrganiserProfileFragment extends Fragment {
         mCompany = (EditText) view.findViewById(R.id.edit_company);
         mCity = (EditText) view.findViewById(R.id.edit_city);
         mPhone = (EditText) view.findViewById(R.id.edit_phone);
+        circleImageView=(CircleImageView) view.findViewById(R.id.photo);
 
         mCompany.setTag(mCompany.getKeyListener());
         mEmail.setTag(mEmail.getKeyListener());
@@ -76,6 +87,12 @@ public class OrganiserProfileFragment extends Fragment {
                 mPhone.setText(organiser.getPhone());
                 mCity.setText(organiser.getCity());
 
+                storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
+                    }
+                });
                 mProgressBar.setVisibility(View.GONE);
             }
 

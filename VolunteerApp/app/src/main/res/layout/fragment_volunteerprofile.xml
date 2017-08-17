@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
@@ -13,27 +14,28 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="200dp" />
 
-    <ImageView
+    <View
         android:id="@+id/volunteer_backimage"
         android:layout_width="match_parent"
         android:layout_height="120sp"
         android:background="@color/green" />
 
-    <ImageView
-        android:id="@+id/volunteer_profileimage"
-        android:layout_width="120sp"
-        android:layout_height="120sp"
-        android:layout_alignParentTop="true"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/photo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="57dp"
-        android:background="@color/volunteer_background"
-        android:foregroundGravity="center"
-        android:src="@drawable/profile_picture" />
+        android:src="@mipmap/volunteer_logo"
+        app:civ_border_color="@color/colorPrimary"
+        app:civ_border_overlay="true"
+        app:civ_border_width="2dp"
+        android:layout_marginTop="64dp"
+        android:layout_alignParentTop="true" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/volunteer_profileimage">
+        android:layout_below="@+id/photo">
 
         <RelativeLayout
             android:layout_width="match_parent"

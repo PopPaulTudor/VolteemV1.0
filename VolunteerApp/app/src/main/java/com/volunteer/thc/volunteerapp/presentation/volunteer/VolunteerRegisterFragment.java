@@ -1,9 +1,13 @@
 package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,13 +31,19 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.LoginActivity;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.ContentValues.TAG;
 
@@ -44,6 +54,7 @@ import static android.content.ContentValues.TAG;
 
 public class VolunteerRegisterFragment extends Fragment {
 
+    private static final int GALLERY_INTENT = 1;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private EditText mEmail, mPassword, mPhone, mCity, mAge, mFirstname, mLastname;
@@ -53,6 +64,9 @@ public class VolunteerRegisterFragment extends Fragment {
     private Spinner spinner;
     private List<String> gender = new ArrayList<>();
     private String mGender;
+    private CircleImageView mImage;
+    private Uri uri = null;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,6 +84,7 @@ public class VolunteerRegisterFragment extends Fragment {
         mAge = (EditText) view.findViewById(R.id.user_age);
         mFirstname = (EditText) view.findViewById(R.id.first_name);
         mLastname = (EditText) view.findViewById(R.id.last_name);
+        mImage = (CircleImageView) view.findViewById(R.id.photo);
         mRegister = (Button) view.findViewById(R.id.register_user);
         mBack = (Button) view.findViewById(R.id.back);
         intent = new Intent(getActivity(), MainActivity.class);
@@ -103,6 +118,26 @@ public class VolunteerRegisterFragment extends Fragment {
                     mProgressDialog = ProgressDialog.show(getActivity(), "Registering", "", true);
                 }
                 createAccount(mEmail.getText().toString(), mPassword.getText().toString());
+            }
+        });
+
+        mImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (PermissionUtil.isStoragePermissionGranted(getContext())) {
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setType("image/*");
+                    startActivityForResult(intent, GALLERY_INTENT);
+
+                } else {
+                    Snackbar.make(view, "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                        }
+                    }).show();
+                }
             }
         });
 
@@ -140,6 +175,7 @@ public class VolunteerRegisterFragment extends Fragment {
                             mCity.setVisibility(View.GONE);
                             mAge.setVisibility(View.GONE);
                             mRegister.setVisibility(View.VISIBLE);
+                            StorageReference mStorage = FirebaseStorage.getInstance().getReference();
 
                             FirebaseUser user = mAuth.getCurrentUser();
 
@@ -153,6 +189,8 @@ public class VolunteerRegisterFragment extends Fragment {
                             Volunteer volunteer1 = new Volunteer(user_firstname, user_lastname, email, user_age, user_city, user_phone, mGender);
 
                             mDatabase.child("users").child("volunteers").child(userID).setValue(volunteer1);
+                            StorageReference filePath = mStorage.child("Photos").child("User").child(userID);
+                            filePath.putFile(uri);
 
                             UserProfileChangeRequest mProfileUpdate = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(user_firstname)
@@ -214,5 +252,17 @@ public class VolunteerRegisterFragment extends Fragment {
             }
         }
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == GALLERY_INTENT && (data != null)) {
+            uri = data.getData();
+            Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+
+
+        }
     }
 }

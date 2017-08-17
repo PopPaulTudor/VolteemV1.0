@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -20,10 +21,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,12 +32,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserProfileFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerMyEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerProfileFragment;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity
@@ -47,7 +53,9 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private TextView mUserStatus, mUserName;
     private SharedPreferences prefs;
-    private ImageView mGender;
+    private CircleImageView mImage;
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +77,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.getMenu().getItem(0).setChecked(true);
 
         View header = navigationView.getHeaderView(0);
-        mGender = (ImageView) header.findViewById(R.id.nav_header_image);
+        mImage = (CircleImageView) header.findViewById(R.id.photo);
         mUserName = (TextView) header.findViewById(R.id.nav_header_name);
         mUserStatus = (TextView) header.findViewById(R.id.nav_header_status);
 
@@ -90,17 +98,22 @@ public class MainActivity extends AppCompatActivity
 
                     if (TextUtils.equals(gender, "Male")) {
                         editor.putString("gender", "Male");
-                        mGender.setImageResource(R.drawable.ic_user_male);
                     } else {
                         editor.putString("gender", "Female");
-                        mGender.setImageResource(R.drawable.ic_user_female);
                     }
                 } else {
                     userType = "Organiser";
                     editor.putString("gender", userType);
                     mUserName.setText(user.getEmail());
-                    mGender.setImageResource(R.drawable.ic_organiser);
                 }
+
+                storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.with(getApplicationContext()).load(uri).fit().centerCrop().into(mImage);
+                    }
+                });
+
 
                 editor.putString("user_status", userType);
                 editor.apply();
@@ -120,21 +133,21 @@ public class MainActivity extends AppCompatActivity
             mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(statusListener);
             mDatabase.removeEventListener(statusListener); // is this really needed?
         } else {
-            String gender = prefs.getString("gender", null);
             String name = prefs.getString("name", null);
 
             if (TextUtils.equals(userStatus, "Volunteer")) {
-                if (TextUtils.equals(gender, "Male")) {
-                    mGender.setImageResource(R.drawable.ic_user_male);
-                    mUserName.setText(name);
-                } else {
-                    mGender.setImageResource(R.drawable.ic_user_female);
-                    mUserName.setText(name);
-                }
+                mUserName.setText(name);
+
             } else {
-                mGender.setImageResource(R.drawable.ic_organiser);
                 mUserName.setText(user.getEmail());
             }
+
+            storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.with(getApplicationContext()).load(uri).fit().centerCrop().into(mImage);
+                }
+            });
 
             mUserStatus.setText(userStatus);
             showEvents(userStatus);

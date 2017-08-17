@@ -6,25 +6,30 @@ import java.util.ArrayList;
 /**
  * Created by Cristi on 6/14/2017.
  */
-public class Event implements Serializable{
+public class Event implements Serializable {
 
-    private String created_by, name, location, type, description, eventID;
-    private long startDate,finishDate,deadline;
+    private String created_by;
+    private String name;
+    private String location;
+    private String type;
+    private String description;
+    private String eventID;
+    private long startDate, finishDate, deadline;
     private int size;
     private ArrayList<String> registered_volunteers;
     private ArrayList<String> accepted_volunteers;
 
-    public Event(){
+    public Event() {
 
     }
 
-    public Event (String created_by, String name, String location, long startDate,long finishDate, String type, String eventID,
-                  String description, long deadline, int size) {
+    public Event(String created_by, String name, String location, long startDate, long finishDate, String type, String eventID,
+                 String description, long deadline, int size) {
         this.created_by = created_by;
         this.name = name;
         this.location = location;
-        this.startDate =startDate;
-        this.finishDate=finishDate;
+        this.startDate = startDate;
+        this.finishDate = finishDate;
         this.type = type;
         this.description = description;
         this.deadline = deadline;
@@ -50,14 +55,14 @@ public class Event implements Serializable{
         this.finishDate = finishDate;
     }
 
-    public Event (String created_by, String name, String location, long startDate,long finishDate, String type, String eventID,
-                  String description, long deadline, int size, ArrayList<String> registered_volunteers, ArrayList<String> accepted_volunteers) {
+    public Event(String created_by, String name, String location, long startDate, long finishDate, String type, String eventID,
+                 String description, long deadline, int size, ArrayList<String> registered_volunteers, ArrayList<String> accepted_volunteers) {
         this.created_by = created_by;
         this.name = name;
         this.location = location;
         this.type = type;
-        this.finishDate=finishDate;
-        this.startDate=startDate;
+        this.finishDate = finishDate;
+        this.startDate = startDate;
         this.description = description;
         this.deadline = deadline;
         this.size = size;
@@ -131,6 +136,7 @@ public class Event implements Serializable{
         this.eventID = eventID;
     }
 
+
     public ArrayList<String> getRegistered_volunteers() {
         return registered_volunteers;
     }
@@ -146,4 +152,5 @@ public class Event implements Serializable{
     public void setAccepted_volunteers(ArrayList<String> accepted_volunteers) {
         this.accepted_volunteers = accepted_volunteers;
     }
+
 }

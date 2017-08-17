@@ -3,6 +3,7 @@ package com.volunteer.thc.volunteerapp.adaptor;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -12,6 +13,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.Util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
@@ -43,11 +51,19 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     }
 
     @Override
-    public void onBindViewHolder(OrgEventsAdaptor.EventViewHolder holder, final int position) {
+    public void onBindViewHolder(final OrgEventsAdaptor.EventViewHolder holder, final int position) {
 
         holder.cardName.setText(EventsList.get(position).getName());
         holder.cardLocation.setText(EventsList.get(position).getLocation());
         holder.cardDate.setText(CalendarUtil.getStringDateFromMM(EventsList.get(position).getDeadline()));
+
+        StorageReference storageRef= FirebaseStorage.getInstance().getReference();
+        storageRef.child("Photos").child("Event").child(EventsList.get(position).getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.with(context).load(uri).fit().centerCrop().into(holder.cardImage);
+            }
+        });
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,7 +93,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         TextView cardName;
         TextView cardDate;
         TextView cardLocation;
-        ImageView imageView;
+        ImageView cardImage;
         CardView cardView;
 
         EventViewHolder(View v) {
@@ -87,6 +103,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
             cardDate= (TextView) v.findViewById(R.id.DateCardElement);
             cardLocation= (TextView) v.findViewById(R.id.LocationCardElement);
             cardView= (CardView) v.findViewById(R.id.CardElement);
+            cardImage=(ImageView)v.findViewById(R.id.ImageCardElement);
 
         }
     }

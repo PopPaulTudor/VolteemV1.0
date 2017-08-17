@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ScrollView
         android:id="@+id/login_form"
@@ -13,14 +15,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-			android:paddingLeft="@dimen/register_padding_left"
-			android:paddingRight="@dimen/register_padding_right">
+            android:paddingLeft="@dimen/register_padding_left"
+            android:paddingRight="@dimen/register_padding_right">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </android.support.design.widget.TextInputLayout>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/photo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="120dp"
+                android:src="@mipmap/volunteer_logo"
+                app:civ_border_color="@color/colorPrimary"
+                app:civ_border_overlay="true"
+                app:civ_border_width="2dp" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -93,8 +99,8 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="Phone number "
-                    android:maxLength="13"
                     android:inputType="phone"
+                    android:maxLength="13"
                     android:visibility="visible" />
             </android.support.design.widget.TextInputLayout>
 

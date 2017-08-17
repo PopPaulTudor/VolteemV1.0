@@ -28,6 +28,7 @@ import com.volunteer.thc.volunteerapp.R;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "EmailPassword";
+    private static final int REQUEST_CODE = 1;
     private EditText mEmail, mPassword;
     private FirebaseAuth mAuth;
     private ProgressDialog mProgressDialog;
@@ -38,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
