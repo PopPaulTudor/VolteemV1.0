@@ -73,13 +73,20 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
-
         navigationView.getMenu().getItem(0).setChecked(true);
 
         View header = navigationView.getHeaderView(0);
         mImage = (CircleImageView) header.findViewById(R.id.photo);
         mUserName = (TextView) header.findViewById(R.id.nav_header_name);
         mUserStatus = (TextView) header.findViewById(R.id.nav_header_status);
+
+        storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.with(getApplicationContext()).load(uri).fit().centerCrop().into(mImage);
+            }
+        });
+
 
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
@@ -107,12 +114,6 @@ public class MainActivity extends AppCompatActivity
                     mUserName.setText(user.getEmail());
                 }
 
-                storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Picasso.with(getApplicationContext()).load(uri).fit().centerCrop().into(mImage);
-                    }
-                });
 
 
                 editor.putString("user_status", userType);
@@ -142,12 +143,6 @@ public class MainActivity extends AppCompatActivity
                 mUserName.setText(user.getEmail());
             }
 
-            storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    Picasso.with(getApplicationContext()).load(uri).fit().centerCrop().into(mImage);
-                }
-            });
 
             mUserStatus.setText(userStatus);
             showEvents(userStatus);

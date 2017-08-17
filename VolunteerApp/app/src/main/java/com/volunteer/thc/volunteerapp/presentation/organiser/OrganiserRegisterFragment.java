@@ -192,7 +192,7 @@ public class OrganiserRegisterFragment extends Fragment {
 
         boolean valid;
         valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mCompany) &&
-                editTextIsValid(mCity) && editTextIsValid(mPhone));
+                editTextIsValid(mCity) && editTextIsValid(mPhone)&&(uri!=null));
         return valid;
     }
 

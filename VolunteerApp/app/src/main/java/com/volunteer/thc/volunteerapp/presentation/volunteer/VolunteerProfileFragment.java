@@ -74,6 +74,7 @@ public class VolunteerProfileFragment extends Fragment {
         mAge = (EditText) view.findViewById(R.id.edit_age);
         mCity = (EditText) view.findViewById(R.id.edit_city);
         mPhone = (EditText) view.findViewById(R.id.edit_phone);
+        circleImageView=(CircleImageView) view.findViewById(R.id.photo);
 
         mFirstnameEdit.setTag(mFirstnameEdit.getKeyListener());
         mLastname.setTag(mLastname.getKeyListener());

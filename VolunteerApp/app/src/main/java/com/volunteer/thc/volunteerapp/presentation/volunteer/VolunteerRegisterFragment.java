@@ -226,7 +226,7 @@ public class VolunteerRegisterFragment extends Fragment {
 
         boolean valid;
         valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mFirstname) &&
-                editTextIsValid(mLastname) && editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity));
+                editTextIsValid(mLastname) && editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity)&&(uri!=null));
         valid &= !TextUtils.isEmpty(mGender);
         return valid;
     }
