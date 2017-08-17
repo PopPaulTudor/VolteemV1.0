@@ -209,7 +209,7 @@ public class VolunteerProfileFragment extends Fragment {
         mLastname.setText(volunteer1.getLastname());
         mPhone.setText(volunteer1.getPhone());
         mCity.setText(volunteer1.getCity());
-        mAge.setText(volunteer1.getAge());
+        mAge.setText(volunteer1.getAge()+"");
         mFirstnameEdit.setError(null);
         mLastname.setError(null);
         mPhone.setError(null);
