@@ -79,25 +79,11 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         holder.acceptUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mDatabase.child("events").child(eventID).child("registered_users").orderByChild("user")
-                        .equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot data: dataSnapshot.getChildren()){
-                            mDatabase.child("events").child(eventID).child("registered_users").child(data.getKey()).setValue(null);
-                            mDatabase.child("events").child(eventID).child("accepted_users").push().child("user").setValue(volunteerIDs.get(position));
-                            Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
-                        }
-                        listVolunteer.remove(position);
-                        volunteerIDs.remove(position);
-                        notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Toast.makeText(parent.getContext(), "Accepting volunteer failed.", Toast.LENGTH_LONG).show();
-                    }
-                });
+                mDatabase.child("events").child(eventID).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
+                Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
+                listVolunteer.remove(position);
+                volunteerIDs.remove(position);
+                notifyDataSetChanged();
             }
         });
     }
@@ -108,7 +94,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     }
 
     class EventViewHolder extends RecyclerView.ViewHolder {
-
 
         TextView nameVolunteer, expPhoneVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer, emailVolunteer;
         RelativeLayout item;

@@ -10,6 +10,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.transition.Slide;
 import android.util.TypedValue;
 import android.view.View;
@@ -28,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.Util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.RegisteredUser;
 
 import java.util.ArrayList;
 
@@ -94,22 +96,21 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         } else {
             mStatus.setVisibility(View.VISIBLE);
             mLeaveEvent.setVisibility(View.VISIBLE);
+            mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
+                                mStatus.setText("Accepted");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
         }
-
-        mDatabase.child("events").child(currentEvent.getEventID()).child("accepted_users").orderByChild("user")
-                .startAt(user.getUid()).endAt(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
-                    mStatus.setText("Status: Accepted");
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
         mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -159,8 +160,8 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
                         mBottomSheetDialog.dismiss();
                         Toast.makeText(VolunteerSingleEventActivity.this, "Signing up for event...", Toast.LENGTH_SHORT).show();
-                        mDatabase.child("events").child(currentEvent.getEventID()).child("registered_users").push()
-                                .child("user").setValue(user.getUid());
+                        mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid())
+                                .setValue(new RegisteredUser("pending", user.getUid(), "valid"));
                         mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
                                 .addListenerForSingleValueEvent(mRegisterListener);
                     }
@@ -197,24 +198,11 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         mBottomSheetDialog.dismiss();
                         Toast.makeText(VolunteerSingleEventActivity.this, "Leaving event...", Toast.LENGTH_LONG).show();
 
-                        mDatabase.child("events").child(currentEvent.getEventID()).child("registered_users").orderByChild("user")
-                                .startAt(user.getUid()).endAt(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                    mDatabase.child("events").child(currentEvent.getEventID()).child("registered_users").child(data.getKey()).setValue(null);
-                                }
-                                events.remove(currentEvent.getEventID());
-                                mDatabase.child("users").child("volunteers").child(user.getUid()).child("events").setValue(events);
-                                Toast.makeText(VolunteerSingleEventActivity.this, "Event left.", Toast.LENGTH_LONG).show();
-                                finish();
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                Toast.makeText(VolunteerSingleEventActivity.this, "Leaving event failed.", Toast.LENGTH_LONG).show();
-                            }
-                        });
+                        mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid()).setValue(null);
+                        events.remove(currentEvent.getEventID());
+                        mDatabase.child("users").child("volunteers").child(user.getUid()).child("events").setValue(events);
+                        Toast.makeText(VolunteerSingleEventActivity.this, "Event left.", Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 });
 

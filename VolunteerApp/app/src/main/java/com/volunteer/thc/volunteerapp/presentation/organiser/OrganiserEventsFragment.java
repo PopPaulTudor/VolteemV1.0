@@ -52,6 +52,7 @@ import java.util.List;
 
 public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
+    private final String pending = "pending", accepted = "accepted";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private List<Event> mEventsList = new ArrayList<>();
@@ -166,16 +167,17 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                 if (TextUtils.equals(event.child("validity").getValue().toString(), "valid")) {
                                     final Event currentEvent = event.getValue(Event.class);
                                     ArrayList<String> reg_users = new ArrayList<>();
+                                    ArrayList<String> acc_users = new ArrayList<>();
 
-                                    for (DataSnapshot registered_users : event.child("registered_users").getChildren()) {
-                                        reg_users.add(registered_users.child("user").getValue().toString());
+                                    for (DataSnapshot registered_users : event.child("users").getChildren()) {
+                                        if (TextUtils.equals(registered_users.child("status").getValue().toString(), pending)) {
+                                            reg_users.add(registered_users.child("id").getValue().toString());
+                                        } else {
+                                            acc_users.add(registered_users.child("id").getValue().toString());
+                                        }
                                     }
                                     currentEvent.setRegistered_volunteers(reg_users);
-                                    reg_users = new ArrayList<>();
-                                    for (DataSnapshot accepted_users : event.child("accepted_users").getChildren()) {
-                                        reg_users.add(accepted_users.child("user").getValue().toString());
-                                    }
-                                    currentEvent.setAccepted_volunteers(reg_users);
+                                    currentEvent.setAccepted_volunteers(acc_users);
                                     if (currentEvent.getFinishDate() < date.getTimeInMillis()) {
                                         mDatabase.child("users").child("organisers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
