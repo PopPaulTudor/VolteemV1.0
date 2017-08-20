@@ -2,6 +2,7 @@ package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -88,7 +89,10 @@ public class VolunteerRegisterFragment extends Fragment {
         mRegister = (Button) view.findViewById(R.id.register_user);
         mBack = (Button) view.findViewById(R.id.back);
         intent = new Intent(getActivity(), MainActivity.class);
-
+        uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + getResources().getResourcePackageName(R.drawable.user)
+                + '/' + getResources().getResourceTypeName(R.drawable.user) + '/' + getResources().getResourceEntryName(R.drawable.user));
+        Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
         gender.add("Gender");
         gender.add("Male");
         gender.add("Female");
@@ -226,7 +230,7 @@ public class VolunteerRegisterFragment extends Fragment {
 
         boolean valid;
         valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mFirstname) &&
-                editTextIsValid(mLastname) && editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity)&&(uri!=null));
+                editTextIsValid(mLastname) && editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity) && (uri != null));
         valid &= !TextUtils.isEmpty(mGender);
         return valid;
     }
@@ -261,8 +265,6 @@ public class VolunteerRegisterFragment extends Fragment {
         if (requestCode == GALLERY_INTENT && (data != null)) {
             uri = data.getData();
             Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
-
-
         }
     }
 }

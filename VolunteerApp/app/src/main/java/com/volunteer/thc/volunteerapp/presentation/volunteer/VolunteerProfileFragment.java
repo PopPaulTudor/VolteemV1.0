@@ -1,12 +1,21 @@
 package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.text.method.KeyListener;
 import android.util.Log;
@@ -17,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,16 +42,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class VolunteerProfileFragment extends Fragment {
 
-
+    public static final int GALLERY_INTENT = 1;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private EditText mFirstnameEdit, mLastname, mEmail, mAge, mCity, mPhone;
@@ -51,21 +64,20 @@ public class VolunteerProfileFragment extends Fragment {
     private TextView mUserName;
     private MenuItem mEdit, mSave, mCancel;
     private CircleImageView circleImageView;
+    private CircleImageView circleImageViewMenu;
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-
+    private Uri uri;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_volunteerprofile, container, false);
+        NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
         mProgressBar.setVisibility(View.VISIBLE);
         prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
-
-        NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-        View header = navigationView.getHeaderView(0);
-        mUserName = (TextView) header.findViewById(R.id.nav_header_name);
+        mUserName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_name);
 
         volunteer1 = new Volunteer();
         mFirstnameEdit = (EditText) view.findViewById(R.id.edit_firstname);
@@ -74,7 +86,8 @@ public class VolunteerProfileFragment extends Fragment {
         mAge = (EditText) view.findViewById(R.id.edit_age);
         mCity = (EditText) view.findViewById(R.id.edit_city);
         mPhone = (EditText) view.findViewById(R.id.edit_phone);
-        circleImageView=(CircleImageView) view.findViewById(R.id.photo);
+        circleImageView = (CircleImageView) view.findViewById(R.id.photo);
+        circleImageViewMenu=(CircleImageView)  navigationView.findViewById(R.id.photo);
 
         mFirstnameEdit.setTag(mFirstnameEdit.getKeyListener());
         mLastname.setTag(mLastname.getKeyListener());
@@ -82,10 +95,61 @@ public class VolunteerProfileFragment extends Fragment {
         mAge.setTag(mAge.getKeyListener());
         mCity.setTag(mCity.getKeyListener());
         mPhone.setTag(mPhone.getKeyListener());
-
         mEmail.setKeyListener(null);
 
         toggleEditOff();
+
+
+        circleImageView.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.select_dialog_item);
+                arrayAdapter.add("Change Image");
+                arrayAdapter.add("View Image");
+
+                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String choice = arrayAdapter.getItem(which);
+
+
+                        if (choice.contains("Change")) {
+                            if (PermissionUtil.isStoragePermissionGranted(getContext())) {
+                                Intent intent = new Intent(Intent.ACTION_PICK);
+                                intent.setType("image/*");
+                                startActivityForResult(intent, GALLERY_INTENT);
+
+                            } else {
+                                Snackbar.make(getView(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                                    }
+                                }).show();
+                            }
+                        } else {
+
+                            DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
+                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("userID", user.getUid());
+                            bundle.putString("userName", user.getDisplayName());
+                            displayPhotoFragment.setArguments(bundle);
+                            fragmentTransaction.add(R.id.volunteer_profile_container, displayPhotoFragment).addToBackStack("showImage");
+                            fragmentTransaction.commit();
+
+                        }
+
+                    }
+                });
+                builderSingle.show();
+            }
+        });
+
 
         ValueEventListener mVolunteerProfileListener = new ValueEventListener() {
             @Override
@@ -97,7 +161,7 @@ public class VolunteerProfileFragment extends Fragment {
                 mLastname.setText(volunteer1.getLastname());
                 mPhone.setText(volunteer1.getPhone());
                 mCity.setText(volunteer1.getCity());
-                mAge.setText(volunteer1.getAge()+"");
+                mAge.setText(volunteer1.getAge() + "");
 
 
                 storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -116,13 +180,37 @@ public class VolunteerProfileFragment extends Fragment {
                 Log.w("ProfileReadCanceled: ", databaseError.toException());
             }
         };
-
         mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(mVolunteerProfileListener);
         mDatabase.removeEventListener(mVolunteerProfileListener);
 
         setHasOptionsMenu(true);
         return view;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == GALLERY_INTENT && (data != null)) {
+            uri = data.getData();
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+            StorageReference filePath = storageRef.child("Photos").child("User").child(user.getUid());
+            final ProgressDialog progressDialog = new ProgressDialog(getContext());
+            progressDialog.show();
+            filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    progressDialog.dismiss();
+                    Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
+                    Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageViewMenu);
+
+                }
+            });
+
+
+        }
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -227,7 +315,7 @@ public class VolunteerProfileFragment extends Fragment {
         mLastname.setText(volunteer1.getLastname());
         mPhone.setText(volunteer1.getPhone());
         mCity.setText(volunteer1.getCity());
-        mAge.setText(volunteer1.getAge()+"");
+        mAge.setText(volunteer1.getAge() + "");
         mFirstnameEdit.setError(null);
         mLastname.setError(null);
         mPhone.setError(null);
@@ -313,4 +401,5 @@ public class VolunteerProfileFragment extends Fragment {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
 }

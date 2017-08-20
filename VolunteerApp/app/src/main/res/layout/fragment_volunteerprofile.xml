@@ -186,4 +186,10 @@
         </RelativeLayout>
     </ScrollView>
 
+
+    <FrameLayout
+        android:id="@+id/volunteer_profile_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </RelativeLayout>

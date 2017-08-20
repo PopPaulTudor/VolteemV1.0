@@ -165,14 +165,13 @@ public class MainActivity extends AppCompatActivity
             if (count == 0) {
                 super.onBackPressed();
             } else {
-                getFragmentManager().popBackStack();
+                getFragmentManager().popBackStackImmediate();
             }
         }
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (isNetworkAvailable()) {
             String actionBarTitle = getActionBar() == null ? "" : String.valueOf(getActionBar().getTitle());
@@ -268,4 +267,5 @@ public class MainActivity extends AppCompatActivity
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
+
 }

@@ -47,13 +47,13 @@ public class SplashActivity extends AppCompatActivity {
                 else openLogin();
 
             }
-
         }
     }
 
     void openLogin() {
         Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
         startActivity(intent);
+        finish();
     }
 
 
