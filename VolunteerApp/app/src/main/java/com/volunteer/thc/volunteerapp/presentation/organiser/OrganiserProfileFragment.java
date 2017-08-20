@@ -152,6 +152,7 @@ public class OrganiserProfileFragment extends Fragment {
 
                 organiser = dataSnapshot.getValue(Organiser.class);
 
+                // TODO check for NPE if organiser==null
                 mCompany.setText(organiser.getCompany());
                 mEmail.setText(organiser.getEmail());
                 mPhone.setText(organiser.getPhone());
