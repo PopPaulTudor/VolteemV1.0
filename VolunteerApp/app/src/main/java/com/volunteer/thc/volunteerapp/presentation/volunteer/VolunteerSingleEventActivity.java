@@ -1,7 +1,9 @@
 package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -18,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +28,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.Util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
@@ -37,12 +43,9 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     private Event currentEvent;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private Button mLeaveEvent, mSignupForEvent;
-    private FloatingActionButton mSignupForEventFloatingButton;
     private ValueEventListener mRegisterListener;
     private ArrayList<String> events = new ArrayList<>();
     private int eventsNumber;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView collapsingToolbarImage;
 
     @Override
@@ -55,11 +58,16 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         currentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
 
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarImage = (ImageView) findViewById(R.id.collapsing_toolbar_image);
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
-
-        ///TODO: baga imaginea aia smechera in --collapsingToolbarImage-- aici paulik
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        storageRef.child("Photos").child("Event").child(currentEvent.getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.with(getApplicationContext()).load(uri).fit().centerCrop().into(collapsingToolbarImage);
+            }
+        });
 
         mEventName = (TextView) findViewById(R.id.event_name);
         mEventLocation = (TextView) findViewById(R.id.event_location);
@@ -71,9 +79,9 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventSize = (TextView) findViewById(R.id.event_size);
         mStatus = (TextView) findViewById(R.id.event_status);
 
-        mSignupForEvent = (Button) findViewById(R.id.event_signup);
-        mSignupForEventFloatingButton = (FloatingActionButton) findViewById(R.id.fab);
-        mLeaveEvent = (Button) findViewById(R.id.event_leave);
+        Button mSignupForEvent = (Button) findViewById(R.id.event_signup);
+        FloatingActionButton mSignupForEventFloatingButton = (FloatingActionButton) findViewById(R.id.fab);
+        Button mLeaveEvent = (Button) findViewById(R.id.event_leave);
 
         getSupportActionBar().setTitle(currentEvent.getName());
 

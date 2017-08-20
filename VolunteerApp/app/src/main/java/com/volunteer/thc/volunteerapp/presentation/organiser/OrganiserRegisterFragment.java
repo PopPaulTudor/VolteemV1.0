@@ -2,6 +2,7 @@ package com.volunteer.thc.volunteerapp.presentation.organiser;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -77,6 +78,12 @@ public class OrganiserRegisterFragment extends Fragment {
         mImage = (CircleImageView) view.findViewById(R.id.photo);
         mBack = (Button) view.findViewById(R.id.back);
         intent = new Intent(getActivity(), MainActivity.class);
+
+        uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + getResources().getResourcePackageName(R.drawable.user)
+                + '/' + getResources().getResourceTypeName(R.drawable.user) + '/' + getResources().getResourceEntryName(R.drawable.user));
+        Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+
 
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override

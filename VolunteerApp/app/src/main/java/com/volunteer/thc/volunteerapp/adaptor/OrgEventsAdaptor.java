@@ -1,8 +1,10 @@
 package com.volunteer.thc.volunteerapp.adaptor;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -13,10 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -37,10 +36,12 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
     private List<Event> EventsList;
     private Context context;
+    private Resources resources;
 
-    public OrgEventsAdaptor(List<Event> list, Context context){
+    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources){
         EventsList = list;
         this.context = context;
+        this.resources=resources;
     }
 
     @Override
@@ -57,6 +58,12 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         holder.cardLocation.setText(EventsList.get(position).getLocation());
         holder.cardDate.setText(CalendarUtil.getStringDateFromMM(EventsList.get(position).getDeadline()));
 
+
+        Uri uriBackground = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + resources.getResourcePackageName(R.drawable.background_default)
+                + '/' + resources.getResourceTypeName(R.drawable.background_default) + '/' + resources.getResourceEntryName(R.drawable.background_default));
+        Picasso.with(context).load(uriBackground).fit().centerCrop().into(holder.cardImage);
+
         StorageReference storageRef= FirebaseStorage.getInstance().getReference();
         storageRef.child("Photos").child("Event").child(EventsList.get(position).getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -64,6 +71,9 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
                 Picasso.with(context).load(uri).fit().centerCrop().into(holder.cardImage);
             }
         });
+
+
+
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

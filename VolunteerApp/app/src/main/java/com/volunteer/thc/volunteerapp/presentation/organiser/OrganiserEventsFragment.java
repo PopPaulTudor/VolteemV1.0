@@ -236,7 +236,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                 snackbar.show();
                             }
 
-                            OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
+                            OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(),getResources());
                             recyclerView.setAdapter(adapter);
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                             recyclerView.setLayoutManager(linearLayoutManager);
