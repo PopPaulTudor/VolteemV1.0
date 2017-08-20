@@ -88,7 +88,7 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
                         mNoResultText.setVisibility(View.VISIBLE);
                     } else {
 
-                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, OrganiserSearchableActivity.this);
+                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, OrganiserSearchableActivity.this,getResources());
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrganiserSearchableActivity.this);
                         recyclerView.setLayoutManager(linearLayoutManager);

@@ -36,6 +36,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.ImageUtils;
 import com.volunteer.thc.volunteerapp.Util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.LoginActivity;
@@ -194,7 +195,7 @@ public class VolunteerRegisterFragment extends Fragment {
 
                             mDatabase.child("users").child("volunteers").child(userID).setValue(volunteer1);
                             StorageReference filePath = mStorage.child("Photos").child("User").child(userID);
-                            filePath.putFile(uri);
+                            filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
 
                             UserProfileChangeRequest mProfileUpdate = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(user_firstname)
@@ -227,7 +228,6 @@ public class VolunteerRegisterFragment extends Fragment {
     }
 
     private boolean validateForm() {
-
         boolean valid;
         valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mFirstname) &&
                 editTextIsValid(mLastname) && editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity) && (uri != null));
