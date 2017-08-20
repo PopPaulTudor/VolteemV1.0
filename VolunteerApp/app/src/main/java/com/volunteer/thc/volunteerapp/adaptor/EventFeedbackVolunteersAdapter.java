@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.interrface.FeedbackDoneListener;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserFeedbackActivity;
 
@@ -37,10 +38,12 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
     private ViewGroup parent;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private FeedbackDoneListener feedbackDoneListener;
 
-    public EventFeedbackVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs){
+    public EventFeedbackVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, FeedbackDoneListener feedbackDoneListener){
         listVolunteer = list;
         this.volunteerIDs = volunteerIDs;
+        this.feedbackDoneListener = feedbackDoneListener;
     }
 
     @Override
@@ -102,7 +105,7 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
                             listVolunteer.remove(position);
                             Toast.makeText(parent.getContext(), "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
                             if(volunteerIDs.isEmpty()){
-                                OrganiserFeedbackActivity.showDoneIcon();
+                                feedbackDoneListener.showDoneTextView();
                             }
                         }
                     }

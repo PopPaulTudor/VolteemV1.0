@@ -16,15 +16,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.EventFeedbackVolunteersAdapter;
+import com.volunteer.thc.volunteerapp.interrface.FeedbackDoneListener;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
 
-public class OrganiserFeedbackActivity extends AppCompatActivity {
+public class OrganiserFeedbackActivity extends AppCompatActivity implements FeedbackDoneListener{
     private ArrayList<Volunteer> mVolunteers;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private RecyclerView mAcceptedUsersList;
-    private static TextView done, text1, text2;
+    private TextView done, text1, text2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,7 @@ public class OrganiserFeedbackActivity extends AppCompatActivity {
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mAcceptedUsers.get(mAcceptedUsers.size() - 1), volunteerID)) {
 
-                        EventFeedbackVolunteersAdapter adapter = new EventFeedbackVolunteersAdapter(mVolunteers, mAcceptedUsers);
+                        EventFeedbackVolunteersAdapter adapter = new EventFeedbackVolunteersAdapter(mVolunteers, mAcceptedUsers, OrganiserFeedbackActivity.this);
                         mAcceptedUsersList.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrganiserFeedbackActivity.this);
                         mAcceptedUsersList.setLayoutManager(linearLayoutManager);
@@ -77,7 +78,8 @@ public class OrganiserFeedbackActivity extends AppCompatActivity {
         }
     }
 
-    public static void showDoneIcon() {
+    @Override
+    public void showDoneTextView() {
         done.setVisibility(View.VISIBLE);
         text1.setVisibility(View.VISIBLE);
         text2.setVisibility(View.VISIBLE);

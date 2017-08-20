@@ -33,10 +33,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.Util.ImageUtils;
-import com.volunteer.thc.volunteerapp.Util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
+import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
+import com.volunteer.thc.volunteerapp.util.ImageUtils;
+import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import java.util.Calendar;
 
@@ -115,17 +116,18 @@ public class CreateEventFragment extends Fragment {
                     int size = Integer.parseInt(mSize.getText().toString());
                     final String eventID = mDatabase.child("events").push().getKey();
 
+
                     StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
                     filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
 
-                    mDatabase.child("users").child("organisers").child(user.getUid())
+                    mDatabase.child("users/organisers/"+user.getUid())
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     int lastEvent = (int) dataSnapshot.child("events").getChildrenCount();
                                     int eventsNr = dataSnapshot.child("eventsnumber").getValue(Integer.class);
-                                    mDatabase.child("users").child("organisers").child(user.getUid()).child("events").child(lastEvent + "").setValue(eventID);
-                                    mDatabase.child("users").child("organisers").child(user.getUid()).child("eventsnumber").setValue(eventsNr + 1);
+                                    DatabaseUtils.writeData("users/organisers/"+user.getUid()+"/events/"+lastEvent, eventID);
+                                    DatabaseUtils.writeData("users/organisers/"+user.getUid()+"/eventsnumber", eventsNr + 1);
                                 }
 
                                 @Override
@@ -135,8 +137,8 @@ public class CreateEventFragment extends Fragment {
                             });
 
                     Event new_event = new Event(user.getUid(), name, location, startDate, finishDate, type, eventID, description, deadline, size);
-                    mDatabase.child("events").child(eventID).setValue(new_event);
-                    mDatabase.child("events").child(eventID).child("validity").setValue("valid");
+                    DatabaseUtils.writeData("events/" + eventID, new_event);
+                    DatabaseUtils.writeData("events/" + eventID + "/validity", "valid");
 
                     returnToEvents();
                     Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -178,8 +180,8 @@ public class CreateEventFragment extends Fragment {
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mStartDate) &&
                 editTextIsValid(mFinishDate) && editTextIsValid(mType) && editTextIsValid(mDescription) &&
-                editTextIsValid(mDeadline) && editTextIsValid(mSize)&& (uri != null));
-        if (valid && (deadline > finishDate) ) {
+                editTextIsValid(mDeadline) && editTextIsValid(mSize) && (uri != null));
+        if (valid && (deadline > finishDate)) {
             Toast.makeText(getActivity(), "The deadline can not be after the finish date.", Toast.LENGTH_SHORT).show();
             return false;
         }

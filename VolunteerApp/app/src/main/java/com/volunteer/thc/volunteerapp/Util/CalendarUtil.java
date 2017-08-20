@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.Util;
+package com.volunteer.thc.volunteerapp.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

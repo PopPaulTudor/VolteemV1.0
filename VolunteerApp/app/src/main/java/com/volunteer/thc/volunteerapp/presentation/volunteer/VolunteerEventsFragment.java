@@ -48,8 +48,6 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private RecyclerView recyclerView;
-    private ValueEventListener mRetrieveEvents;
-    private ArrayList<String> mUserEvents = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Calendar date = Calendar.getInstance();
     private TextView noEvents;
@@ -107,7 +105,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                         noEvents.setVisibility(View.VISIBLE);
                     }
                     mSwipeRefreshLayout.setRefreshing(false);
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(),getResources());
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);

@@ -10,11 +10,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
@@ -33,7 +30,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ViewGroup parent;
 
-    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, String eventID){
+    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, String eventID) {
         listVolunteer = list;
         this.classParent = classParent;
         this.volunteerIDs = volunteerIDs;
@@ -51,27 +48,27 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     @Override
     public void onBindViewHolder(final EventVolunteersAdapter.EventViewHolder holder, final int position) {
 
-        holder.nameVolunteer.setText(listVolunteer.get(position).getFirstname()+" "+listVolunteer.get(position).getLastname());
+        holder.nameVolunteer.setText(listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname());
         holder.cityVolunteer.setText("City: " + listVolunteer.get(position).getCity());
         holder.ageVolunteer.setText("Age: " + listVolunteer.get(position).getAge());
         holder.emailVolunteer.setText("Email: " + listVolunteer.get(position).getEmail());
-        if(classParent.contains("accept")){
+        if (classParent.contains("accept")) {
             holder.phoneVolunteer.setText("Experience: " + listVolunteer.get(position).getExperience());
             holder.acceptUser.setVisibility(View.GONE);
             holder.expPhoneVolunteer.setText(listVolunteer.get(position).getPhone());
-        }else{
+        } else {
             holder.phoneVolunteer.setText("Phone: " + listVolunteer.get(position).getPhone());
             holder.acceptUser.setVisibility(View.VISIBLE);
-            holder.expPhoneVolunteer.setText(listVolunteer.get(position).getExperience()+"");
+            holder.expPhoneVolunteer.setText(listVolunteer.get(position).getExperience() + "");
         }
 
-        final boolean isExpanded = position==mExpandedPosition;
-        holder.expandableItem.setVisibility(isExpanded?View.VISIBLE:View.GONE);
+        final boolean isExpanded = position == mExpandedPosition;
+        holder.expandableItem.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
         holder.item.setActivated(isExpanded);
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mExpandedPosition = isExpanded ? -1:position;
+                mExpandedPosition = isExpanded ? -1 : position;
                 notifyDataSetChanged();
             }
         });
@@ -104,8 +101,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             super(itemView);
 
             item = (RelativeLayout) itemView.findViewById(R.id.item_view);
-            nameVolunteer=(TextView) itemView.findViewById(R.id.name_volunteer_element);
-            expPhoneVolunteer=(TextView) itemView.findViewById(R.id.exp_phone_volunteer_element);
+            nameVolunteer = (TextView) itemView.findViewById(R.id.name_volunteer_element);
+            expPhoneVolunteer = (TextView) itemView.findViewById(R.id.exp_phone_volunteer_element);
 
             expandableItem = (LinearLayout) itemView.findViewById(R.id.expandable_item);
             cityVolunteer = (TextView) itemView.findViewById(R.id.volunteer_city);
