@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,6 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
@@ -64,6 +64,8 @@ public class OrganiserRegisterFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_organiserregister, container, false);
 
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        mStorage = storage.getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         mEmail = (EditText) view.findViewById(R.id.email);
@@ -141,7 +143,6 @@ public class OrganiserRegisterFragment extends Fragment {
                             String user_phone = mPhone.getText().toString();
 
                             Organiser organiser = new Organiser(email, user_company, user_city, user_phone);
-
 
                             StorageReference filePath = mStorage.child("Photos").child("User").child(userID);
                             filePath.putFile(uri);
