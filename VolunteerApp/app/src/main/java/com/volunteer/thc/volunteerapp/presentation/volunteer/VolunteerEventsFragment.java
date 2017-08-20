@@ -212,7 +212,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                         noEvents.setVisibility(View.VISIBLE);
                     }
                     mSwipeRefreshLayout.setRefreshing(false);
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(),getResources());
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);

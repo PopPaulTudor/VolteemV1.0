@@ -1,8 +1,10 @@
 package com.volunteer.thc.volunteerapp.adaptor;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -34,10 +36,12 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
     private List<Event> EventsList;
     private Context context;
+    private Resources resources;
 
-    public OrgEventsAdaptor(List<Event> list, Context context) {
+    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources){
         EventsList = list;
         this.context = context;
+        this.resources=resources;
     }
 
     @Override
@@ -49,24 +53,33 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
     @Override
     public void onBindViewHolder(final OrgEventsAdaptor.EventViewHolder holder, final int position) {
-        holder.cardImage.setImageBitmap(null);
+
         holder.cardName.setText(EventsList.get(position).getName());
         holder.cardLocation.setText(EventsList.get(position).getLocation());
         holder.cardDate.setText(CalendarUtil.getStringDateFromMM(EventsList.get(position).getDeadline()));
 
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+
+        Uri uriBackground = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + resources.getResourcePackageName(R.drawable.background_default)
+                + '/' + resources.getResourceTypeName(R.drawable.background_default) + '/' + resources.getResourceEntryName(R.drawable.background_default));
+        Picasso.with(context).load(uriBackground).fit().centerCrop().into(holder.cardImage);
+
+        StorageReference storageRef= FirebaseStorage.getInstance().getReference();
         storageRef.child("Photos").child("Event").child(EventsList.get(position).getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.with(context).load(uri).fit().centerCrop().into(holder.cardImage);
             }
         });
+
+
+
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                if (TextUtils.equals(prefs.getString("user_status", null), "Organiser")) {
+                if(TextUtils.equals(prefs.getString("user_status", null), "Organiser")) {
                     Intent intent = new Intent(context.getApplicationContext(), OrganiserSingleEventActivity.class);
                     intent.putExtra("SingleEvent", EventsList.get(position));
                     context.startActivity(intent);
@@ -85,7 +98,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     }
 
 
-    class EventViewHolder extends RecyclerView.ViewHolder {
+    class EventViewHolder extends RecyclerView.ViewHolder{
 
         TextView cardName;
         TextView cardDate;
@@ -96,11 +109,11 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         EventViewHolder(View v) {
             super(v);
 
-            cardName = (TextView) v.findViewById(R.id.NameCardElement);
-            cardDate = (TextView) v.findViewById(R.id.DateCardElement);
-            cardLocation = (TextView) v.findViewById(R.id.LocationCardElement);
-            cardView = (CardView) v.findViewById(R.id.CardElement);
-            cardImage = (ImageView) v.findViewById(R.id.ImageCardElement);
+            cardName= (TextView) v.findViewById(R.id.NameCardElement);
+            cardDate= (TextView) v.findViewById(R.id.DateCardElement);
+            cardLocation= (TextView) v.findViewById(R.id.LocationCardElement);
+            cardView= (CardView) v.findViewById(R.id.CardElement);
+            cardImage=(ImageView)v.findViewById(R.id.ImageCardElement);
 
         }
     }

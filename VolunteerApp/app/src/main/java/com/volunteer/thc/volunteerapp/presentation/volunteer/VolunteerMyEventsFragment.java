@@ -90,7 +90,7 @@ public class VolunteerMyEventsFragment extends Fragment {
                     noEvents.setVisibility(View.VISIBLE);
                 }
                 mProgressBar.setVisibility(View.GONE);
-                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext());
+                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(),getResources());
                 recyclerView.setAdapter(adapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                 recyclerView.setLayoutManager(linearLayoutManager);

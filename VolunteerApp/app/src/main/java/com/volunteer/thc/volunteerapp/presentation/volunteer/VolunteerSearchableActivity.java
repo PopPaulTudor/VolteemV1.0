@@ -100,7 +100,7 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
                 if (mResultEvents.isEmpty()) {
                     mNoResultText.setVisibility(View.VISIBLE);
                 }
-                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this);
+                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this,getResources());
                 recyclerView.setAdapter(adapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(VolunteerSearchableActivity.this);
                 recyclerView.setLayoutManager(linearLayoutManager);
