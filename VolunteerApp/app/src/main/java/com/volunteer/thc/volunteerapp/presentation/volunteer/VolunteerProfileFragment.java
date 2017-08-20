@@ -14,7 +14,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.text.method.KeyListener;
@@ -45,6 +44,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.ImageUtils;
 import com.volunteer.thc.volunteerapp.Util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
@@ -67,6 +67,7 @@ public class VolunteerProfileFragment extends Fragment {
     private CircleImageView circleImageViewMenu;
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     private Uri uri;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -87,7 +88,7 @@ public class VolunteerProfileFragment extends Fragment {
         mCity = (EditText) view.findViewById(R.id.edit_city);
         mPhone = (EditText) view.findViewById(R.id.edit_phone);
         circleImageView = (CircleImageView) view.findViewById(R.id.photo);
-        circleImageViewMenu=(CircleImageView)  navigationView.findViewById(R.id.photo);
+        circleImageViewMenu = (CircleImageView) navigationView.findViewById(R.id.photo);
 
         mFirstnameEdit.setTag(mFirstnameEdit.getKeyListener());
         mLastname.setTag(mLastname.getKeyListener());
@@ -197,13 +198,12 @@ public class VolunteerProfileFragment extends Fragment {
             StorageReference filePath = storageRef.child("Photos").child("User").child(user.getUid());
             final ProgressDialog progressDialog = new ProgressDialog(getContext());
             progressDialog.show();
-            filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            filePath.putBytes(ImageUtils.compressImage(uri, getActivity())).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     progressDialog.dismiss();
                     Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
                     Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageViewMenu);
-
                 }
             });
 

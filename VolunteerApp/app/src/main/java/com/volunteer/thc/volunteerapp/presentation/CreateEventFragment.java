@@ -22,7 +22,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,9 +31,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.ImageUtils;
 import com.volunteer.thc.volunteerapp.Util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
@@ -117,7 +116,7 @@ public class CreateEventFragment extends Fragment {
                     final String eventID = mDatabase.child("events").push().getKey();
 
                     StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
-                    filePath.putFile(uri);
+                    filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
 
                     mDatabase.child("users").child("organisers").child(user.getUid())
                             .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -164,8 +163,6 @@ public class CreateEventFragment extends Fragment {
         if (requestCode == GALLERY_INTENT && (data != null)) {
             uri = data.getData();
             Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
-
-
         }
     }
 

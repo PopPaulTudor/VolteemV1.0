@@ -13,10 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -38,7 +35,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     private List<Event> EventsList;
     private Context context;
 
-    public OrgEventsAdaptor(List<Event> list, Context context){
+    public OrgEventsAdaptor(List<Event> list, Context context) {
         EventsList = list;
         this.context = context;
     }
@@ -52,12 +49,12 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
     @Override
     public void onBindViewHolder(final OrgEventsAdaptor.EventViewHolder holder, final int position) {
-
+        holder.cardImage.setImageBitmap(null);
         holder.cardName.setText(EventsList.get(position).getName());
         holder.cardLocation.setText(EventsList.get(position).getLocation());
         holder.cardDate.setText(CalendarUtil.getStringDateFromMM(EventsList.get(position).getDeadline()));
 
-        StorageReference storageRef= FirebaseStorage.getInstance().getReference();
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         storageRef.child("Photos").child("Event").child(EventsList.get(position).getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -69,7 +66,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
             public void onClick(View v) {
 
                 SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                if(TextUtils.equals(prefs.getString("user_status", null), "Organiser")) {
+                if (TextUtils.equals(prefs.getString("user_status", null), "Organiser")) {
                     Intent intent = new Intent(context.getApplicationContext(), OrganiserSingleEventActivity.class);
                     intent.putExtra("SingleEvent", EventsList.get(position));
                     context.startActivity(intent);
@@ -88,7 +85,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     }
 
 
-    class EventViewHolder extends RecyclerView.ViewHolder{
+    class EventViewHolder extends RecyclerView.ViewHolder {
 
         TextView cardName;
         TextView cardDate;
@@ -99,11 +96,11 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         EventViewHolder(View v) {
             super(v);
 
-            cardName= (TextView) v.findViewById(R.id.NameCardElement);
-            cardDate= (TextView) v.findViewById(R.id.DateCardElement);
-            cardLocation= (TextView) v.findViewById(R.id.LocationCardElement);
-            cardView= (CardView) v.findViewById(R.id.CardElement);
-            cardImage=(ImageView)v.findViewById(R.id.ImageCardElement);
+            cardName = (TextView) v.findViewById(R.id.NameCardElement);
+            cardDate = (TextView) v.findViewById(R.id.DateCardElement);
+            cardLocation = (TextView) v.findViewById(R.id.LocationCardElement);
+            cardView = (CardView) v.findViewById(R.id.CardElement);
+            cardImage = (ImageView) v.findViewById(R.id.ImageCardElement);
 
         }
     }

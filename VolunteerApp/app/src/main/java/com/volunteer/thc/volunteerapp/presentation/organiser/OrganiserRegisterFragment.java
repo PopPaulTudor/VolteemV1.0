@@ -31,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.ImageUtils;
 import com.volunteer.thc.volunteerapp.Util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.presentation.LoginActivity;
@@ -64,8 +65,7 @@ public class OrganiserRegisterFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_organiserregister, container, false);
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        mStorage = storage.getReference();
+        mStorage = FirebaseStorage.getInstance().getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         mEmail = (EditText) view.findViewById(R.id.email);
@@ -145,7 +145,7 @@ public class OrganiserRegisterFragment extends Fragment {
                             Organiser organiser = new Organiser(email, user_company, user_city, user_phone);
 
                             StorageReference filePath = mStorage.child("Photos").child("User").child(userID);
-                            filePath.putFile(uri);
+                            filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
 
                             mDatabase.child("users").child("organisers").child(userID).setValue(organiser);
 

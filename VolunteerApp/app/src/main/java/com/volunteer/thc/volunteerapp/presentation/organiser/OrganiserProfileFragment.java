@@ -42,6 +42,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.Util.ImageUtils;
 import com.volunteer.thc.volunteerapp.Util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
@@ -80,8 +81,8 @@ public class OrganiserProfileFragment extends Fragment {
         mCompany = (EditText) view.findViewById(R.id.edit_company);
         mCity = (EditText) view.findViewById(R.id.edit_city);
         mPhone = (EditText) view.findViewById(R.id.edit_phone);
-        circleImageView=(CircleImageView) view.findViewById(R.id.photo);
-        circleImageViewMenu=(CircleImageView)  navigationView.findViewById(R.id.photo);
+        circleImageView = (CircleImageView) view.findViewById(R.id.photo);
+        circleImageViewMenu = (CircleImageView) navigationView.findViewById(R.id.photo);
 
 
         mCompany.setTag(mCompany.getKeyListener());
@@ -336,21 +337,19 @@ public class OrganiserProfileFragment extends Fragment {
 
         if (requestCode == GALLERY_INTENT && (data != null)) {
             uri = data.getData();
+
             StorageReference storageRef = FirebaseStorage.getInstance().getReference();
             StorageReference filePath = storageRef.child("Photos").child("User").child(user.getUid());
             final ProgressDialog progressDialog = new ProgressDialog(getContext());
             progressDialog.show();
-            filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            filePath.putBytes(ImageUtils.compressImage(uri, getActivity())).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     progressDialog.dismiss();
                     Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
                     Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageViewMenu);
-
                 }
             });
-
-
         }
     }
 }
