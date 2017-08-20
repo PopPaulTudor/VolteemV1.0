@@ -134,7 +134,7 @@ public class OrganiserProfileFragment extends Fragment {
                             bundle.putString("userID", user.getUid());
                             bundle.putString("userName", user.getDisplayName());
                             displayPhotoFragment.setArguments(bundle);
-                            fragmentTransaction.add(R.id.volunteer_profile_container, displayPhotoFragment).addToBackStack("showImage");
+                            fragmentTransaction.add(R.id.organiser_profile_container, displayPhotoFragment).addToBackStack("showImage");
                             fragmentTransaction.commit();
 
                         }
