@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--<color name="colorPrimary">#3F51B5</color>-->
-    <color name="colorPrimary">#4ab2d9</color>
-    <color name="colorPrimaryDark">#2485a8</color>
-    <!--<color name="colorPrimaryDark">#303F9F</color>-->
+    <color name="colorPrimary">#199c88</color>
+    <color name="colorPrimaryDark">#137a6a</color>
     <color name="colorAccent">#FF4081</color>
     <color name="floatingButtonBackgroundTint">#81C784</color>
     <!--<color name="green">#65ba69</color>-->
