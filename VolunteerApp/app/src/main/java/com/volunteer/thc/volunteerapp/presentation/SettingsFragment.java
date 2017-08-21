@@ -4,17 +4,21 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,6 +46,8 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
+        setAppVersionName(view);
 
         view.findViewById(R.id.change_pass_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +81,7 @@ public class SettingsFragment extends Fragment {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         mBottomSheetDialog.dismiss();
-                                                        if(task.isSuccessful()) {
+                                                        if (task.isSuccessful()) {
                                                             Toast.makeText(getActivity(), "Password changed!", Toast.LENGTH_SHORT).show();
                                                         } else {
                                                             Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
@@ -144,6 +150,20 @@ public class SettingsFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    private void setAppVersionName(View view) {
+        String version = "";
+        try {
+            PackageInfo info = getActivity().getPackageManager().getPackageInfo(
+                    getActivity().getPackageName(), 0);
+            version = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("SettingsFragment", e.getMessage());
+        }
+
+        TextView appNameView = (TextView) view.findViewById(R.id.text_settings);
+        appNameView.setText("- App version: " + version + " -");
     }
 
     private boolean valid(String password) {

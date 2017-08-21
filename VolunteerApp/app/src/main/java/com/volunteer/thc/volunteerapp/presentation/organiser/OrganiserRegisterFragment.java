@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.SignUpEvent;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -32,11 +34,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.util.ImageUtils;
-import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.presentation.LoginActivity;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
+import com.volunteer.thc.volunteerapp.util.ImageUtils;
+import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -127,7 +129,6 @@ public class OrganiserRegisterFragment extends Fragment {
     }
 
     private void createAccount(final String email, String password) {
-
         Log.d("TAG", "CreateAccount: " + email);
         if (!validateForm()) {
             return;
@@ -172,11 +173,17 @@ public class OrganiserRegisterFragment extends Fragment {
                                         }
                                     });
 
+                            Answers.getInstance().logSignUp(new SignUpEvent()
+                                    .putMethod("Organiser")
+                                    .putSuccess(true));
+
                             user.sendEmailVerification();
                             startActivity(intent);
                             getActivity().finish();
-
                         } else {
+                            Answers.getInstance().logSignUp(new SignUpEvent()
+                                    .putMethod("Organiser")
+                                    .putSuccess(false));
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                                 mEmail.setError("Email address is already in use.");
                                 mEmail.requestFocus();
@@ -193,14 +200,13 @@ public class OrganiserRegisterFragment extends Fragment {
                     }
 
                 });
-
     }
 
     private boolean validateForm() {
 
         boolean valid;
         valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mCompany) &&
-                editTextIsValid(mCity) && editTextIsValid(mPhone)&&(uri!=null));
+                editTextIsValid(mCity) && editTextIsValid(mPhone) && (uri != null));
         return valid;
     }
 
