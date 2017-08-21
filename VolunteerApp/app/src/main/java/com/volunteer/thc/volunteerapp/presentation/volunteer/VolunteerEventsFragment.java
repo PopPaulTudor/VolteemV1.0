@@ -105,10 +105,12 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                         noEvents.setVisibility(View.VISIBLE);
                     }
                     mSwipeRefreshLayout.setRefreshing(false);
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
-                    recyclerView.setAdapter(adapter);
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                    recyclerView.setLayoutManager(linearLayoutManager);
+                    if (isFragmentActive()) {
+                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                        recyclerView.setAdapter(adapter);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                        recyclerView.setLayoutManager(linearLayoutManager);
+                    }
                 }
 
                 @Override
@@ -174,5 +176,9 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    private boolean isFragmentActive() {
+        return isAdded() && !isDetached() && !isRemoving();
     }
 }

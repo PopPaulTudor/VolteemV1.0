@@ -41,6 +41,7 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.CreateEventFragment;
+import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -162,7 +163,6 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-
                             for (DataSnapshot event : dataSnapshot.getChildren()) {
                                 if (TextUtils.equals(event.child("validity").getValue().toString(), "valid")) {
                                     final Event currentEvent = event.getValue(Event.class);
@@ -179,43 +179,44 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                     currentEvent.setRegistered_volunteers(reg_users);
                                     currentEvent.setAccepted_volunteers(acc_users);
                                     if (currentEvent.getFinishDate() < date.getTimeInMillis()) {
-                                        mDatabase.child("users").child("organisers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                long experience = dataSnapshot.child("experience").getValue(Long.class);
-                                                mDatabase.child("users").child("organisers").child(user.getUid()).child("experience")
-                                                        .setValue(experience + (currentEvent.getSize() * 10));
-                                            }
+                                        if (isFragmentActive()) {
+                                            mDatabase.child("users/organisers/" + user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    long experience = dataSnapshot.child("experience").getValue(Long.class);
+                                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/experience", (experience + (currentEvent.getSize() * 10)));
+                                                }
 
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
 
-                                            }
-                                        });
-                                        mDatabase.child("events").child(currentEvent.getEventID()).child("validity").setValue("expired");
-                                        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-                                        alert.setTitle("Event finished");
-                                        alert.setCancelable(false);
-                                        alert.setMessage("One of your events, " + currentEvent.getName() + ", has finished. " +
-                                                "If you have any feedback to give about any of the volunteers, please tap on the \"" +
-                                                "Give feedback\" button.");
-                                        alert.setPositiveButton("DONE", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                }
+                                            });
+                                            mDatabase.child("events").child(currentEvent.getEventID()).child("validity").setValue("expired");
+                                            AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                                            alert.setTitle("Event finished");
+                                            alert.setCancelable(false);
+                                            alert.setMessage("One of your events, " + currentEvent.getName() + ", has finished. " +
+                                                    "If you have any feedback to give about any of the volunteers, please tap on the \"" +
+                                                    "Give feedback\" button.");
+                                            alert.setPositiveButton("DONE", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                                            }
-                                        });
-                                        alert.setNegativeButton("GIVE FEEDBACK", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                Intent intent = new Intent(getActivity(), OrganiserFeedbackActivity.class);
-                                                intent.putExtra("name", currentEvent.getName());
-                                                intent.putExtra("volunteers", currentEvent.getAccepted_volunteers());
-                                                startActivity(intent);
-                                                dialogInterface.dismiss();
-                                            }
-                                        });
-                                        alert.show();
+                                                }
+                                            });
+                                            alert.setNegativeButton("GIVE FEEDBACK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Intent intent = new Intent(getActivity(), OrganiserFeedbackActivity.class);
+                                                    intent.putExtra("name", currentEvent.getName());
+                                                    intent.putExtra("volunteers", currentEvent.getAccepted_volunteers());
+                                                    startActivity(intent);
+                                                    dialogInterface.dismiss();
+                                                }
+                                            });
+                                            alert.show();
+                                        }
 
                                     } else {
                                         mEventsList.add(currentEvent);
@@ -225,23 +226,26 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
                             mSwipeRefreshLayout.setRefreshing(false);
 
-                            if (mEventsList.isEmpty()) {
+                            if (isFragmentActive()) {
 
-                                noEvents.setVisibility(View.VISIBLE);
-                                Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
-                                snackbar.setAction("Add", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        openCreateEventFragment();
-                                    }
-                                });
-                                snackbar.show();
+                                if (mEventsList.isEmpty()) {
+
+                                    noEvents.setVisibility(View.VISIBLE);
+                                    Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
+                                    snackbar.setAction("Add", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            openCreateEventFragment();
+                                        }
+                                    });
+                                    snackbar.show();
+                                }
+
+                                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                                recyclerView.setAdapter(adapter);
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                recyclerView.setLayoutManager(linearLayoutManager);
                             }
-
-                            OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(),getResources());
-                            recyclerView.setAdapter(adapter);
-                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                            recyclerView.setLayoutManager(linearLayoutManager);
                         }
 
                         @Override
@@ -273,5 +277,9 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    private boolean isFragmentActive() {
+        return isAdded() && !isDetached() && !isRemoving();
     }
 }

@@ -71,6 +71,5 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
         }
 
         return view;
-
     }
 }

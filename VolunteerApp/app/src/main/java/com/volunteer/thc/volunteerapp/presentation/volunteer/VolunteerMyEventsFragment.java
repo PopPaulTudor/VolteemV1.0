@@ -76,80 +76,84 @@ public class VolunteerMyEventsFragment extends Fragment {
                     if (currentEvent.getFinishDate() > date.getTimeInMillis()) {
                         mEventsList.add(currentEvent);
                     } else {
-                        mDatabase.child("events/" + currentEvent.getEventID() + "/users/" + user.getUid() + "/flag").setValue("done");
-                        final boolean isUserAccepted = TextUtils.equals(eventSnapshot.child("users").child(user.getUid())
-                                .child("status").getValue().toString(), "accepted");
-                        if (isUserAccepted) {
-                            mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    long experience = dataSnapshot.child("experience").getValue(Long.class);
-                                    mDatabase.child("users").child("volunteers").child(user.getUid()).child("experience")
-                                            .setValue(experience + (currentEvent.getSize() * 5));
-                                }
+                        if (isFragmentActive()) {
+                            mDatabase.child("events/" + currentEvent.getEventID() + "/users/" + user.getUid() + "/flag").setValue("done");
+                            final boolean isUserAccepted = TextUtils.equals(eventSnapshot.child("users").child(user.getUid())
+                                    .child("status").getValue().toString(), "accepted");
+                            if (isUserAccepted) {
+                                mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        long experience = dataSnapshot.child("experience").getValue(Long.class);
+                                        mDatabase.child("users").child("volunteers").child(user.getUid()).child("experience")
+                                                .setValue(experience + (currentEvent.getSize() * 5));
+                                    }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
 
-                                }
-                            });
-                            View alertView = getActivity().getLayoutInflater().inflate(R.layout.volunteer_alert_dialog, null);
-                            final AlertDialog alert = new AlertDialog.Builder(getActivity())
-                                    .setView(alertView)
-                                    .setTitle("Event finished")
-                                    .setMessage("One of the events you volunteered for, " + currentEvent.getName() + ", has finished. " +
-                                            "Please give the event organiser a rating. ")
-                                    .setCancelable(false)
-                                    .setPositiveButton("DONE", null)
-                                    .create();
+                                    }
+                                });
+                                View alertView = getActivity().getLayoutInflater().inflate(R.layout.volunteer_alert_dialog, null);
+                                final AlertDialog alert = new AlertDialog.Builder(getActivity())
+                                        .setView(alertView)
+                                        .setTitle("Event finished")
+                                        .setMessage("One of the events you volunteered for, " + currentEvent.getName() + ", has finished. " +
+                                                "Please give the event organiser a rating. ")
+                                        .setCancelable(false)
+                                        .setPositiveButton("DONE", null)
+                                        .create();
 
-                            final RatingBar ratingBar = (RatingBar) alertView.findViewById(R.id.ratingBar);
-                            final TextView noStarsText = (TextView) alertView.findViewById(R.id.noStarsText);
+                                final RatingBar ratingBar = (RatingBar) alertView.findViewById(R.id.ratingBar);
+                                final TextView noStarsText = (TextView) alertView.findViewById(R.id.noStarsText);
 
-                            alert.show();
-                            alert.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    final int starsCount = (int) ratingBar.getRating();
-                                    Log.w("rating", starsCount + "");
-                                    if (starsCount > 0) {
-                                        alert.dismiss();
-                                        mDatabase.child("users").child("organisers").child(currentEvent.getCreated_by())
-                                                .child("org_rating").runTransaction(new Transaction.Handler() {
-                                            @Override
-                                            public Transaction.Result doTransaction(MutableData mutableData) {
-                                                OrganiserRating organiserRating = mutableData.getValue(OrganiserRating.class);
-                                                if (organiserRating == null) {
+                                alert.show();
+                                alert.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        final int starsCount = (int) ratingBar.getRating();
+                                        Log.w("rating", starsCount + "");
+                                        if (starsCount > 0) {
+                                            alert.dismiss();
+                                            mDatabase.child("users").child("organisers").child(currentEvent.getCreated_by())
+                                                    .child("org_rating").runTransaction(new Transaction.Handler() {
+                                                @Override
+                                                public Transaction.Result doTransaction(MutableData mutableData) {
+                                                    OrganiserRating organiserRating = mutableData.getValue(OrganiserRating.class);
+                                                    if (organiserRating == null) {
+                                                        return Transaction.success(mutableData);
+                                                    }
+
+                                                    organiserRating.calculateNewRating(starsCount);
+                                                    mutableData.setValue(organiserRating);
                                                     return Transaction.success(mutableData);
                                                 }
 
-                                                organiserRating.calculateNewRating(starsCount);
-                                                mutableData.setValue(organiserRating);
-                                                return Transaction.success(mutableData);
-                                            }
-
-                                            @Override
-                                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                                                Log.e("Transaction", "onComplete:" + databaseError);
-                                            }
-                                        });
-                                        Toast.makeText(getActivity(), "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        noStarsText.setVisibility(View.VISIBLE);
+                                                @Override
+                                                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                                                    Log.e("Transaction", "onComplete:" + databaseError);
+                                                }
+                                            });
+                                            Toast.makeText(getActivity(), "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            noStarsText.setVisibility(View.VISIBLE);
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                     }
+                    if (mEventsList.isEmpty()) {
+                        noEvents.setVisibility(View.VISIBLE);
+                    }
+                    if(isFragmentActive()) {
+                        mProgressBar.setVisibility(View.GONE);
+                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                        recyclerView.setAdapter(adapter);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                        recyclerView.setLayoutManager(linearLayoutManager);
+                    }
                 }
-                if (mEventsList.isEmpty()) {
-                    noEvents.setVisibility(View.VISIBLE);
-                }
-                mProgressBar.setVisibility(View.GONE);
-                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(),getResources());
-                recyclerView.setAdapter(adapter);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                recyclerView.setLayoutManager(linearLayoutManager);
             }
 
             @Override
@@ -157,5 +161,9 @@ public class VolunteerMyEventsFragment extends Fragment {
 
             }
         });
+    }
+
+    private boolean isFragmentActive() {
+        return isAdded() && !isDetached() && !isRemoving();
     }
 }
