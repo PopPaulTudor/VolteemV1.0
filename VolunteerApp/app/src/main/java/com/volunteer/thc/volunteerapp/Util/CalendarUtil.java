@@ -1,22 +1,16 @@
 package com.volunteer.thc.volunteerapp.util;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by poppa on 02.08.2017.
  */
-
 public final class CalendarUtil {
 
-
-    public static String getStringDateFromMM(long date){
-
-        Calendar calendar= Calendar.getInstance();
-        calendar.setTimeInMillis(date);
-
+    public static String getStringDateFromMM(long millis) {
+        Date date = new Date(millis);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        dateFormat.setTimeZone(calendar.getTimeZone());
-        return dateFormat.format(calendar.getTime());
+        return dateFormat.format(date);
     }
 }
