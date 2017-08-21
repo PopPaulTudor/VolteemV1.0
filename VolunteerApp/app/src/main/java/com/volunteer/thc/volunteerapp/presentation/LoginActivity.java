@@ -18,6 +18,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.LoginEvent;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -177,9 +180,25 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startActivityByClass(Class activity) {
+        // Log Crashlytics user
+        logUser();
+        Answers.getInstance().logLogin(new LoginEvent()
+                .putMethod("LoginMethod")
+                .putSuccess(true));
+
         Intent intent = new Intent(LoginActivity.this, activity);
         startActivity(intent);
         finish();
+    }
+
+    private void logUser() {
+        if (mAuth.getCurrentUser() != null) {
+            // You can call any combination of these three methods
+            Crashlytics.setUserIdentifier(mAuth.getCurrentUser().getUid());
+            Crashlytics.setUserEmail(mAuth.getCurrentUser().getEmail());
+            Crashlytics.setUserName(mAuth.getCurrentUser().getDisplayName());
+            Log.d(TAG, "Crashlytics setup successful!");
+        }
     }
 
     private boolean isNetworkAvailable() {

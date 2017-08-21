@@ -83,6 +83,9 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity android:name=".presentation.organiser.OrganiserFeedbackActivity"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="008fc2192d2ffc17f33d76ccfaceff7d975d199f" />
     </application>
 
 

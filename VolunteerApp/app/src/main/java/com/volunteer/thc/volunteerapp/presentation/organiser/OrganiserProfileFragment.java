@@ -42,10 +42,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.util.ImageUtils;
-import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
+import com.volunteer.thc.volunteerapp.util.ImageUtils;
+import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -150,10 +150,8 @@ public class OrganiserProfileFragment extends Fragment {
         ValueEventListener mOrganiserProfileListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 organiser = dataSnapshot.getValue(Organiser.class);
 
-                // TODO check for NPE if organiser==null
                 mCompany.setText(organiser.getCompany());
                 mEmail.setText(organiser.getEmail());
                 mPhone.setText(organiser.getPhone());
