@@ -31,6 +31,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 
+import de.cketti.library.changelog.ChangeLog;
+
 /**
  * Created by Cristi on 6/17/2017.
  */
@@ -149,6 +151,28 @@ public class SettingsFragment extends Fragment {
                 });
             }
         });
+
+        view.findViewById(R.id.settings_feedback).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent Email = new Intent(Intent.ACTION_SEND);
+                Email.setType("text/email");
+                // TODO we should add a second account just for app feedback (for security reasons)
+                Email.putExtra(Intent.EXTRA_EMAIL, new String[] { "thcvolunteerapp@gmail.com" });
+                Email.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
+                Email.putExtra(Intent.EXTRA_TEXT, "");
+                startActivity(Intent.createChooser(Email, "Send Feedback:"));
+            }
+        });
+
+        view.findViewById(R.id.settings_changelog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChangeLog changelog = new ChangeLog(getActivity());
+                changelog.getLogDialog().show();
+            }
+        });
+
         return view;
     }
 

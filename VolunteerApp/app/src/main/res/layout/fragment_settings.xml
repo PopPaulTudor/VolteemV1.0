@@ -1,79 +1,124 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clickable="true"
-    tools:context="com.volunteer.thc.volunteerapp.presentation.SettingsFragment">
+				xmlns:tools="http://schemas.android.com/tools"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:clickable="true"
+				tools:context="com.volunteer.thc.volunteerapp.presentation.SettingsFragment">
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/notification_button"
-        android:layout_width="match_parent"
-        android:layout_height="40sp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:padding="5sp"
-        android:text="@string/notifications"
-        android:textColor="@color/black" />
+	<android.support.v7.widget.SwitchCompat
+		android:id="@+id/notification_button"
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:layout_alignParentStart="true"
+		android:layout_alignParentTop="true"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="5dp"
+		android:background="@color/white"
+		android:gravity="center_vertical"
+		android:padding="5dp"
+		android:text="@string/notifications"
+		android:textColor="@color/black"
+		android:textSize="16sp"
+		android:textStyle="bold"/>
 
-    <Button
-        android:id="@+id/change_pass_button"
-        android:layout_width="match_parent"
-        android:layout_height="40sp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/notification_button"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:padding="5sp"
-        android:text="@string/change_password"
-        android:textAllCaps="true"
-        android:textColor="@color/black" />
+	<Button
+		android:id="@+id/change_pass_button"
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:layout_alignParentStart="true"
+		android:layout_below="@id/notification_button"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="5dp"
+		android:background="@color/white"
+		android:gravity="center_vertical"
+		android:padding="5dp"
+		android:text="@string/change_password"
+		android:textAllCaps="true"
+		android:textColor="@color/black"
+		android:textSize="16sp"/>
 
-    <Button
-        android:id="@+id/about_button"
-        android:layout_width="match_parent"
-        android:layout_height="40sp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/change_pass_button"
-        android:layout_marginTop="68dp"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:padding="5sp"
-        android:text="@string/about"
-        android:textColor="@color/black" />
+	<Button
+		android:id="@+id/about_button"
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:layout_alignParentStart="true"
+		android:layout_below="@id/change_pass_button"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="5dp"
+		android:layout_marginTop="10dp"
+		android:background="@color/white"
+		android:gravity="center_vertical"
+		android:padding="5dp"
+		android:text="@string/about"
+		android:textColor="@color/black"
+		android:textSize="16sp"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="40sp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/about_button"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:padding="5sp"
-        android:text="Facebook"
-        android:textColor="@color/black" />
+	<Button
+		android:id="@+id/settings_facebook_btn"
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:layout_alignParentStart="true"
+		android:layout_below="@id/about_button"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="5dp"
+		android:background="@color/white"
+		android:gravity="center_vertical"
+		android:padding="5dp"
+		android:text="Facebook"
+		android:textColor="@color/black"
+		android:textSize="16sp"/>
 
-    <Button
-        android:id="@+id/button_delete_account"
-        android:layout_width="match_parent"
-        android:layout_height="40sp"
-        android:layout_above="@+id/text_settings"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="22dp"
-        android:background="@color/white"
-        android:text="@string/delete_account"
-        android:textColor="@color/colorAccent" />
+	<Button
+		android:id="@+id/settings_feedback"
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:layout_alignParentStart="true"
+		android:layout_below="@id/settings_facebook_btn"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="5dp"
+		android:background="@color/white"
+		android:gravity="center_vertical"
+		android:padding="5dp"
+		android:text="Send feedback"
+		android:textColor="@color/black"
+		android:textSize="16sp"/>
 
-    <TextView
-        android:id="@+id/text_settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
-        android:text="-- App Name --"
-        android:textColor="@color/green1"
-        android:textSize="22sp" />
+	<Button
+		android:id="@+id/settings_changelog"
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:layout_alignParentStart="true"
+		android:layout_below="@id/settings_feedback"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="5dp"
+		android:background="@color/white"
+		android:gravity="center_vertical"
+		android:padding="5dp"
+		android:text="Changelog"
+		android:textColor="@color/black"
+		android:textSize="16sp"/>
+
+	<Button
+		android:id="@+id/button_delete_account"
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:layout_above="@+id/text_settings"
+		android:layout_alignParentStart="true"
+		android:layout_marginBottom="15dp"
+		android:backgroundTint="@color/tint_delete_account"
+		android:text="@string/delete_account"
+		android:textColor="@color/colorAccent"
+		android:textSize="20sp"/>
+
+	<TextView
+		android:id="@+id/text_settings"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="20dp"
+		android:text="-- App Version Name --"
+		android:textColor="@color/black"
+		android:textSize="20sp"/>
 
 </RelativeLayout>

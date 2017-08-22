@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog>
+	<release version="1.0.1" versioncode="2">
+		<change>UI improvements</change>
+		<change>Added profile pictures</change>
+		<change>Bug fixes</change>
+	</release>
+	<release version="1.0" versioncode="1">
+		<change>First release</change>
+	</release>
+</changelog>
