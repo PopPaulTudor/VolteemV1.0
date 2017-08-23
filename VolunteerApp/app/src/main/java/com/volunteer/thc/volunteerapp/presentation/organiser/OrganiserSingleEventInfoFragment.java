@@ -214,6 +214,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 .setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        OrganiserEventsFragment.hasActionHappened = true;
                         mDatabase.child("events").child(mCurrentEvent.getEventID()).setValue(null);
                         Toast.makeText(getActivity(), "Event deleted.", Toast.LENGTH_SHORT).show();
                         getActivity().finish();

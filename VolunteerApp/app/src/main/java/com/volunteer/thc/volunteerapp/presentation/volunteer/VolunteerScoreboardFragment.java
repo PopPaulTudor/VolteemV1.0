@@ -59,7 +59,7 @@ public class VolunteerScoreboardFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 experience = dataSnapshot.getValue(Integer.class);
-                experienceText.setText("Your XP: " + experience);
+                experienceText.setText("XP: " + experience);
                 mProgressBar.setVisibility(View.GONE);
             }
 
@@ -79,7 +79,7 @@ public class VolunteerScoreboardFragment extends Fragment {
                         if (position <= 10) {
                             congratsText.setVisibility(View.VISIBLE);
                         }
-                        leaderboardPosition.setText("Your rank: " + position);
+                        leaderboardPosition.setText("Rank: " + position);
                     } else {
                         --position;
                     }

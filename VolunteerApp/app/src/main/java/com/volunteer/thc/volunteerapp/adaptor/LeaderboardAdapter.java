@@ -8,6 +8,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
@@ -19,9 +20,17 @@ import java.util.ArrayList;
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.EventViewHolder> {
 
     private ArrayList<Volunteer> listVolunteer;
+    private ArrayList<Organiser> listOrganiser;
+    public static final int ORGANISER = 2;
+    private int flag = 1;
 
     public LeaderboardAdapter(ArrayList<Volunteer> listVolunteer) {
         this.listVolunteer = listVolunteer;
+    }
+
+    public LeaderboardAdapter(ArrayList<Organiser> listOrganiser, final int flag) {
+        this.listOrganiser = listOrganiser;
+        this.flag = flag;
     }
 
     @Override
@@ -32,27 +41,36 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     @Override
     public void onBindViewHolder(EventViewHolder holder, final int position) {
-        holder.nameVolunteer.setText(listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname());
-        holder.volunteerPosition.setText((position + 1) + ".");
-        holder.expVolunteer.setText(listVolunteer.get(position).getExperience() + "");
+        if(flag == 1) {
+            holder.userName.setText(listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname());
+            holder.userPosition.setText((position + 1) + ".");
+            holder.userExperience.setText(listVolunteer.get(position).getExperience() + "");
+        } else {
+            holder.userName.setText(listOrganiser.get(position).getCompany());
+            holder.userPosition.setText((position + 1) + ".");
+            holder.userExperience.setText(listOrganiser.get(position).getExperience() + "");
+        }
     }
 
     @Override
     public int getItemCount() {
-        return listVolunteer.size();
+        if(flag == 1) {
+            return listVolunteer.size();
+        }
+        return listOrganiser.size();
     }
 
     class EventViewHolder extends RecyclerView.ViewHolder {
-        TextView nameVolunteer, expVolunteer, volunteerPosition;
+        TextView userName, userExperience, userPosition;
         RelativeLayout item;
 
         EventViewHolder(View itemView) {
             super(itemView);
 
             item = (RelativeLayout) itemView.findViewById(R.id.item_view);
-            volunteerPosition = (TextView) itemView.findViewById(R.id.leaderboardPosition);
-            nameVolunteer = (TextView) itemView.findViewById(R.id.volunteer_name);
-            expVolunteer = (TextView) itemView.findViewById(R.id.volunteer_experience);
+            userPosition = (TextView) itemView.findViewById(R.id.leaderboardPosition);
+            userName = (TextView) itemView.findViewById(R.id.user_name);
+            userExperience = (TextView) itemView.findViewById(R.id.user_experience);
         }
     }
 }

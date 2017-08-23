@@ -46,6 +46,7 @@ public class VolunteerMyEventsFragment extends Fragment {
     private RecyclerView recyclerView;
     private TextView noEvents;
     private Calendar date = Calendar.getInstance();
+    protected static boolean hasActionHappened = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,13 +57,18 @@ public class VolunteerMyEventsFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
         noEvents = (TextView) view.findViewById(R.id.no_events_text);
+
+        loadEvents();
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        loadEvents();
+        if(hasActionHappened) {
+            loadEvents();
+            hasActionHappened = false;
+        }
     }
 
     private void loadEvents() {

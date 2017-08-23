@@ -45,5 +45,6 @@
     <string name="all_events">All Events</string>
     <string name="my_events">My Events</string>
     <string name="profile">Profile</string>
-    <string name="your_rank_loading">Your rank: Loading...</string>
+    <string name="your_rank_loading">Rank: Loading...</string>
+    <string name="your_rating">Rating: </string>
 </resources>

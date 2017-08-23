@@ -7,4 +7,70 @@
     android:focusableInTouchMode="true"
     tools:context="com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserScoreboardFragment">
 
+    <ProgressBar
+        android:id="@+id/indeterminateBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp" />
+
+    <TextView
+        android:id="@+id/congratsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Congrats! You're in the top 10 organisers!"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/leaderboardPosition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="110dp"
+        android:text="@string/your_rank_loading"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/experienceText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="80dp"
+        android:text="XP"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/experienceText"
+        android:layout_marginTop="50dp"
+        android:drawableEnd="@drawable/ic_star"
+        android:text="@string/your_rating"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/leaderboard_show_hide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/leaderboardRecView"
+        android:layout_alignEnd="@+id/leaderboardRecView"
+        android:layout_alignTop="@+id/experienceText"
+        android:text="SHOW RANKING" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/leaderboardRecView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/leaderboardPosition"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp">
+
+    </android.support.v7.widget.RecyclerView>
 </RelativeLayout>

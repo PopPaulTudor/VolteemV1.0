@@ -51,6 +51,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Calendar date = Calendar.getInstance();
     private TextView noEvents;
+    protected static boolean hasActionHappened = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,6 +73,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
             }
         });
 
+        loadEvents();
         setHasOptionsMenu(true);
         return view;
     }
@@ -79,7 +81,10 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onResume() {
         super.onResume();
-        loadEvents();
+        if(hasActionHappened) {
+            loadEvents();
+            hasActionHappened = false;
+        }
     }
 
     @Override

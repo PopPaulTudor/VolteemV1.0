@@ -53,7 +53,7 @@ import java.util.List;
 
 public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private final String pending = "pending", accepted = "accepted";
+    private final String pending = "pending";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private List<Event> mEventsList = new ArrayList<>();
@@ -61,6 +61,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Calendar date = Calendar.getInstance();
     private TextView noEvents;
+    protected static boolean hasActionHappened = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -88,6 +89,8 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                 openCreateEventFragment();
             }
         });
+
+        loadEvents();
         setHasOptionsMenu(true);
         return view;
     }
@@ -101,8 +104,11 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onResume() {
         super.onResume();
-        mEventsList = new ArrayList<>();
-        loadEvents();
+        if(hasActionHappened) {
+            mEventsList = new ArrayList<>();
+            loadEvents();
+            hasActionHappened = false;
+        }
     }
 
     @Override

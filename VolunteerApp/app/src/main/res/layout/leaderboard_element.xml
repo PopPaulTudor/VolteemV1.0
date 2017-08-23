@@ -19,7 +19,7 @@
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/volunteer_name"
+            android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/leaderboardPosition"
@@ -28,10 +28,10 @@
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/volunteer_experience"
+            android:id="@+id/user_experience"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/volunteer_name"
+            android:layout_alignBaseline="@+id/user_name"
             android:layout_marginStart="200dp"
             android:text="500"
             android:textSize="20sp" />
@@ -39,7 +39,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/volunteer_name"
+            android:layout_below="@+id/user_name"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"

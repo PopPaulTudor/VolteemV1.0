@@ -107,7 +107,6 @@ public class CreateEventFragment extends Fragment {
 
                 if (validateForm()) {
 
-
                     hideKeyboardFrom(getActivity(), getView());
                     String name = mName.getText().toString();
                     String location = mLocation.getText().toString();
@@ -116,18 +115,17 @@ public class CreateEventFragment extends Fragment {
                     int size = Integer.parseInt(mSize.getText().toString());
                     final String eventID = mDatabase.child("events").push().getKey();
 
-
                     StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
                     filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
 
-                    mDatabase.child("users/organisers/"+user.getUid())
+                    mDatabase.child("users/organisers/" + user.getUid())
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     int lastEvent = (int) dataSnapshot.child("events").getChildrenCount();
                                     int eventsNr = dataSnapshot.child("eventsnumber").getValue(Integer.class);
-                                    DatabaseUtils.writeData("users/organisers/"+user.getUid()+"/events/"+lastEvent, eventID);
-                                    DatabaseUtils.writeData("users/organisers/"+user.getUid()+"/eventsnumber", eventsNr + 1);
+                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/events/" + lastEvent, eventID);
+                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/eventsnumber", eventsNr + 1);
                                 }
 
                                 @Override
@@ -156,7 +154,6 @@ public class CreateEventFragment extends Fragment {
 
         return view;
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -208,7 +205,6 @@ public class CreateEventFragment extends Fragment {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-
 
     View.OnClickListener setonClickListenerCalendar(final EditText editText) {
         return new View.OnClickListener() {
