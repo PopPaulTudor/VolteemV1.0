@@ -143,16 +143,16 @@ public class VolunteerMyEventsFragment extends Fragment {
                             }
                         }
                     }
-                    if (mEventsList.isEmpty()) {
-                        noEvents.setVisibility(View.VISIBLE);
-                    }
-                    if(isFragmentActive()) {
-                        mProgressBar.setVisibility(View.GONE);
-                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
-                        recyclerView.setAdapter(adapter);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                        recyclerView.setLayoutManager(linearLayoutManager);
-                    }
+                }
+                if (mEventsList.isEmpty()) {
+                    noEvents.setVisibility(View.VISIBLE);
+                }
+                if(isFragmentActive()) {
+                    mProgressBar.setVisibility(View.GONE);
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                    recyclerView.setAdapter(adapter);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(linearLayoutManager);
                 }
             }
 

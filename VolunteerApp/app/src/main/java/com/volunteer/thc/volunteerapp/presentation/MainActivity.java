@@ -38,9 +38,11 @@ import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserProfileFragment;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserScoreboardFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerMyEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerProfileFragment;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerScoreboardFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -55,7 +57,6 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences prefs;
     private CircleImageView mImage;
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,61 +176,61 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         if (isNetworkAvailable()) {
             String actionBarTitle = getActionBar() == null ? "" : String.valueOf(getActionBar().getTitle());
-            if (id == R.id.nav_events) {
-                prefs.edit().putInt("cameFrom", 1).apply();
-                String userStatus = prefs.getString("user_status", null);
-
-                if (TextUtils.equals(userStatus, "Volunteer")) {
-                    replaceFragmentByClass(new VolunteerEventsFragment());
-                } else {
-                    replaceFragmentByClass(new OrganiserEventsFragment());
+            final String userStatus = prefs.getString("user_status", null);
+            final String volunteer = "Volunteer";
+            switch (id) {
+                case R.id.nav_events: {
+                    prefs.edit().putInt("cameFrom", 1).apply();
+                    if (TextUtils.equals(userStatus, volunteer)) {
+                        replaceFragmentByClass(new VolunteerEventsFragment());
+                    } else {
+                        replaceFragmentByClass(new OrganiserEventsFragment());
+                    }
+                    actionBarTitle = "Events";
+                    break;
                 }
-
-                actionBarTitle = "Events";
-                item.setChecked(true);
-
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawers();
-            } else if (id == R.id.user_events) {
-                prefs.edit().putInt("cameFrom", 2).apply();
-                replaceFragmentByClass(new VolunteerMyEventsFragment());
-                actionBarTitle = "My Events";
-                item.setChecked(true);
-
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawers();
-            } else if (id == R.id.nav_profile) {
-                String userStatus = prefs.getString("user_status", null);
-                if (TextUtils.equals(userStatus, "Volunteer")) {
-                    replaceFragmentByClass(new VolunteerProfileFragment());
-                } else {
-                    replaceFragmentByClass(new OrganiserProfileFragment());
+                case R.id.user_events: {
+                    prefs.edit().putInt("cameFrom", 2).apply();
+                    replaceFragmentByClass(new VolunteerMyEventsFragment());
+                    actionBarTitle = "My Events";
+                    break;
                 }
-
-                actionBarTitle = "Profile";
-                item.setChecked(true);
-
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawers();
-            } else if (id == R.id.nav_settings) {
-                replaceFragmentByClass(new SettingsFragment());
-                actionBarTitle = "Settings";
-                item.setChecked(true);
-
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawers();
-            } else if (id == R.id.nav_logout) {
-                Auth.signOut();
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("user_status", null);
-                editor.putString("name", null);
-                editor.putString("gender", null);
-                editor.apply();
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+                case R.id.nav_profile: {
+                    if (TextUtils.equals(userStatus, volunteer)) {
+                        replaceFragmentByClass(new VolunteerProfileFragment());
+                    } else {
+                        replaceFragmentByClass(new OrganiserProfileFragment());
+                    }
+                    actionBarTitle = "Profile";
+                    break;
+                }
+                case R.id.nav_settings: {
+                    replaceFragmentByClass(new SettingsFragment());
+                    actionBarTitle = "Settings";
+                    break;
+                }
+                case R.id.nav_scoreboard: {
+                    if (TextUtils.equals(userStatus, volunteer)) {
+                        replaceFragmentByClass(new VolunteerScoreboardFragment());
+                    } else {
+                        replaceFragmentByClass(new OrganiserScoreboardFragment());
+                    }
+                    actionBarTitle = "Scoreboard";
+                    break;
+                }
+                case R.id.nav_logout: {
+                    Auth.signOut();
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("user_status", null);
+                    editor.putString("name", null);
+                    editor.putString("gender", null);
+                    editor.apply();
+                    startActivity(new Intent(this, LoginActivity.class));
+                    finish();
+                    break;
+                }
             }
-
+            item.setChecked(true);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(actionBarTitle);
             }

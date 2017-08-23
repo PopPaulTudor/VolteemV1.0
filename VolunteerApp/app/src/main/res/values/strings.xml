@@ -4,7 +4,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="settings">Settings</string>
     <string name="title_activity_login">Sign in</string>
 
     <string name="spinner_title">Gender</string>
@@ -41,4 +41,9 @@
     <string name="no_stars">Please give us your feedback.</string>
     <string name="no_events">No events to show.</string>
     <string name="action_delete">Delete</string>
+    <string name="scoreboard">Scoreboard</string>
+    <string name="all_events">All Events</string>
+    <string name="my_events">My Events</string>
+    <string name="profile">Profile</string>
+    <string name="your_rank_loading">Your rank: Loading...</string>
 </resources>
