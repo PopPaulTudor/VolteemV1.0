@@ -16,8 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +28,7 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -36,9 +39,11 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
     private Event mCurrentEvent = new Event();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private EditText mName, mLocation, mStartDate, mType, mDescription, mDeadline, mSize, mFinishDate;
+    private EditText mName, mLocation, mStartDate, mDescription, mDeadline, mSize, mFinishDate;
     private MenuItem mEdit, mSave, mCancel, mDelete;
     private long currentStartDate, currentFinishDate, currentDeadline;
+    private Spinner mType;
+    private ArrayList<String> typeList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -47,19 +52,24 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_info, container, false);
 
         mCurrentEvent = (Event) getArguments().getSerializable("currentEvent");
+        populateSpinnerArray();
 
         mName = (EditText) view.findViewById(R.id.event_name);
         mLocation = (EditText) view.findViewById(R.id.event_location);
         mStartDate = (EditText) view.findViewById(R.id.event_date_start);
         mFinishDate = (EditText) view.findViewById(R.id.event_date_finish);
         mDeadline = (EditText) view.findViewById(R.id.event_deadline);
-        mType = (EditText) view.findViewById(R.id.event_type);
+        mType = (Spinner) view.findViewById(R.id.event_type);
         mDescription = (EditText) view.findViewById(R.id.event_description);
         mSize = (EditText) view.findViewById(R.id.event_size);
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, typeList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mType.setAdapter(adapter);
+
         mName.setText(mCurrentEvent.getName());
         mLocation.setText(mCurrentEvent.getLocation());
-        mType.setText(mCurrentEvent.getType());
+        mType.setSelection(typeList.indexOf(mCurrentEvent.getType()));
         mDescription.setText(mCurrentEvent.getDescription());
         mDeadline.setText(CalendarUtil.getStringDateFromMM(mCurrentEvent.getDeadline()));
         mStartDate.setText(CalendarUtil.getStringDateFromMM(mCurrentEvent.getStartDate()));
@@ -123,7 +133,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
         currentName = mName.getText().toString();
         currentLocation = mLocation.getText().toString();
-        currentType = mType.getText().toString();
+        currentType = mType.getSelectedItem().toString();
         currentDescription = mDescription.getText().toString();
         currentSize = mSize.getText().toString();
 
@@ -182,7 +192,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
         mName.setText(mCurrentEvent.getName());
         mLocation.setText(mCurrentEvent.getLocation());
-        mType.setText(mCurrentEvent.getType());
+        mType.setSelection(typeList.indexOf(mCurrentEvent.getType()));
         mDescription.setText(mCurrentEvent.getDescription());
         mSize.setText(mCurrentEvent.getSize() + "");
         mDeadline.setText(CalendarUtil.getStringDateFromMM(mCurrentEvent.getDeadline()));
@@ -191,7 +201,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
         mName.setError(null);
         mLocation.setError(null);
-        mType.setError(null);
         mDescription.setError(null);
         mDeadline.setError(null);
         mStartDate.setError(null);
@@ -240,13 +249,12 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mStartDate.setEnabled(bool);
         mFinishDate.setEnabled(bool);
         mDeadline.setEnabled(bool);
-
     }
 
     public boolean validateForm() {
 
         boolean valid;
-        valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mType) &&
+        valid = (editTextIsValid(mName) && editTextIsValid(mLocation) &&
                 editTextIsValid(mDescription) && editTextIsValid(mDeadline) && editTextIsValid(mSize));
         return valid;
     }
@@ -267,6 +275,15 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     private void hideKeyboardFrom(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private void populateSpinnerArray() {
+        typeList.add("Sports");
+        typeList.add("Music");
+        typeList.add("Festival");
+        typeList.add("Charity");
+        typeList.add("Training");
+        typeList.add("Other");
     }
 
     View.OnClickListener setonClickListenerCalendar(final EditText editText) {

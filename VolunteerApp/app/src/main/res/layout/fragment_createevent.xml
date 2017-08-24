@@ -7,7 +7,6 @@
     android:orientation="vertical"
     tools:context="com.volunteer.thc.volunteerapp.presentation.CreateEventFragment">
 
-
     <ScrollView
         android:id="@+id/create_event"
         android:layout_width="match_parent"
@@ -22,15 +21,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-
                 <ImageView
                     android:id="@+id/event_image"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:src="@color/colorPrimary" />
-
-
-
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -70,9 +65,7 @@
                         android:focusable="false"
                         android:hint="Start event date " />
 
-
                 </android.support.design.widget.TextInputLayout>
-
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -86,21 +79,13 @@
                         android:focusable="false"
                         android:hint="Finish event date" />
 
-
                 </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <Spinner
+                    android:id="@+id/event_type"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <EditText
-                        android:id="@+id/event_type"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:hint="Type"
-                        android:inputType="textPersonName" />
-
-                </android.support.design.widget.TextInputLayout>
+                    android:layout_height="wrap_content"
+                    android:prompt="@string/type" />
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -158,11 +143,8 @@
                     android:text="CANCEL"
                     android:textStyle="bold" />
 
-
             </LinearLayout>
 
         </android.support.v4.widget.NestedScrollView>
-
-
     </ScrollView>
 </LinearLayout>

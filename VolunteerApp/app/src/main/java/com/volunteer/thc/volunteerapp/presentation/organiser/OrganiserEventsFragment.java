@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,7 +28,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,7 +66,11 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Calendar date = Calendar.getInstance();
     private TextView noEvents;
+    private Spinner actionFilter;
+    private ArrayList<String> typeList = new ArrayList<>();
     protected static boolean hasActionHappened = false;
+    private MenuItem filter;
+    private String filterType = "All";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -97,14 +106,13 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
     @Override
     public void onRefresh() {
-        mEventsList = new ArrayList<>();
         loadEvents();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(hasActionHappened) {
+        if (hasActionHappened) {
             mEventsList = new ArrayList<>();
             loadEvents();
             hasActionHappened = false;
@@ -126,11 +134,45 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
         searchView.clearFocus();
 
         MenuItem searchMenu = menu.findItem(R.id.app_bar_search);
+        filter = menu.findItem(R.id.action_filter);
+        actionFilter = (Spinner) filter.getActionView().findViewById(R.id.filterSpinner);
+        populateSpinnerArray();
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, typeList) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                view.setVisibility(View.GONE);
+                return view;
+            }
+        };
+        actionFilter.setAdapter(adapter);
+        actionFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (!TextUtils.equals(filterType, actionFilter.getSelectedItem().toString())) {
+                    filterType = actionFilter.getSelectedItem().toString();
+                    noEvents.setVisibility(View.GONE);
+                    if (TextUtils.equals(filterType, "All")) {
+                        loadEvents();
+                    } else {
+                        loadFilterQuery(filterType);
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         MenuItemCompat.setOnActionExpandListener(searchMenu,
                 new MenuItemCompat.OnActionExpandListener() {
                     @Override
                     public boolean onMenuItemActionCollapse(MenuItem item) {
                         item.getActionView().clearFocus();
+                        filter.setVisible(true);
                         return true;  // Return true to collapse action view
                     }
 
@@ -141,6 +183,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                         //get input method
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+                        filter.setVisible(false);
                         return true;  // Return true to expand action view
                     }
                 });
@@ -154,6 +197,8 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
             case R.id.app_bar_search:
                 getActivity().onSearchRequested();
                 return true;
+            case R.id.action_filter:
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -162,6 +207,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     private void loadEvents() {
 
         mSwipeRefreshLayout.setRefreshing(true);
+        mEventsList = new ArrayList<>();
 
         if (isNetworkAvailable()) {
 
@@ -267,6 +313,54 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
         }
     }
 
+    private void loadFilterQuery(final String filter) {
+        mSwipeRefreshLayout.setRefreshing(true);
+        mEventsList = new ArrayList<>();
+        mDatabase.child("events").orderByChild("created_by").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    if (TextUtils.equals(dataSnapshot1.child("type").getValue().toString(), filter) &&
+                            TextUtils.equals(dataSnapshot1.child("validity").getValue().toString(), "valid")) {
+                        final Event currentEvent = dataSnapshot1.getValue(Event.class);
+                        ArrayList<String> reg_users = new ArrayList<>();
+                        ArrayList<String> acc_users = new ArrayList<>();
+
+                        for (DataSnapshot registered_users : dataSnapshot1.child("users").getChildren()) {
+                            if (TextUtils.equals(registered_users.child("status").getValue().toString(), pending)) {
+                                reg_users.add(registered_users.child("id").getValue().toString());
+                            } else {
+                                acc_users.add(registered_users.child("id").getValue().toString());
+                            }
+                        }
+                        currentEvent.setRegistered_volunteers(reg_users);
+                        currentEvent.setAccepted_volunteers(acc_users);
+
+                        mEventsList.add(currentEvent);
+                    }
+                }
+                mSwipeRefreshLayout.setRefreshing(false);
+                if (isFragmentActive()) {
+
+                    if (mEventsList.isEmpty()) {
+                        noEvents.setVisibility(View.VISIBLE);
+                    }
+
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                    recyclerView.setAdapter(adapter);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(linearLayoutManager);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void openCreateEventFragment() {
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -283,6 +377,16 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    private void populateSpinnerArray() {
+        typeList.add("All");
+        typeList.add("Sports");
+        typeList.add("Music");
+        typeList.add("Festival");
+        typeList.add("Charity");
+        typeList.add("Training");
+        typeList.add("Other");
     }
 
     private boolean isFragmentActive() {

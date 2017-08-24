@@ -8,6 +8,7 @@
     <string name="title_activity_login">Sign in</string>
 
     <string name="spinner_title">Gender</string>
+    <string name="type">Type</string>
 
     <!-- Strings related to profile edit actions -->
     <string name="action_edit">Edit</string>
@@ -47,4 +48,6 @@
     <string name="profile">Profile</string>
     <string name="your_rank_loading">Rank: Loading...</string>
     <string name="your_rating">Rating: </string>
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
 </resources>
