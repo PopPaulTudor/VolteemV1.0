@@ -68,7 +68,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     private TextView noEvents;
     private Spinner actionFilter;
     private ArrayList<String> typeList = new ArrayList<>();
-    protected static boolean hasActionHappened = false;
+    public static boolean hasActionHappened = false;
     private MenuItem filter;
     private String filterType = "All";
 
@@ -276,8 +276,6 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                 }
                             }
 
-                            mSwipeRefreshLayout.setRefreshing(false);
-
                             if (isFragmentActive()) {
 
                                 if (mEventsList.isEmpty()) {
@@ -298,6 +296,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                                 recyclerView.setLayoutManager(linearLayoutManager);
                             }
+                            mSwipeRefreshLayout.setRefreshing(false);
                         }
 
                         @Override

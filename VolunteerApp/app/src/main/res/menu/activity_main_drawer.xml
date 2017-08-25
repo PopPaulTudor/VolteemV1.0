@@ -20,9 +20,14 @@
             android:title="@string/profile" />
 
         <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/settings"
-            android:title="@string/settings" />
+            android:id="@+id/nav_news"
+            android:icon="@drawable/ic_news"
+            android:title="@string/news"/>
+
+        <item
+            android:id="@+id/nav_chat"
+            android:icon="@drawable/ic_chat"
+            android:title="@string/chat"/>
 
         <item
             android:id="@+id/nav_scoreboard"
@@ -30,9 +35,16 @@
             android:title="@string/scoreboard" />
 
         <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/settings"
+            android:title="@string/settings" />
+
+
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/exit"
             android:title="Logout" />
+
 
     </group>
 

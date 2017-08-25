@@ -1,8 +1,6 @@
 package com.volunteer.thc.volunteerapp.adaptor;
 
-import android.app.Notification;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +13,9 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.notification.NotifcationFirebase;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 
 import java.util.ArrayList;
 
@@ -88,10 +84,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
                 listVolunteer.remove(position);
                 volunteerIDs.remove(position);
-
-
-
-
+                notifyDataSetChanged();
+                OrganiserEventsFragment.hasActionHappened = true;
             }
         });
     }
