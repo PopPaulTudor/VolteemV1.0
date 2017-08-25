@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,10 +29,13 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.OrganiserRating;
+import com.volunteer.thc.volunteerapp.util.CalculateUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Cristi on 7/15/2017.
@@ -91,13 +95,14 @@ public class VolunteerMyEventsFragment extends Fragment {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         long experience = dataSnapshot.child("experience").getValue(Long.class);
+                                        long nrOfDays = TimeUnit.MILLISECONDS.convert(currentEvent.getFinishDate() - currentEvent.getStartDate(), TimeUnit.DAYS);
                                         mDatabase.child("users").child("volunteers").child(user.getUid()).child("experience")
-                                                .setValue(experience + (currentEvent.getSize() * 5));
+                                                .setValue(experience + CalculateUtils.calculateVolunteerExperience(currentEvent.getSize(), nrOfDays));
                                     }
 
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
-
+                                        Log.e("Volunteers", databaseError.getMessage());
                                     }
                                 });
                                 View alertView = getActivity().getLayoutInflater().inflate(R.layout.volunteer_alert_dialog, null);

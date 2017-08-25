@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+	<release version="1.0.3" versioncode="3">
+		<change>Card element improvements</change>
+		<change>Changed how xp is calculated</change>
+	</release>
 	<release version="1.0.1" versioncode="2">
 		<change>UI improvements</change>
 		<change>Added profile pictures</change>

@@ -13,4 +13,5 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000</color>
 	<color name="tint_delete_account">#14000000</color>
+    <color name="cardElementBackgroundTint">#a1ffffff</color>
 </resources>
