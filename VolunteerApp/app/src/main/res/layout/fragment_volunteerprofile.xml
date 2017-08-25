@@ -66,55 +66,45 @@
                 android:textColor="@android:color/black"
                 android:textSize="17sp" />
 
-            <TextView
-                android:id="@+id/text_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/text_age"
+            <ImageView
+                android:id="@+id/image_email_volunteer"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_marginStart="10sp"
                 android:layout_below="@+id/edit_lastname"
-                android:layout_marginTop="26dp"
-                android:text="Email: "
-                android:textColor="@android:color/black"
-                android:textSize="17sp" />
+                android:src="@drawable/email"
+                android:layout_marginTop="26dp" />
 
-            <TextView
-                android:id="@+id/text_age"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/edit_age"
-                android:layout_alignBottom="@+id/edit_age"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/text_email"
-                android:layout_marginStart="10sp"
-                android:text="Age: "
-                android:textColor="@android:color/black"
-                android:textSize="17sp" />
 
-            <TextView
-                android:id="@+id/text_city"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/edit_phone"
-                android:layout_alignBottom="@+id/edit_phone"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/text_age"
-                android:layout_marginStart="10sp"
-                android:text="Phone: "
-                android:textColor="@android:color/black"
-                android:textSize="17sp" />
 
-            <TextView
-                android:id="@+id/text_phone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/edit_city"
-                android:layout_alignBottom="@+id/edit_city"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/text_city"
+            <ImageView
+                android:id="@+id/image_phone_volunteer"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_below="@+id/image_email_volunteer"
                 android:layout_marginStart="10sp"
-                android:text="City: "
-                android:textColor="@android:color/black"
-                android:textSize="17sp" />
+                android:layout_marginTop="5sp"
+                android:src="@drawable/phone" />
+
+            <ImageView
+                android:id="@+id/image_city_volunteer"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_marginTop="5sp"
+                android:layout_below="@id/image_phone_volunteer"
+                android:layout_marginStart="10sp"
+                android:src="@drawable/home" />
+
+            <ImageView
+                android:id="@+id/image_age_volunteer"
+                android:layout_width="40sp"
+                android:layout_below="@+id/image_city_volunteer"
+                android:layout_height="40sp"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="5sp"
+                android:layout_marginStart="10sp"
+                android:src="@drawable/age" />
+
 
             <EditText
                 android:id="@+id/edit_firstname"
@@ -142,33 +132,14 @@
                 android:id="@+id/edit_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/text_email"
-                android:layout_alignBottom="@+id/text_email"
-                android:layout_toEndOf="@+id/text_city"
+                android:layout_alignBottom="@+id/image_email_volunteer"
+                android:layout_alignTop="@+id/image_email_volunteer"
+                android:layout_toEndOf="@+id/image_email_volunteer"
+                android:background="@android:color/transparent"
+                android:ellipsize="end"
                 android:ems="10"
                 android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:inputType="textPersonName" />
-
-            <EditText
-                android:id="@+id/edit_age"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/edit_email"
-                android:layout_below="@+id/edit_email"
-                android:ems="10"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:inputType="number" />
-
-            <EditText
-                android:id="@+id/edit_city"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/edit_age"
-                android:layout_below="@+id/edit_age"
-                android:ems="10"
-                android:focusable="false"
+                android:layout_marginStart="15sp"
                 android:focusableInTouchMode="false"
                 android:inputType="textPersonName" />
 
@@ -176,13 +147,46 @@
                 android:id="@+id/edit_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/edit_city"
-                android:layout_below="@+id/edit_city"
+                android:layout_above="@+id/image_city_volunteer"
+                android:layout_alignEnd="@+id/edit_email"
+                android:layout_below="@+id/edit_email"
+                android:background="@android:color/transparent"
                 android:ems="10"
-                android:maxLength="13"
+                android:focusable="false"
+                android:layout_marginStart="15sp"
+                android:focusableInTouchMode="false"
+                android:inputType="phone"
+                android:maxLength="13" />
+
+            <EditText
+                android:id="@+id/edit_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/edit_phone"
+                android:layout_below="@+id/image_phone_volunteer"
+                android:background="@android:color/transparent"
+                android:ems="10"
+                android:layout_marginStart="15sp"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
-                android:inputType="phone" />
+                android:inputType="textPersonName"
+                android:layout_above="@+id/image_age_volunteer" />
+
+            <EditText
+                android:id="@+id/edit_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:ems="10"
+                android:focusable="false"
+                android:layout_alignBaseline="@+id/image_age_volunteer"
+                android:layout_alignBottom="@+id/image_age_volunteer"
+                android:focusableInTouchMode="false"
+                android:inputType="number"
+                android:layout_alignParentBottom="true"
+                android:layout_alignEnd="@+id/edit_phone"
+                android:layout_alignTop="@+id/image_age_volunteer" />
+
         </RelativeLayout>
     </ScrollView>
 

@@ -22,10 +22,10 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/photo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         android:layout_centerHorizontal="true"
-        android:src="@mipmap/volunteer_logo"
+        android:src="@drawable/orgaiser_picture_default"
         app:civ_border_color="@color/colorPrimary"
         app:civ_border_overlay="true"
         app:civ_border_width="2dp"
@@ -40,85 +40,78 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/text_company"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/edit_company"
-                android:layout_alignBottom="@+id/edit_company"
-                android:layout_alignStart="@+id/text_email"
-                android:text="Company: "
-                android:textColor="@android:color/black"
-                android:textSize="17sp" />
-
-            <TextView
-                android:id="@+id/text_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <ImageView
+                android:id="@+id/image_email"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_below="@+id/edit_company"
+                android:layout_marginTop="40sp"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/text_company"
                 android:layout_marginStart="10sp"
-                android:layout_marginTop="46sp"
-                android:text="Email: "
-                android:textColor="@android:color/black"
-                android:textSize="17sp" />
+                android:src="@drawable/email" />
 
-            <TextView
-                android:id="@+id/text_phone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/edit_phone"
-                android:layout_alignBottom="@+id/edit_phone"
+            <ImageView
+                android:id="@+id/image_phone"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_marginTop="5sp"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/text_email"
+                android:layout_below="@+id/image_email"
                 android:layout_marginStart="10sp"
-                android:text="Phone: "
-                android:textColor="@android:color/black"
-                android:textSize="17sp" />
+                android:src="@drawable/phone" />
 
-            <TextView
-                android:id="@+id/text_city"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/edit_city"
-                android:layout_alignBottom="@+id/edit_city"
+            <ImageView
+                android:id="@+id/image_city"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_marginTop="5sp"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/text_phone"
+                android:layout_below="@id/image_phone"
                 android:layout_marginStart="10sp"
-                android:text="City: "
-                android:textColor="@android:color/black"
-                android:textSize="17sp" />
-
+                android:src="@drawable/home" />
             <EditText
                 android:id="@+id/edit_company"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="30sp"
+                android:textAlignment="center"
+                android:background="@android:color/transparent"
                 android:layout_marginTop="23dp"
-                android:layout_toEndOf="@+id/text_company"
+                android:foregroundGravity="center"
                 android:ems="10"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true" />
 
             <EditText
                 android:id="@+id/edit_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/text_email"
-                android:layout_alignBottom="@+id/text_email"
-                android:layout_alignStart="@+id/edit_phone"
+                android:layout_toEndOf="@+id/image_email"
+                android:layout_alignBottom="@id/image_email"
                 android:ems="10"
+                android:layout_marginStart="15sp"
+                android:background="@android:color/transparent"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
-                android:inputType="textEmailAddress" />
+                android:ellipsize="end"
+                android:inputType="textEmailAddress"
+                android:layout_alignTop="@+id/image_email" />
 
             <EditText
                 android:id="@+id/edit_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/edit_email"
-                android:layout_toEndOf="@+id/text_phone"
+                android:layout_toEndOf="@+id/image_phone"
+                android:layout_alignBaseline="@+id/image_phone"
+                android:layout_alignBottom="@id/image_phone"
                 android:ems="10"
+                android:layout_marginStart="15sp"
+                android:background="@android:color/transparent"
                 android:maxLength="13"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
@@ -128,19 +121,25 @@
                 android:id="@+id/edit_city"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/edit_phone"
+                android:layout_toEndOf="@+id/image_city"
+                android:layout_alignBottom="@+id/image_city"
                 android:layout_below="@+id/edit_phone"
-                android:ems="10"
+                android:layout_alignBaseline="@+id/image_city"
+                android:background="@android:color/transparent"
                 android:focusable="false"
+                android:ems="10"
+                android:layout_marginStart="15sp"
                 android:focusableInTouchMode="false"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                 />
         </RelativeLayout>
+
     </ScrollView>
-
-
     <FrameLayout
         android:id="@+id/organiser_profile_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

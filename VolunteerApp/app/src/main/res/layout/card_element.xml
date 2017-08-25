@@ -21,15 +21,35 @@
                 android:id="@+id/ImageCardElement"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/rectangle" />
+                android:src="@drawable/rectangle"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
+
+            <ImageView
+                android:id="@+id/card_text_back"
+                android:layout_width="170dp"
+                android:layout_height="50dp"
+                android:background="@color/card_back"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                />
+            <ImageView
+                android:id="@+id/card_location_back"
+                android:layout_width="170dp"
+                android:layout_height="50dp"
+                android:background="@color/card_back"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true" />
 
             <TextView
                 android:id="@+id/NameCardElement"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10sp"
-                android:layout_marginTop="78dp"
-                android:hint="Electric Castle 2017" />
+                android:layout_marginStart="5sp"
+                android:hint="Electric Castle 2017"
+                android:textColor="@color/black"
+                android:layout_alignTop="@+id/card_text_back"
+                android:layout_alignParentStart="true" />
 
 
             <TextView
@@ -37,6 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/NameCardElement"
+                android:textColor="@color/black"
                 android:layout_marginBottom="5sp"
                 android:layout_marginStart="10sp"
                 android:hint="13/07/17" />
@@ -46,6 +67,7 @@
                 android:id="@+id/LocationCardElement"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:layout_alignTop="@+id/NameCardElement"
                 android:layout_marginLeft="250dp"
                 android:gravity="center"
