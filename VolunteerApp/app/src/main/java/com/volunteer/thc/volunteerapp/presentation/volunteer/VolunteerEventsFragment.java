@@ -7,11 +7,14 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +22,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +57,10 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Calendar date = Calendar.getInstance();
     private TextView noEvents;
+    private ArrayList<String> typeList = new ArrayList<>();
+    private String filterType = "All";
+    private Spinner actionFilter;
+    protected static boolean hasActionHappened = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,6 +82,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
             }
         });
 
+        loadEvents();
         setHasOptionsMenu(true);
         return view;
     }
@@ -79,7 +90,10 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onResume() {
         super.onResume();
-        loadEvents();
+        if(hasActionHappened) {
+            loadEvents();
+            hasActionHappened = false;
+        }
     }
 
     @Override
@@ -105,10 +119,12 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                         noEvents.setVisibility(View.VISIBLE);
                     }
                     mSwipeRefreshLayout.setRefreshing(false);
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
-                    recyclerView.setAdapter(adapter);
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                    recyclerView.setLayoutManager(linearLayoutManager);
+                    if (isFragmentActive()) {
+                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                        recyclerView.setAdapter(adapter);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                        recyclerView.setLayoutManager(linearLayoutManager);
+                    }
                 }
 
                 @Override
@@ -124,6 +140,40 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
         }
     }
 
+    private void loadFilterQuery(final String filter) {
+        mSwipeRefreshLayout.setRefreshing(true);
+        mEventsList = new ArrayList<>();
+        mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    if (TextUtils.equals(dataSnapshot1.child("type").getValue().toString(), filter) &&
+                            dataSnapshot1.child("deadline").getValue(Long.class) > date.getTimeInMillis()) {
+                        mEventsList.add(dataSnapshot1.getValue(Event.class));
+                    }
+                }
+                mSwipeRefreshLayout.setRefreshing(false);
+                if (isFragmentActive()) {
+
+                    if (mEventsList.isEmpty()) {
+                        noEvents.setVisibility(View.VISIBLE);
+                    }
+
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                    recyclerView.setAdapter(adapter);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(linearLayoutManager);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -137,6 +187,38 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
         searchView.clearFocus();
 
         MenuItem searchMenu = menu.findItem(R.id.app_bar_search);
+        MenuItem filter = menu.findItem(R.id.action_filter);
+        actionFilter = (Spinner) filter.getActionView().findViewById(R.id.filterSpinner);
+        populateSpinnerArray();
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, typeList) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                view.setVisibility(View.GONE);
+                return view;
+            }
+        };
+        actionFilter.setAdapter(adapter);
+        actionFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (!TextUtils.equals(filterType, actionFilter.getSelectedItem().toString())) {
+                    filterType = actionFilter.getSelectedItem().toString();
+                    noEvents.setVisibility(View.GONE);
+                    if (TextUtils.equals(filterType, "All")) {
+                        loadEvents();
+                    } else {
+                        loadFilterQuery(filterType);
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         MenuItemCompat.setOnActionExpandListener(searchMenu,
                 new MenuItemCompat.OnActionExpandListener() {
                     @Override
@@ -164,6 +246,8 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
             case R.id.app_bar_search:
                 getActivity().onSearchRequested();
                 return true;
+            case R.id.action_filter:
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -174,5 +258,19 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    private void populateSpinnerArray() {
+        typeList.add("All");
+        typeList.add("Sports");
+        typeList.add("Music");
+        typeList.add("Festival");
+        typeList.add("Charity");
+        typeList.add("Training");
+        typeList.add("Other");
+    }
+
+    private boolean isFragmentActive() {
+        return isAdded() && !isDetached() && !isRemoving();
     }
 }

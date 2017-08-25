@@ -4,17 +4,21 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -26,6 +30,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
+
+import de.cketti.library.changelog.ChangeLog;
 
 /**
  * Created by Cristi on 6/17/2017.
@@ -42,6 +48,8 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
+        setAppVersionName(view);
 
         view.findViewById(R.id.change_pass_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +83,7 @@ public class SettingsFragment extends Fragment {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         mBottomSheetDialog.dismiss();
-                                                        if(task.isSuccessful()) {
+                                                        if (task.isSuccessful()) {
                                                             Toast.makeText(getActivity(), "Password changed!", Toast.LENGTH_SHORT).show();
                                                         } else {
                                                             Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
@@ -143,7 +151,43 @@ public class SettingsFragment extends Fragment {
                 });
             }
         });
+
+        view.findViewById(R.id.settings_feedback).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent Email = new Intent(Intent.ACTION_SEND);
+                Email.setType("text/email");
+                // TODO we should add a second account just for app feedback (for security reasons)
+                Email.putExtra(Intent.EXTRA_EMAIL, new String[] { "thcvolunteerapp@gmail.com" });
+                Email.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
+                Email.putExtra(Intent.EXTRA_TEXT, "");
+                startActivity(Intent.createChooser(Email, "Send Feedback:"));
+            }
+        });
+
+        view.findViewById(R.id.settings_changelog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChangeLog changelog = new ChangeLog(getActivity());
+                changelog.getLogDialog().show();
+            }
+        });
+
         return view;
+    }
+
+    private void setAppVersionName(View view) {
+        String version = "";
+        try {
+            PackageInfo info = getActivity().getPackageManager().getPackageInfo(
+                    getActivity().getPackageName(), 0);
+            version = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("SettingsFragment", e.getMessage());
+        }
+
+        TextView appNameView = (TextView) view.findViewById(R.id.text_settings);
+        appNameView.setText("- App version: " + version + " -");
     }
 
     private boolean valid(String password) {

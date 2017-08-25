@@ -165,6 +165,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
+                        VolunteerEventsFragment.hasActionHappened = true;
                         mBottomSheetDialog.dismiss();
                         Toast.makeText(VolunteerSingleEventActivity.this, "Signing up for event...", Toast.LENGTH_SHORT).show();
                         mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid())
@@ -202,6 +203,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
+                        VolunteerMyEventsFragment.hasActionHappened = true;
                         mBottomSheetDialog.dismiss();
                         Toast.makeText(VolunteerSingleEventActivity.this, "Leaving event...", Toast.LENGTH_LONG).show();
 

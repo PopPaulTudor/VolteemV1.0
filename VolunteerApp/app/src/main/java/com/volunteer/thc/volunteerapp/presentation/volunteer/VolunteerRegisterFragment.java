@@ -22,6 +22,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.SignUpEvent;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -36,11 +38,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.util.ImageUtils;
-import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.LoginActivity;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
+import com.volunteer.thc.volunteerapp.util.ImageUtils;
+import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +99,7 @@ public class VolunteerRegisterFragment extends Fragment {
         gender.add("Gender");
         gender.add("Male");
         gender.add("Female");
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, gender);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, gender);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -205,10 +207,17 @@ public class VolunteerRegisterFragment extends Fragment {
                             user.sendEmailVerification();
                             Toast.makeText(getActivity(), "Account successfully created. A verification email has been sent to your email address.", Toast.LENGTH_LONG).show();
 
+                            Answers.getInstance().logSignUp(new SignUpEvent()
+                                    .putMethod("Volunteer")
+                                    .putSuccess(true));
+
                             startActivity(intent);
                             getActivity().finish();
 
                         } else {
+                            Answers.getInstance().logSignUp(new SignUpEvent()
+                                    .putMethod("Volunteer")
+                                    .putSuccess(false));
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                                 mEmail.setError("Email address is already in use.");
                                 mEmail.requestFocus();

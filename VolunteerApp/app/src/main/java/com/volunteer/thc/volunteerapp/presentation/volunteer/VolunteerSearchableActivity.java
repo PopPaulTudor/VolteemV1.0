@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.SearchEvent;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -55,6 +57,9 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
             query = intent.getStringExtra(SearchManager.QUERY);
             getSupportActionBar().setTitle(query);
             query = query.toLowerCase();
+
+            Answers.getInstance().logSearch(new SearchEvent().putQuery("SearchEvent")
+                    .putCustomAttribute("Query", query));
         }
     }
 
@@ -100,7 +105,7 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
                 if (mResultEvents.isEmpty()) {
                     mNoResultText.setVisibility(View.VISIBLE);
                 }
-                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this,getResources());
+                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this, getResources());
                 recyclerView.setAdapter(adapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(VolunteerSearchableActivity.this);
                 recyclerView.setLayoutManager(linearLayoutManager);

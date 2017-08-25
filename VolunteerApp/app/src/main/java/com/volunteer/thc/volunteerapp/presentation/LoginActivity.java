@@ -28,6 +28,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.volunteer.thc.volunteerapp.R;
 
+import io.fabric.sdk.android.Fabric;
+
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "EmailPassword";
@@ -41,6 +43,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // TODO on app release, remove debug from Fabric
+        final Fabric fabric = new Fabric.Builder(this)
+                .kits(new Crashlytics())
+                .debuggable(true)
+                .build();
+        Fabric.with(fabric);
+
         setContentView(R.layout.activity_login);
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
