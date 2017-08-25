@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
-	<release version="1.0.3" versioncode="3">
+	<release version="1.0.6" versioncode="4">
 		<change>Card element improvements</change>
 		<change>Changed how xp is calculated</change>
+        <change>Refreshing accepted users in fragment</change>
 	</release>
 	<release version="1.0.1" versioncode="2">
 		<change>UI improvements</change>

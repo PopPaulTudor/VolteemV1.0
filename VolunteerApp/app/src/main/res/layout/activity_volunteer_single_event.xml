@@ -64,6 +64,7 @@
                 android:id="@+id/event_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="280dp"
                 android:layout_marginTop="20dp"
                 android:text="TextView" />
 
@@ -72,6 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/event_name"
+                android:maxWidth="280dp"
                 android:layout_marginTop="5dp"
                 android:text="TextView" />
 
@@ -79,6 +81,7 @@
                 android:id="@+id/event_start_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="280dp"
                 android:layout_below="@id/event_location"
                 android:layout_marginTop="5dp"
                 android:text="TextView" />
@@ -87,6 +90,7 @@
                 android:id="@+id/event_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="280dp"
                 android:layout_below="@id/event_start_date"
                 android:layout_marginTop="5dp"
                 android:text="TextView" />
@@ -95,6 +99,7 @@
                 android:id="@+id/event_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="280dp"
                 android:layout_below="@id/event_type"
                 android:layout_marginTop="5dp"
                 android:text="TextView" />
@@ -103,6 +108,7 @@
                 android:id="@+id/event_deadline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="280dp"
                 android:layout_below="@id/event_description"
                 android:layout_marginTop="5dp"
                 android:text="TextView" />
@@ -111,6 +117,7 @@
                 android:id="@+id/event_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="280dp"
                 android:layout_below="@id/event_deadline"
                 android:layout_marginTop="5dp"
                 android:text="TextView" />
@@ -119,6 +126,7 @@
                 android:id="@+id/event_finish_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="280dp"
                 android:layout_below="@id/event_size"
                 android:layout_marginTop="5dp"
                 android:hint="Finish date" />
@@ -127,6 +135,7 @@
                 android:id="@+id/event_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="280dp"
                 android:layout_below="@id/event_finish_date"
                 android:layout_marginTop="5dp"
                 android:text="Status: Pending"

@@ -39,7 +39,7 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_registered_users, container, false);
 
-        mRegisteredUsers = (ArrayList) getArguments().getStringArrayList("registered_users");
+        mRegisteredUsers = getArguments().getStringArrayList("registered_users");
         eventID = getArguments().getString("eventID");
         mRegisteredUsersRecView = (RecyclerView) view.findViewById(R.id.RecViewRegUsers);
         mRegisteredUsersRecView.setHasFixedSize(true);
