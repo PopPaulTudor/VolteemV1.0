@@ -213,6 +213,14 @@ public class MainActivity extends AppCompatActivity
                     actionBarTitle = "Settings";
                     break;
                 }
+                case R.id.nav_chat: {
+                    replaceFragmentByClass(new ChatFragment());
+                    actionBarTitle="Chat";
+                }
+                case R.id.nav_news: {
+                    replaceFragmentByClass(new NewsFragment());
+                    actionBarTitle="News";
+                }
                 case R.id.nav_scoreboard: {
                     if (TextUtils.equals(userStatus, volunteer)) {
                         replaceFragmentByClass(new VolunteerScoreboardFragment());
