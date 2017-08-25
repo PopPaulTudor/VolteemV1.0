@@ -56,7 +56,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mAcceptedUsers.get(mAcceptedUsers.size() - 1), volunteerID)) {
 
-                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", eventID);
+                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", eventID,getContext());
                         mAcceptedUsersList.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         mAcceptedUsersList.setLayoutManager(linearLayoutManager);

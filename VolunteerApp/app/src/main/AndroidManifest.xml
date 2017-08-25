@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -82,11 +83,37 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".presentation.organiser.OrganiserFeedbackActivity"></activity>
+        <activity android:name=".presentation.organiser.OrganiserFeedbackActivity" />
+
+        <receiver
+            android:name=".notification.NotificationEventReceiver"
+            android:process=":remote" />
+
+        <service android:name=".notification.NotifcationFirebase">
+               <intent-filter>   
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent-filter>
+
+        </service>
+
+
+        <service
+            android:name=".notification.InstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="008fc2192d2ffc17f33d76ccfaceff7d975d199f" />
-    </application>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimary"/>
 
 
-</manifest>
+</application>
+
+
+    </manifest>
