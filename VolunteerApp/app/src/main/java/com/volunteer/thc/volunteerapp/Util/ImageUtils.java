@@ -19,13 +19,6 @@ public final class ImageUtils {
 
     private static final String TAG = "ImageUtils";
 
-    private static String choice = null;
-
-    public static String returnButtonPressedonImage(final Activity activity) {
-
-
-        return choice;
-    }
 
     public static byte[] compressImage(Uri fileUri, Activity activity) {
         byte[] byteArray = null;
@@ -39,6 +32,7 @@ public final class ImageUtils {
         Bitmap bmp = BitmapFactory.decodeStream(imageStream);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
         bmp.compress(Bitmap.CompressFormat.JPEG, 50, stream);
         byteArray = stream.toByteArray();
         try {

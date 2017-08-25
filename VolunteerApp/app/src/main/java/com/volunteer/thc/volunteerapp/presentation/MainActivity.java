@@ -32,10 +32,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.notification.NotifcationFirebase;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserProfileFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerEventsFragment;
@@ -117,6 +120,7 @@ public class MainActivity extends AppCompatActivity
 
 
                 editor.putString("user_status", userType);
+                editor.putString("user_id",user.getUid());
                 editor.apply();
 
                 mUserStatus.setText(userType);

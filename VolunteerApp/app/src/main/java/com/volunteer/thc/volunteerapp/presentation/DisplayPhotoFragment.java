@@ -25,7 +25,6 @@ import com.volunteer.thc.volunteerapp.R;
 public class DisplayPhotoFragment extends Fragment {
 
     ImageView imageView;
-    TextView textView;
     ImageView button;
 
     @Nullable
@@ -35,12 +34,10 @@ public class DisplayPhotoFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.photo_detailed, container, false);
         imageView = (ImageView) view.findViewById(R.id.photo_display);
-        textView = (TextView) view.findViewById(R.id.photo_name);
         button = (ImageView) view.findViewById(R.id.photo_button);
 
         String userID = getArguments().getString("userID");
         String userName = getArguments().getString("userName");
-        textView.setText(userName);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

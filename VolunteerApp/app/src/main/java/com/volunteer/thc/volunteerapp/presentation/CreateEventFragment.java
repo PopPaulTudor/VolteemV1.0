@@ -2,7 +2,9 @@ package com.volunteer.thc.volunteerapp.presentation;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -37,6 +39,7 @@ import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
+import com.volunteer.thc.volunteerapp.notification.NotificationEventReceiver;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import java.util.Calendar;
@@ -140,8 +143,20 @@ public class CreateEventFragment extends Fragment {
                     DatabaseUtils.writeData("events/" + eventID, new_event);
                     DatabaseUtils.writeData("events/" + eventID + "/validity", "valid");
 
+                    Intent alarm = new Intent(getContext(), NotificationEventReceiver.class);
+                    alarm.putExtra("nameEvent", name);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 100, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.set(0, finishDate, pendingIntent);
+
+
                     returnToEvents();
                     Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+
+
+
+
+
                 }
             }
         });
@@ -223,7 +238,7 @@ public class CreateEventFragment extends Fragment {
                         month++;
                         editText.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;
-                        myCalendar.set(year, month, dayOfMonth, 0, 0, 0);
+                        myCalendar.set(year, month, dayOfMonth, 12, 15, 0);
                         if (editText.equals(mStartDate)) startDate = myCalendar.getTimeInMillis();
                         else if (editText.equals(mFinishDate))
                             finishDate = myCalendar.getTimeInMillis();
