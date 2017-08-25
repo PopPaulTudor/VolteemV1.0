@@ -14,6 +14,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 
 import java.util.ArrayList;
 
@@ -81,6 +82,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 listVolunteer.remove(position);
                 volunteerIDs.remove(position);
                 notifyDataSetChanged();
+                OrganiserEventsFragment.hasActionHappened = true;
             }
         });
     }
