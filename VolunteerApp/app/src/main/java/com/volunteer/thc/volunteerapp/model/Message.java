@@ -6,9 +6,12 @@ package com.volunteer.thc.volunteerapp.model;
 
 public class Message {
 
-    String sentBy;
-    String receivedBy;
-    String content;
+    private String sentBy;
+    private String receivedBy;
+    private String content;
+
+    public Message() {
+    }
 
     public Message(String sentBy, String receivedBy, String content) {
         this.sentBy = sentBy;
