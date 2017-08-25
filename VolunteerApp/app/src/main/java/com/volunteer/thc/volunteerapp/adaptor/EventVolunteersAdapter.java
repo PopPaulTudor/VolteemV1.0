@@ -1,5 +1,6 @@
 package com.volunteer.thc.volunteerapp.adaptor;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 
 import java.util.ArrayList;
 
@@ -29,12 +31,14 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     private int mExpandedPosition = -1;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ViewGroup parent;
+    private Context context;
 
-    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, String eventID) {
+    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, String eventID, Context context) {
         listVolunteer = list;
         this.classParent = classParent;
         this.volunteerIDs = volunteerIDs;
         this.eventID = eventID;
+        this.context = context;
     }
 
     @Override
@@ -81,6 +85,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 listVolunteer.remove(position);
                 volunteerIDs.remove(position);
                 notifyDataSetChanged();
+                OrganiserEventsFragment.hasActionHappened = true;
             }
         });
     }
@@ -91,6 +96,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     }
 
     class EventViewHolder extends RecyclerView.ViewHolder {
+
 
         TextView nameVolunteer, expPhoneVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer, emailVolunteer;
         RelativeLayout item;

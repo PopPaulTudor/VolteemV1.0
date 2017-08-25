@@ -2,7 +2,9 @@ package com.volunteer.thc.volunteerapp.presentation;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,10 +18,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,8 +42,11 @@ import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
+import com.volunteer.thc.volunteerapp.notification.NotificationEventReceiver;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -49,13 +57,15 @@ import java.util.Calendar;
 public class CreateEventFragment extends Fragment {
 
     private static final int GALLERY_INTENT = 1;
-    private EditText mName, mLocation, mType, mDescription, mDeadline, mSize, mStartDate, mFinishDate;
+    private EditText mName, mLocation, mDescription, mDeadline, mSize, mStartDate, mFinishDate;
     private ImageView mImage;
+    private Spinner mType;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private long startDate = -1, finishDate, deadline;
     private StorageReference mStorage;
     private Uri uri = null;
+    private ArrayList<String> typeList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,7 +77,7 @@ public class CreateEventFragment extends Fragment {
         mLocation = (EditText) view.findViewById(R.id.event_location);
         mStartDate = (EditText) view.findViewById(R.id.event_date_start_create);
         mFinishDate = (EditText) view.findViewById(R.id.event_date_finish_create);
-        mType = (EditText) view.findViewById(R.id.event_type);
+        mType = (Spinner) view.findViewById(R.id.event_type);
         mDescription = (EditText) view.findViewById(R.id.event_description);
         mDeadline = (EditText) view.findViewById(R.id.event_deadline_create);
         mImage = (ImageView) view.findViewById(R.id.event_image);
@@ -76,6 +86,11 @@ public class CreateEventFragment extends Fragment {
 
         Button mSaveEvent = (Button) view.findViewById(R.id.save_event);
         Button mCancel = (Button) view.findViewById(R.id.cancel_event);
+
+        populateSpinnerArray();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, typeList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mType.setAdapter(adapter);
 
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,27 +122,25 @@ public class CreateEventFragment extends Fragment {
 
                 if (validateForm()) {
 
-
                     hideKeyboardFrom(getActivity(), getView());
                     String name = mName.getText().toString();
                     String location = mLocation.getText().toString();
-                    String type = mType.getText().toString();
                     String description = mDescription.getText().toString();
                     int size = Integer.parseInt(mSize.getText().toString());
                     final String eventID = mDatabase.child("events").push().getKey();
-
+                    String type = mType.getSelectedItem().toString();
 
                     StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
                     filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
 
-                    mDatabase.child("users/organisers/"+user.getUid())
+                    mDatabase.child("users/organisers/" + user.getUid())
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     int lastEvent = (int) dataSnapshot.child("events").getChildrenCount();
                                     int eventsNr = dataSnapshot.child("eventsnumber").getValue(Integer.class);
-                                    DatabaseUtils.writeData("users/organisers/"+user.getUid()+"/events/"+lastEvent, eventID);
-                                    DatabaseUtils.writeData("users/organisers/"+user.getUid()+"/eventsnumber", eventsNr + 1);
+                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/events/" + lastEvent, eventID);
+                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/eventsnumber", eventsNr + 1);
                                 }
 
                                 @Override
@@ -140,8 +153,20 @@ public class CreateEventFragment extends Fragment {
                     DatabaseUtils.writeData("events/" + eventID, new_event);
                     DatabaseUtils.writeData("events/" + eventID + "/validity", "valid");
 
+                    Intent alarm = new Intent(getContext(), NotificationEventReceiver.class);
+                    alarm.putExtra("nameEvent", name);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 100, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.set(0, finishDate, pendingIntent);
+
+
                     returnToEvents();
                     Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+
+
+
+
+
                 }
             }
         });
@@ -156,7 +181,6 @@ public class CreateEventFragment extends Fragment {
 
         return view;
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -179,8 +203,12 @@ public class CreateEventFragment extends Fragment {
 
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mStartDate) &&
-                editTextIsValid(mFinishDate) && editTextIsValid(mType) && editTextIsValid(mDescription) &&
+                editTextIsValid(mFinishDate) && editTextIsValid(mDescription) &&
                 editTextIsValid(mDeadline) && editTextIsValid(mSize) && (uri != null));
+        if(valid && TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
+            Toast.makeText(getActivity(), "Please select a type.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         if (valid && (deadline > finishDate)) {
             Toast.makeText(getActivity(), "The deadline can not be after the finish date.", Toast.LENGTH_SHORT).show();
             return false;
@@ -209,6 +237,15 @@ public class CreateEventFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    private void populateSpinnerArray() {
+        typeList.add("Type");
+        typeList.add("Sports");
+        typeList.add("Music");
+        typeList.add("Festival");
+        typeList.add("Charity");
+        typeList.add("Training");
+        typeList.add("Other");
+    }
 
     View.OnClickListener setonClickListenerCalendar(final EditText editText) {
         return new View.OnClickListener() {
@@ -223,7 +260,7 @@ public class CreateEventFragment extends Fragment {
                         month++;
                         editText.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;
-                        myCalendar.set(year, month, dayOfMonth, 0, 0, 0);
+                        myCalendar.set(year, month, dayOfMonth, 12, 15, 0);
                         if (editText.equals(mStartDate)) startDate = myCalendar.getTimeInMillis();
                         else if (editText.equals(mFinishDate))
                             finishDate = myCalendar.getTimeInMillis();

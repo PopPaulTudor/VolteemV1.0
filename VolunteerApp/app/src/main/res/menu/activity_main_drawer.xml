@@ -1,35 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
 
         <item
             android:id="@+id/nav_events"
-            android:title="All Events"
-            android:icon="@drawable/all_events"/>
+            android:icon="@drawable/all_events"
+            android:title="@string/all_events" />
 
         <item
             android:id="@+id/user_events"
-            android:title="My Events"
             android:icon="@drawable/my_events"
-            android:visible="false"/>
+            android:title="@string/my_events"
+            android:visible="false" />
 
         <item
             android:id="@+id/nav_profile"
-            android:title="Profile"
-            android:icon="@drawable/user"/>
+            android:icon="@drawable/user"
+            android:title="@string/profile" />
+
+        <item
+            android:id="@+id/nav_news"
+            android:icon="@drawable/ic_news"
+            android:title="@string/news"/>
+
+        <item
+            android:id="@+id/nav_chat"
+            android:icon="@drawable/ic_chat"
+            android:title="@string/chat"/>
+
+        <item
+            android:id="@+id/nav_scoreboard"
+            android:icon="@drawable/ic_scoreboard"
+            android:title="@string/scoreboard" />
 
         <item
             android:id="@+id/nav_settings"
-            android:title="Settings"
-            android:icon="@drawable/settings"/>
+            android:icon="@drawable/settings"
+            android:title="@string/settings" />
+
 
         <item
             android:id="@+id/nav_logout"
-            android:title="Logout"
-            android:icon="@drawable/exit"/>
+            android:icon="@drawable/exit"
+            android:title="Logout" />
+
 
     </group>
 

@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:drawableTop="@drawable/ic_no_events"
+        android:drawableTop="@drawable/ic_calendar"
         android:text="@string/no_events"
         android:textColor="@android:color/black"
         android:textSize="20sp"

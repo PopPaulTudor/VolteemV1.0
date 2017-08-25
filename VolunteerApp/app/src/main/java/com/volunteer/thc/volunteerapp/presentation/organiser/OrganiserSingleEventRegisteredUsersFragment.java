@@ -39,7 +39,7 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_registered_users, container, false);
 
-        mRegisteredUsers = (ArrayList) getArguments().getStringArrayList("registered_users");
+        mRegisteredUsers = getArguments().getStringArrayList("registered_users");
         eventID = getArguments().getString("eventID");
         mRegisteredUsersRecView = (RecyclerView) view.findViewById(R.id.RecViewRegUsers);
         mRegisteredUsersRecView.setHasFixedSize(true);
@@ -55,7 +55,7 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mRegisteredUsers.get(mRegisteredUsers.size() - 1), volunteerID)) {
                         quicksort(0, mVolunteers.size() - 1);
-                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", eventID);
+                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", eventID,getContext());
                         mRegisteredUsersRecView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         mRegisteredUsersRecView.setLayoutManager(linearLayoutManager);
