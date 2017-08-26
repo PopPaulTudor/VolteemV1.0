@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
+import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
     private ArrayList<Volunteer> mVolunteers = new ArrayList<>();
     private RecyclerView mRegisteredUsersRecView;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private String eventID;
+    private Event currentEvent;
 
     @Nullable
     @Override
@@ -39,8 +40,8 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_registered_users, container, false);
 
-        mRegisteredUsers = (ArrayList) getArguments().getStringArrayList("registered_users");
-        eventID = getArguments().getString("eventID");
+        currentEvent = (Event) getArguments().getSerializable("currentEvent");
+        mRegisteredUsers = currentEvent.getRegistered_volunteers();
         mRegisteredUsersRecView = (RecyclerView) view.findViewById(R.id.RecViewRegUsers);
         mRegisteredUsersRecView.setHasFixedSize(true);
 
@@ -55,7 +56,7 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mRegisteredUsers.get(mRegisteredUsers.size() - 1), volunteerID)) {
                         quicksort(0, mVolunteers.size() - 1);
-                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", eventID,getContext());
+                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", currentEvent,getContext());
                         mRegisteredUsersRecView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         mRegisteredUsersRecView.setLayoutManager(linearLayoutManager);

@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
+import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
 
     private ArrayList<String> mAcceptedUsers = new ArrayList<>();
     private ArrayList<Volunteer> mVolunteers = new ArrayList<>();
-    private String eventID;
+    private Event currentEvent;
     private RecyclerView mAcceptedUsersList;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -39,12 +40,10 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_accepted_users, container, false);
 
-
-        mAcceptedUsers = (ArrayList) getArguments().getStringArrayList("accepted_users");
-        eventID = getArguments().getString("eventID");
+        currentEvent = (Event) getArguments().getSerializable("currentEvent");
+        mAcceptedUsers = currentEvent.getAccepted_volunteers();
         mAcceptedUsersList = (RecyclerView) view.findViewById(R.id.RecViewAccUsers);
         mAcceptedUsersList.setHasFixedSize(true);
-
 
         for (final String volunteerID : mAcceptedUsers) {
             mVolunteers = new ArrayList<>();
@@ -56,7 +55,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mAcceptedUsers.get(mAcceptedUsers.size() - 1), volunteerID)) {
 
-                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", eventID,getContext());
+                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", currentEvent ,getContext());
                         mAcceptedUsersList.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         mAcceptedUsersList.setLayoutManager(linearLayoutManager);
