@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.RegisteredUser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
@@ -37,38 +39,77 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_accepted_users, container, false);
 
         currentEvent = (Event) getArguments().getSerializable("currentEvent");
         mAcceptedUsers = currentEvent.getAccepted_volunteers();
+
         mAcceptedUsersList = (RecyclerView) view.findViewById(R.id.RecViewAccUsers);
         mAcceptedUsersList.setHasFixedSize(true);
 
-        for (final String volunteerID : mAcceptedUsers) {
-            mVolunteers = new ArrayList<>();
-            mDatabase.child("users").child("volunteers").child(volunteerID).addListenerForSingleValueEvent(new ValueEventListener() {
+        return view;
+    }
+
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        currentEvent = currentEvent == null ? (Event) getArguments().getSerializable("currentEvent") : currentEvent;
+        Log.d("EventID", currentEvent.getEventID());
+
+        if (isVisibleToUser) {
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+            database.child("events").child(currentEvent.getEventID()).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Volunteer volunteer;
-                    volunteer = dataSnapshot.getValue(Volunteer.class);
-                    mVolunteers.add(volunteer);
-                    if (TextUtils.equals(mAcceptedUsers.get(mAcceptedUsers.size() - 1), volunteerID)) {
+                    Log.d("SingleEventFragment", "Refreshing accepted users.");
+                    mAcceptedUsers = new ArrayList<>();
 
-                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", currentEvent ,getContext());
-                        mAcceptedUsersList.setAdapter(adapter);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                        mAcceptedUsersList.setLayoutManager(linearLayoutManager);
+                    if (dataSnapshot!= null) {
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            RegisteredUser registeredUser = data.getValue(RegisteredUser.class);
+                            if(TextUtils.equals(registeredUser.getStatus(), "accepted")) {
+                                mAcceptedUsers.add(registeredUser.getId());
+                            }
+                        }
                     }
+
+                    refreshList();
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.d("SingleEventFragment", databaseError.getMessage());
                 }
             });
         }
+    }
 
-        return view;
+    public void refreshList() {
+        if (mAcceptedUsers != null) {
+            for (final String volunteerID : mAcceptedUsers) {
+                mVolunteers = new ArrayList<>();
+                mDatabase.child("users").child("volunteers").child(volunteerID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Volunteer volunteer;
+                        volunteer = dataSnapshot.getValue(Volunteer.class);
+                        mVolunteers.add(volunteer);
+                        if (TextUtils.equals(mAcceptedUsers.get(mAcceptedUsers.size() - 1), volunteerID)) {
+
+                            EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", currentEvent, getContext());
+                            mAcceptedUsersList.setAdapter(adapter);
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                            mAcceptedUsersList.setLayoutManager(linearLayoutManager);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
     }
 }

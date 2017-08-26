@@ -301,8 +301,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
-                            Log.e("Read", "error");
+                            Log.e("Read", databaseError.getDetails());
                         }
                     });
 

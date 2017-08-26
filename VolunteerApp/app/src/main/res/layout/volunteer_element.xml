@@ -14,8 +14,10 @@
             android:id="@+id/name_volunteer_element"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="12dp"
+            android:layout_margin="15dp"
+            android:maxWidth="200dp"
             android:text="Prenume Nume"
+            android:textColor="@color/black"
             android:textSize="20sp" />
 
         <TextView
@@ -23,17 +25,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/name_volunteer_element"
-            android:layout_marginLeft="200dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="50dp"
             android:text="500"
+            android:textColor="@color/black"
             android:textSize="20sp" />
 
         <LinearLayout
             android:id="@+id/expandable_item"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/exp_phone_volunteer_element"
-            android:layout_margin="16dp"
-            android:layout_marginRight="10dp"
+            android:layout_margin="15dp"
             android:orientation="vertical"
             android:visibility="gone">
 
@@ -42,34 +45,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
-                android:text="City: Cluj-Napoca" />
+                android:text="City: Cluj-Napoca"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/volunteer_age"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
-                android:text="Age: 25" />
+                android:text="Age: 25"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/volunteer_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
-                android:text="Phone number: 0777777777" />
+                android:text="Phone number: 0777777777"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/volunteer_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
-                android:text="Email: volunteer@app.com" />
+                android:text="Email: volunteer@app.com"
+                android:textColor="@color/black" />
 
             <Button
                 android:id="@+id/accept_volunteer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Accept Volunteer"
+                android:textColor="@color/black"
                 android:visibility="gone" />
 
         </LinearLayout>
@@ -80,7 +88,7 @@
             android:layout_below="@+id/expandable_item"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:background="@android:color/darker_gray" />
 
     </RelativeLayout>
