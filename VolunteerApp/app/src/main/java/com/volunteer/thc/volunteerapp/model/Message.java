@@ -1,10 +1,12 @@
 package com.volunteer.thc.volunteerapp.model;
 
+import java.io.Serializable;
+
 /**
  * Created by poppa on 25.08.2017.
  */
 
-public class Message {
+public class Message implements Serializable {
 
     private String sentBy;
     private String receivedBy;
@@ -42,4 +44,7 @@ public class Message {
     public void setContent(String content) {
         this.content = content;
     }
+
+
+
 }

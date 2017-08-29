@@ -14,10 +14,14 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.model.Chat;
+import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by poppa on 28.07.2017.
@@ -27,17 +31,18 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
     private ArrayList<Volunteer> listVolunteer;
     private ArrayList<String> volunteerIDs;
-    private String classParent, eventID;
+    private String classParent;
+    private Event event;
     private int mExpandedPosition = -1;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ViewGroup parent;
     private Context context;
 
-    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, String eventID, Context context) {
+    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context) {
         listVolunteer = list;
         this.classParent = classParent;
         this.volunteerIDs = volunteerIDs;
-        this.eventID = eventID;
+        this.event = event;
         this.context = context;
     }
 
@@ -80,12 +85,19 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         holder.acceptUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mDatabase.child("events").child(eventID).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
+                mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
+
+                Chat chat= new Chat(event.getCreated_by(),volunteerIDs.get(position),"You have been accepted to "+event.getName(), UUID.randomUUID().toString());
+                mDatabase.child("conversation").push().setValue(chat);
+
                 listVolunteer.remove(position);
                 volunteerIDs.remove(position);
                 notifyDataSetChanged();
                 OrganiserEventsFragment.hasActionHappened = true;
+
+
+
             }
         });
     }

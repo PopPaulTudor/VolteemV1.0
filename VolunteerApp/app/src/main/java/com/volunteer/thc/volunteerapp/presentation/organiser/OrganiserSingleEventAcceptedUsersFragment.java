@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
+import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
 
     private ArrayList<String> mAcceptedUsers = new ArrayList<>();
     private ArrayList<Volunteer> mVolunteers = new ArrayList<>();
-    private String eventID;
+    private Event event;
     private RecyclerView mAcceptedUsersList;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -41,7 +42,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
 
 
         mAcceptedUsers = (ArrayList) getArguments().getStringArrayList("accepted_users");
-        eventID = getArguments().getString("eventID");
+        event = (Event) getArguments().getSerializable("event");
         mAcceptedUsersList = (RecyclerView) view.findViewById(R.id.RecViewAccUsers);
         mAcceptedUsersList.setHasFixedSize(true);
 
@@ -56,7 +57,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mAcceptedUsers.get(mAcceptedUsers.size() - 1), volunteerID)) {
 
-                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", eventID,getContext());
+                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", event,getContext());
                         mAcceptedUsersList.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         mAcceptedUsersList.setLayoutManager(linearLayoutManager);

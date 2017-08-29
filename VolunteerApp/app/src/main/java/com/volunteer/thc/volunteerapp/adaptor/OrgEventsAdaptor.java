@@ -74,6 +74,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
 
 
+
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
