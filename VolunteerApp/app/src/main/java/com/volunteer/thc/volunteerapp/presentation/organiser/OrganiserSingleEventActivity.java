@@ -40,12 +40,9 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
         OrganiserSingleEventInfoFragment fragmentInfo = new OrganiserSingleEventInfoFragment();
         fragmentInfo.setArguments(bundle);
 
-        bundle.putString("eventID", mCurrentEvent.getEventID());
-        bundle.putStringArrayList("registered_users", mCurrentEvent.getRegistered_volunteers());
         OrganiserSingleEventRegisteredUsersFragment fragmentRegistered = new OrganiserSingleEventRegisteredUsersFragment();
         fragmentRegistered.setArguments(bundle);
 
-        bundle.putStringArrayList("accepted_users", mCurrentEvent.getAccepted_volunteers());
         OrganiserSingleEventAcceptedUsersFragment fragmentAccepted = new OrganiserSingleEventAcceptedUsersFragment();
         fragmentAccepted.setArguments(bundle);
 

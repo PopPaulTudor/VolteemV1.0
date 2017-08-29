@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -90,17 +92,26 @@
             android:process=":remote" />
 
         <service android:name=".notification.NotifcationFirebase">
-               <intent-filter>   
-            <action android:name="com.google.firebase.MESSAGING_EVENT" />
-        </intent-filter>
+               
+            <intent-filter>   
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
 
         </service>
 
-
         <service
-            android:name=".notification.InstanceIDService">
+            android:name=".notification.FirebaseNewsService"
+            android:exported="false" />
+
+        <receiver android:name=".notification.StartFirebaseServiceAtBoot">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".notification.InstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
@@ -110,10 +121,8 @@
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorPrimary"/>
+            android:resource="@color/colorPrimary" />
 
+    </application>
 
-</application>
-
-
-    </manifest>
+</manifest>

@@ -14,10 +14,13 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by poppa on 28.07.2017.
@@ -27,17 +30,19 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
     private ArrayList<Volunteer> listVolunteer;
     private ArrayList<String> volunteerIDs;
-    private String classParent, eventID;
+    private String classParent;
+    private Event event;
     private int mExpandedPosition = -1;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ViewGroup parent;
     private Context context;
+    private Calendar date = Calendar.getInstance();
 
-    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, String eventID, Context context) {
+    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context) {
         listVolunteer = list;
         this.classParent = classParent;
         this.volunteerIDs = volunteerIDs;
-        this.eventID = eventID;
+        this.event = event;
         this.context = context;
     }
 
@@ -80,7 +85,10 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         holder.acceptUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mDatabase.child("events").child(eventID).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
+                String eventID = mDatabase.child("news").push().getKey();
+                mDatabase.child("news").child(eventID).setValue(new NewsMessage(date.getTimeInMillis(), eventID, event.getCreated_by(), volunteerIDs.get(position),
+                        "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
+                mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
                 listVolunteer.remove(position);
                 volunteerIDs.remove(position);

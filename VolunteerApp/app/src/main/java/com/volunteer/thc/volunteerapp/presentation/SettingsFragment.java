@@ -2,6 +2,7 @@ package com.volunteer.thc.volunteerapp.presentation;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -11,12 +12,15 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,15 +45,51 @@ public class SettingsFragment extends Fragment {
 
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private EditText mPassword, mOldPassword, mNewPassword;
+    private SwitchCompat notificationsSwitch;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private SharedPreferences prefs;
+    private boolean notifications;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-
         setAppVersionName(view);
+        notificationsSwitch = (SwitchCompat) view.findViewById(R.id.notification_button);
+        prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        notifications = prefs.getBoolean("notifications", true);
+        notificationsSwitch.setChecked(notifications);
+        notificationsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(notificationsSwitch.isChecked()) {
+                    if(!notifications) {
+                        prefs.edit().putBoolean("notifications", true).apply();
+                    }
+                } else {
+                    if(notifications) {
+                        AlertDialog muteNotificationsAlert = new AlertDialog.Builder(getActivity())
+                                .setTitle("Mute notifications")
+                                .setMessage("Are you sure you want to mute all notifications?")
+                                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        prefs.edit().putBoolean("notifications", false).apply();
+                                    }
+                                })
+                                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        notificationsSwitch.setChecked(true);
+                                    }
+                                })
+                                .create();
+                        muteNotificationsAlert.show();
+                    }
+                }
+            }
+        });
 
         view.findViewById(R.id.change_pass_button).setOnClickListener(new View.OnClickListener() {
             @Override

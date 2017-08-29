@@ -46,7 +46,7 @@ public class OrganiserFeedbackActivity extends AppCompatActivity implements Feed
                 return true;
             }
         });
-        String eventName = getIntent().getStringExtra("name");
+        final String eventName = getIntent().getStringExtra("name");
         final ArrayList<String> mAcceptedUsers = getIntent().getStringArrayListExtra("volunteers");
         getSupportActionBar().setTitle(eventName);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -63,7 +63,7 @@ public class OrganiserFeedbackActivity extends AppCompatActivity implements Feed
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mAcceptedUsers.get(mAcceptedUsers.size() - 1), volunteerID)) {
 
-                        EventFeedbackVolunteersAdapter adapter = new EventFeedbackVolunteersAdapter(mVolunteers, mAcceptedUsers, OrganiserFeedbackActivity.this);
+                        EventFeedbackVolunteersAdapter adapter = new EventFeedbackVolunteersAdapter(mVolunteers, eventName, mAcceptedUsers, OrganiserFeedbackActivity.this);
                         mAcceptedUsersList.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrganiserFeedbackActivity.this);
                         mAcceptedUsersList.setLayoutManager(linearLayoutManager);

@@ -15,17 +15,15 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.interrface.FeedbackDoneListener;
+import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserFeedbackActivity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by Cristi on 8/14/2017.
@@ -39,11 +37,14 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private FeedbackDoneListener feedbackDoneListener;
+    private String eventName;
+    private Calendar date = Calendar.getInstance();
 
-    public EventFeedbackVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, FeedbackDoneListener feedbackDoneListener){
+    public EventFeedbackVolunteersAdapter(ArrayList<Volunteer> list, String eventName, ArrayList<String> volunteerIDs, FeedbackDoneListener feedbackDoneListener) {
         listVolunteer = list;
         this.volunteerIDs = volunteerIDs;
         this.feedbackDoneListener = feedbackDoneListener;
+        this.eventName = eventName;
     }
 
     @Override
@@ -54,8 +55,8 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
     }
 
     @Override
-    public void onBindViewHolder(EventViewHolder holder,final int position) {
-        holder.nameVolunteer.setText(listVolunteer.get(position).getFirstname()+" "+listVolunteer.get(position).getLastname());
+    public void onBindViewHolder(EventViewHolder holder, final int position) {
+        holder.nameVolunteer.setText(listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname());
         holder.cityVolunteer.setText("City: " + listVolunteer.get(position).getCity());
         holder.ageVolunteer.setText("Age: " + listVolunteer.get(position).getAge());
         holder.emailVolunteer.setText("Email: " + listVolunteer.get(position).getEmail());
@@ -63,7 +64,7 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
         holder.expVolunteer.setText("Experience: " + listVolunteer.get(position).getExperience());
 
         final boolean isExpanded = position == mExpandedPosition;
-        holder.expandableItem.setVisibility(isExpanded ? View.VISIBLE:View.GONE);
+        holder.expandableItem.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
         holder.item.setActivated(isExpanded);
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +82,7 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
                         .setView(feedbackDialogView)
                         .setTitle("Feedback")
                         .setMessage("Write your feedback about " + listVolunteer.get(position).getFirstname() + " " +
-                        listVolunteer.get(position).getLastname())
+                                listVolunteer.get(position).getLastname())
                         .setCancelable(false)
                         .setPositiveButton("DONE", null)
                         .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -96,15 +97,18 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
                     @Override
                     public void onClick(View view) {
                         String feedbackText = mFeedback.getText().toString();
-                        if(!feedbackText.isEmpty()) {
+                        if (!feedbackText.isEmpty()) {
                             feedbackDialog.dismiss();
                             notifyDataSetChanged();
                             mDatabase.child("users").child("volunteers").child(volunteerIDs.get(position)).child("feedback")
                                     .child(user.getUid()).setValue(feedbackText);
+                            String newsID = mDatabase.child("news").push().getKey();
+                            mDatabase.child("news").child(newsID).setValue(new NewsMessage(date.getTimeInMillis(), newsID, user.getUid(), volunteerIDs.get(position),
+                                    "You have received feedback for your activity at " + eventName, NewsMessage.FEEDBACK, false, false));
                             volunteerIDs.remove(position);
                             listVolunteer.remove(position);
                             Toast.makeText(parent.getContext(), "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
-                            if(volunteerIDs.isEmpty()){
+                            if (volunteerIDs.isEmpty()) {
                                 feedbackDoneListener.showDoneTextView();
                             }
                         }
@@ -119,7 +123,7 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
         return listVolunteer.size();
     }
 
-    class EventViewHolder extends RecyclerView.ViewHolder{
+    class EventViewHolder extends RecyclerView.ViewHolder {
         TextView nameVolunteer, expVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer, emailVolunteer;
         RelativeLayout item;
         LinearLayout expandableItem;

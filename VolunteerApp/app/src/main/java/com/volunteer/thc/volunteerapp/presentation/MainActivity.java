@@ -32,13 +32,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.notification.NotifcationFirebase;
+import com.volunteer.thc.volunteerapp.notification.FirebaseNewsService;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserProfileFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserScoreboardFragment;
@@ -60,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences prefs;
     private CircleImageView mImage;
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+    private Intent serviceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +66,14 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        serviceIntent = new Intent(this, FirebaseNewsService.class);
+        startService(serviceIntent);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
@@ -90,7 +91,6 @@ public class MainActivity extends AppCompatActivity
                 Picasso.with(getApplicationContext()).load(uri).fit().centerCrop().into(mImage);
             }
         });
-
 
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
@@ -118,10 +118,8 @@ public class MainActivity extends AppCompatActivity
                     mUserName.setText(user.getEmail());
                 }
 
-
-
                 editor.putString("user_status", userType);
-                editor.putString("user_id",user.getUid());
+                editor.putString("user_id", user.getUid());
                 editor.apply();
 
                 mUserStatus.setText(userType);
@@ -213,13 +211,15 @@ public class MainActivity extends AppCompatActivity
                     actionBarTitle = "Settings";
                     break;
                 }
-                case R.id.nav_chat: {
-                    replaceFragmentByClass(new ChatFragment());
-                    actionBarTitle="Chat";
-                }
                 case R.id.nav_news: {
                     replaceFragmentByClass(new NewsFragment());
-                    actionBarTitle="News";
+                    actionBarTitle = "News";
+                    break;
+                }
+                case R.id.nav_chat: {
+                    replaceFragmentByClass(new ChatFragment());
+                    actionBarTitle = "Chat";
+                    break;
                 }
                 case R.id.nav_scoreboard: {
                     if (TextUtils.equals(userStatus, volunteer)) {
@@ -237,11 +237,13 @@ public class MainActivity extends AppCompatActivity
                     editor.putString("name", null);
                     editor.putString("gender", null);
                     editor.apply();
+                    stopService(serviceIntent);
                     startActivity(new Intent(this, LoginActivity.class));
                     finish();
                     break;
                 }
             }
+
             item.setChecked(true);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(actionBarTitle);
@@ -280,5 +282,4 @@ public class MainActivity extends AppCompatActivity
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
-
 }
