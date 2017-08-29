@@ -45,11 +45,21 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
+            android:name=".presentation.ConversationActivity"
+            android:label="Conversation"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+
+
+        <activity
             android:name=".presentation.SplashActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
+
+
+
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

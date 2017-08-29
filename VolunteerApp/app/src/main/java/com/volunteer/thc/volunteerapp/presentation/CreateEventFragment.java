@@ -18,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -39,13 +38,12 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.notification.NotificationEventReceiver;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
-import com.volunteer.thc.volunteerapp.notification.NotificationEventReceiver;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -164,9 +162,6 @@ public class CreateEventFragment extends Fragment {
                     Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
 
 
-
-
-
                 }
             }
         });
@@ -205,7 +200,7 @@ public class CreateEventFragment extends Fragment {
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mStartDate) &&
                 editTextIsValid(mFinishDate) && editTextIsValid(mDescription) &&
                 editTextIsValid(mDeadline) && editTextIsValid(mSize) && (uri != null));
-        if(valid && TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
+        if (valid && TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
             Toast.makeText(getActivity(), "Please select a type.", Toast.LENGTH_SHORT).show();
             return false;
         }

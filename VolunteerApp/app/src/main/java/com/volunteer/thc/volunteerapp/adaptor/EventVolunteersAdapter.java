@@ -16,11 +16,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
+import com.volunteer.thc.volunteerapp.model.Chat;
+import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * Created by poppa on 28.07.2017.
@@ -88,12 +92,20 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 String eventID = mDatabase.child("news").push().getKey();
                 mDatabase.child("news").child(eventID).setValue(new NewsMessage(date.getTimeInMillis(), eventID, event.getCreated_by(), volunteerIDs.get(position),
                         "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
+
                 mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
+
+                Chat chat= new Chat(event.getCreated_by(),volunteerIDs.get(position),"You have been accepted to "+event.getName(), UUID.randomUUID().toString());
+                mDatabase.child("conversation").push().setValue(chat);
+
                 listVolunteer.remove(position);
                 volunteerIDs.remove(position);
                 notifyDataSetChanged();
                 OrganiserEventsFragment.hasActionHappened = true;
+
+
+
             }
         });
     }
