@@ -4,12 +4,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Chat;
+import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
 
@@ -22,7 +24,6 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     private ArrayList<Chat> data = new ArrayList<>();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
 
 
     public ConversationAdapter(ArrayList<Chat> data) {
@@ -40,15 +41,20 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     @Override
     public void onBindViewHolder(ConversationAdapter.EventViewHolder holder, int position) {
-        if(data.get(position).getSentBy().equals(user.getUid())) {
-            holder.sent.setVisibility(View.VISIBLE);
-            holder.sent.setText(data.get(position).getContent());
-            holder.receive.setVisibility(View.GONE);
+        if (data.get(position).getSentBy().equals(user.getUid())) {
 
-        }else {
-            holder.receive.setVisibility(View.VISIBLE);
-            holder.receive.setText(data.get(position).getContent());
-            holder.sent.setVisibility(View.GONE);
+            holder.relativeSent.setVisibility(View.VISIBLE);
+            holder.relativeReceive.setVisibility(View.GONE);
+
+            holder.textSent.setText(data.get(position).getContent());
+            holder.hourSent.setText(CalendarUtil.getHourFromLong(data.get(position).getHour()));
+
+        } else {
+            holder.relativeSent.setVisibility(View.GONE);
+            holder.relativeReceive.setVisibility(View.VISIBLE);
+
+            holder.textReceive.setText(data.get(position).getContent());
+            holder.hourReceive.setText(CalendarUtil.getHourFromLong(data.get(position).getHour()));
         }
     }
 
@@ -59,13 +65,22 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
 
     class EventViewHolder extends RecyclerView.ViewHolder {
-        TextView sent;
-        TextView receive;
+        TextView textSent;
+        TextView textReceive;
+        TextView hourSent;
+        TextView hourReceive;
+        RelativeLayout relativeSent;
+        RelativeLayout relativeReceive;
 
         EventViewHolder(View v) {
             super(v);
-                sent = (TextView) v.findViewById(R.id.conversation_text_sent);
-                receive = (TextView) v.findViewById(R.id.conversation_text_receive);
+            textSent = (TextView) v.findViewById(R.id.conversation_text_sent);
+            textReceive = (TextView) v.findViewById(R.id.conversation_text_receive);
+            hourSent = (TextView) v.findViewById(R.id.conversation_hour_sent);
+            hourReceive = (TextView) v.findViewById(R.id.conversation_hour_receive);
+            relativeSent=(RelativeLayout) v.findViewById(R.id.layout_sent);
+            relativeReceive=(RelativeLayout) v.findViewById(R.id.layout_receive);
+
 
         }
     }

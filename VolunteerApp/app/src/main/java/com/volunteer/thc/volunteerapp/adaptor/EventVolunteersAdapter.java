@@ -96,7 +96,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
 
-                Chat chat= new Chat(event.getCreated_by(),volunteerIDs.get(position),"You have been accepted to "+event.getName(), UUID.randomUUID().toString());
+                Chat chat= new Chat(event.getCreated_by(),volunteerIDs.get(position),"You have been accepted to "+event.getName(), UUID.randomUUID().toString(),Calendar.getInstance().getTimeInMillis());
                 mDatabase.child("conversation").push().setValue(chat);
 
                 listVolunteer.remove(position);

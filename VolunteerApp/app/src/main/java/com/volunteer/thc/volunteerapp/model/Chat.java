@@ -1,7 +1,6 @@
 package com.volunteer.thc.volunteerapp.model;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * Created by poppa on 27.08.2017.
@@ -10,13 +9,15 @@ import java.util.UUID;
 public class Chat extends Message implements Serializable {
 
     private String uuid;
+    private long hour;
 
     public Chat() {
     }
 
-    public Chat(String sentBy, String receivedBy, String content,String uuid) {
+    public Chat(String sentBy, String receivedBy, String content, String uuid, long hour) {
         super(sentBy, receivedBy, content);
         this.uuid = uuid;
+        this.hour = hour;
     }
 
     public String getUuid() {
@@ -25,5 +26,13 @@ public class Chat extends Message implements Serializable {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public long getHour() {
+        return hour;
+    }
+
+    public void setHour(long hour) {
+        this.hour = hour;
     }
 }

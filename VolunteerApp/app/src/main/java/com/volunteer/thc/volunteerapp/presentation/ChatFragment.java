@@ -1,8 +1,10 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.ChatAdapter;
 import com.volunteer.thc.volunteerapp.model.Chat;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserFeedbackActivity;
 
 import java.util.ArrayList;
 
@@ -51,7 +54,7 @@ public class ChatFragment extends Fragment {
                     Chat chatData = data.getValue(Chat.class);
                     boolean change = false;
                     for (Chat chat : array) {
-                        if (chat.getUuid().equals(chatData.getUuid())) {
+                        if (chat.getReceivedBy().equals(chatData.getReceivedBy())) {
                             change = true;
                             break;
                         }
@@ -71,6 +74,46 @@ public class ChatFragment extends Fragment {
                         intent.putExtra("chat", arrayCopy.get(position));
 
                         startActivity(intent);
+                    }
+                });
+
+                listChat.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                        final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                        alert.setTitle("Delete conversation?")
+                        .setCancelable(true)
+                        .setMessage("Are you sure you want to delete this conversation?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                mDatabase.child("conversation").orderByChild("uuid").equalTo(arrayCopy.get(position).getUuid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                                            dataSnapshot1.getRef().removeValue();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+
+
+                                chatAdapter.remove(arrayCopy.get(position));
+                                chatAdapter.notifyDataSetChanged();
+
+                            }
+                        });
+
+
+                        alert.show();
+
+                        return true;
                     }
                 });
             }

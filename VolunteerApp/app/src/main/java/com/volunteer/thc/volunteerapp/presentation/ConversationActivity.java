@@ -20,6 +20,7 @@ import com.volunteer.thc.volunteerapp.adaptor.ConversationAdapter;
 import com.volunteer.thc.volunteerapp.model.Chat;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by poppa on 26.08.2017.
@@ -68,7 +69,7 @@ public class ConversationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!reply.getText().toString().isEmpty()) {
-                    Chat chat = new Chat(idSent, idReceive, reply.getText().toString(), chatDefault.getUuid());
+                    Chat chat = new Chat(idSent, idReceive, reply.getText().toString(), chatDefault.getUuid(), Calendar.getInstance().getTimeInMillis());
                     mDatabase.child("conversation").push().setValue(chat);
                     reply.setText(null);
                 }

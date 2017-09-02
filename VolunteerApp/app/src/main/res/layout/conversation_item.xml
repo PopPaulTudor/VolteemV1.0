@@ -4,27 +4,66 @@
     android:layout_height="wrap_content">
 
 
-    <TextView
-        android:id="@+id/conversation_text_sent"
+    <RelativeLayout
+        android:id="@+id/layout_sent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/chat_element"
-        android:padding="10dp"
-        android:textSize="20dp"
-        android:layout_margin="10dp"
-        android:text="fpmaaspfmaapofmafa"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/chat_element">
+
+        <TextView
+            android:id="@+id/conversation_text_sent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:padding="7dp"
+            android:text="fpmaaspfmaapofmafa"
+            android:textSize="20dp" />
+
+
+        <TextView
+            android:id="@+id/conversation_hour_sent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/conversation_text_sent"
+            android:layout_alignLeft="@+id/conversation_text_sent"
+            android:paddingTop="10dp"
+            android:text="21:04"
+            android:textSize="15dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_receive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+
+        android:background="@drawable/chat_element_secondary">
 
     <TextView
         android:id="@+id/conversation_text_receive"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/chat_element_secondary"
-        android:padding="10dp"
+        android:padding="7dp"
         android:textSize="20dp"
         android:layout_margin="10dp"
         android:text="fpmaaspfmaapofmafa" />
+
+
+    <TextView
+        android:id="@+id/conversation_hour_receive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_alignBottom="@+id/conversation_text_receive"
+        android:layout_alignRight="@+id/conversation_text_receive"
+        android:paddingTop="10dp"
+        android:text="21:04"
+        android:textSize="15dp" />
+
+    </RelativeLayout>
 
 
 

@@ -15,4 +15,5 @@ public class CalculateUtils {
 
         return totalXp;
     }
+
 }
