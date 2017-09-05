@@ -33,6 +33,8 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
     private RecyclerView mRegisteredUsersRecView;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private Event currentEvent;
+    public static EventVolunteersAdapter adapter;
+
 
     @Nullable
     @Override
@@ -56,7 +58,7 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
                     mVolunteers.add(volunteer);
                     if (TextUtils.equals(mRegisteredUsers.get(mRegisteredUsers.size() - 1), volunteerID)) {
                         quicksort(0, mVolunteers.size() - 1);
-                        EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", currentEvent,getContext());
+                        adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", currentEvent,getContext(),OrganiserSingleEventRegisteredUsersFragment.this);
                         mRegisteredUsersRecView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         mRegisteredUsersRecView.setLayoutManager(linearLayoutManager);

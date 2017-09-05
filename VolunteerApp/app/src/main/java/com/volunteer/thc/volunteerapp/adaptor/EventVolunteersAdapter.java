@@ -1,6 +1,8 @@
 package com.volunteer.thc.volunteerapp.adaptor;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,16 +13,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.Event;
-import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.Chat;
 import com.volunteer.thc.volunteerapp.model.Event;
-import com.volunteer.thc.volunteerapp.model.Message;
+import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.presentation.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,15 +39,26 @@ import java.util.UUID;
 
 public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteersAdapter.EventViewHolder> {
 
-    private ArrayList<Volunteer> listVolunteer;
-    private ArrayList<String> volunteerIDs;
+    private static ArrayList<Volunteer> listVolunteer;
+    private static ArrayList<String> volunteerIDs;
     private String classParent;
-    private Event event;
+    private static Event event;
     private int mExpandedPosition = -1;
-    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private static DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ViewGroup parent;
     private Context context;
     private Calendar date = Calendar.getInstance();
+    private static FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private OrganiserSingleEventRegisteredUsersFragment fragment;
+
+    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context, OrganiserSingleEventRegisteredUsersFragment fragment) {
+        listVolunteer = list;
+        this.classParent = classParent;
+        this.volunteerIDs = volunteerIDs;
+        this.event = event;
+        this.context = context;
+        this.fragment = fragment;
+    }
 
     public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context) {
         listVolunteer = list;
@@ -49,6 +67,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         this.event = event;
         this.context = context;
     }
+
 
     @Override
     public EventVolunteersAdapter.EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -86,6 +105,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             }
         });
 
+
         holder.acceptUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,16 +116,50 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
 
-                Chat chat= new Chat(event.getCreated_by(),volunteerIDs.get(position),"You have been accepted to "+event.getName(), UUID.randomUUID().toString(),Calendar.getInstance().getTimeInMillis());
+                Chat chat = new Chat(event.getCreated_by(), volunteerIDs.get(position), "You have been accepted to " + event.getName(), UUID.randomUUID().toString(), Calendar.getInstance().getTimeInMillis(), false);
                 mDatabase.child("conversation").push().setValue(chat);
 
                 listVolunteer.remove(position);
                 volunteerIDs.remove(position);
                 notifyDataSetChanged();
-                OrganiserEventsFragment.hasActionHappened = true;
 
 
+            }
+        });
 
+        holder.sendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final Intent intent = new Intent(context, ConversationActivity.class);
+
+                mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (!dataSnapshot.exists()) {
+                            Chat chat = new Chat(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
+                            intent.putExtra("chat", chat);
+                        } else {
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                Chat chat = dataSnapshot1.getValue(Chat.class);
+                                intent.putExtra("chat", chat);
+                                break;
+                            }
+
+                        }
+                        ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() + listVolunteer.get(position).getLastname();
+                        intent.putExtra("class", "adapter");
+                        intent.putExtra("position", position);
+                        ConversationActivity.fragment = fragment;
+                        context.startActivity(intent);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
     }
@@ -121,7 +175,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         TextView nameVolunteer, expPhoneVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer, emailVolunteer;
         RelativeLayout item;
         LinearLayout expandableItem;
-        Button acceptUser;
+        Button acceptUser, sendMessage;
 
         EventViewHolder(View itemView) {
             super(itemView);
@@ -136,6 +190,49 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             phoneVolunteer = (TextView) itemView.findViewById(R.id.volunteer_phone);
             emailVolunteer = (TextView) itemView.findViewById(R.id.volunteer_email);
             acceptUser = (Button) itemView.findViewById(R.id.accept_volunteer);
+            sendMessage = (Button) itemView.findViewById(R.id.send_volunteer);
         }
+    }
+
+    public static void acceptVolunteer(final int position, Activity activity) {
+
+        String eventID = mDatabase.child("news").push().getKey();
+        mDatabase.child("news").child(eventID).setValue(new NewsMessage(Calendar.getInstance().getTimeInMillis(), eventID, event.getCreated_by(), volunteerIDs.get(position),
+                "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
+
+        mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
+        Toast.makeText(activity, "Accepted volunteer!", Toast.LENGTH_LONG).show();
+
+
+        mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String uuid = null;
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        Chat chatData = data.getValue(Chat.class);
+                        uuid = chatData.getUuid();
+                        break;
+
+                    }
+                } else {
+                    uuid = UUID.randomUUID().toString();
+                }
+                Chat chat = new Chat(event.getCreated_by(), volunteerIDs.get(position), "You have been accepted to " + event.getName(), uuid, Calendar.getInstance().getTimeInMillis(), false);
+                mDatabase.child("conversation").push().setValue(chat);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        listVolunteer.remove(position);
+        volunteerIDs.remove(position);
+
+        OrganiserEventsFragment.hasActionHappened = true;
+
+
     }
 }
