@@ -26,4 +26,8 @@ public final class CalendarUtil {
         return  hour+":"+minute;
     }
 
+    public static long getCurrentTimeInMillis() {
+        Calendar calendar = Calendar.getInstance();
+        return calendar.getTimeInMillis();
+    }
 }

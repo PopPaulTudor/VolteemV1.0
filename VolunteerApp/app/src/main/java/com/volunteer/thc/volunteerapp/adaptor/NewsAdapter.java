@@ -69,7 +69,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 } else {
                     Toast.makeText(context, "News starred.", Toast.LENGTH_SHORT).show();
                     mDatabase.child("news/" + newsList.get(position).getNewsID() + "/starred").setValue(true);
-                    mDatabase.child("news/" + newsList.get(position).getNewsID() + "/expireDate").setValue(date.getTimeInMillis());
                     holder.starredIcon.setVisibility(View.VISIBLE);
                     newsList.get(position).setStarred(true);
                 }

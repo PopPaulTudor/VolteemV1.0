@@ -103,7 +103,7 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
                             mDatabase.child("users").child("volunteers").child(volunteerIDs.get(position)).child("feedback")
                                     .child(user.getUid()).setValue(feedbackText);
                             String newsID = mDatabase.child("news").push().getKey();
-                            mDatabase.child("news").child(newsID).setValue(new NewsMessage(date.getTimeInMillis(), newsID, user.getUid(), volunteerIDs.get(position),
+                            mDatabase.child("news").child(newsID).setValue(new NewsMessage(date.getTimeInMillis(), newsID, "soon", user.getUid(), volunteerIDs.get(position),
                                     "You have received feedback for your activity at " + eventName, NewsMessage.FEEDBACK, false, false));
                             volunteerIDs.remove(position);
                             listVolunteer.remove(position);

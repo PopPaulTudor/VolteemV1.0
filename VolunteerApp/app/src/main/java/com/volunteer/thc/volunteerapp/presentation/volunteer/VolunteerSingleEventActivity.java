@@ -32,6 +32,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.RegisteredUser;
@@ -166,6 +167,11 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                     public void onClick(View view) {
 
                         VolunteerEventsFragment.hasActionHappened = true;
+                        String newsID = mDatabase.child("news").push().getKey();
+                        mDatabase.child("news/"+newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(),
+                                newsID, currentEvent.getEventID(), user.getUid(), currentEvent.getCreated_by()
+                                , "A new volunteer registered for your event " + currentEvent.getName()
+                                , NewsMessage.REGISTERED, false, false));
                         mBottomSheetDialog.dismiss();
                         Toast.makeText(VolunteerSingleEventActivity.this, "Signing up for event...", Toast.LENGTH_SHORT).show();
                         mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid())
