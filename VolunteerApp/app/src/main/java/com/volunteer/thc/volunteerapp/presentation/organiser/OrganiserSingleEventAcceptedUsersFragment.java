@@ -35,6 +35,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
     private Event currentEvent;
     private RecyclerView mAcceptedUsersList;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    public static EventVolunteersAdapter adapter;
 
     @Nullable
     @Override
@@ -97,7 +98,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment {
                         mVolunteers.add(volunteer);
                         if (TextUtils.equals(mAcceptedUsers.get(mAcceptedUsers.size() - 1), volunteerID)) {
 
-                            EventVolunteersAdapter adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", currentEvent, getContext());
+                            adapter= new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", currentEvent, getContext());
                             mAcceptedUsersList.setAdapter(adapter);
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                             mAcceptedUsersList.setLayoutManager(linearLayoutManager);
