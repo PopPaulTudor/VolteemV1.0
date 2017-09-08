@@ -13,35 +13,31 @@
     <RelativeLayout
         android:id="@+id/input_view"
         android:layout_width="340dp"
-        android:layout_height="60dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
         android:background="@drawable/chat_element_sent">
 
         <EditText
             android:id="@+id/input_conversation"
             android:layout_width="290dp"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="5dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
+            android:layout_marginStart="8dp"
             android:background="@android:color/transparent"
-            android:textColor="@color/black"
-            android:layout_toStartOf="@+id/sendMessage" />
+            android:textColor="@color/black" />
 
 
-        <TextView
+        <ImageView
             android:id="@+id/sendMessage"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:text="Send"
-            android:textSize="19dp"
-            android:textColor="@color/colorPrimary"
-            android:layout_marginEnd="9dp"
-            android:layout_alignBaseline="@+id/input_conversation"
-            android:layout_alignBottom="@+id/input_conversation"
-            android:layout_alignParentEnd="true" />
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/input_conversation"
+            android:src="@drawable/ic_send_black" />
 
     </RelativeLayout>
 

@@ -57,7 +57,7 @@ public class ConversationActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(nameChat);
         final RecyclerView conversation = (RecyclerView) findViewById(R.id.list_conversation);
         reply = (EditText) findViewById(R.id.input_conversation);
-        TextView sendMessage = (TextView) findViewById(R.id.sendMessage);
+        ImageView sendMessage = (ImageView) findViewById(R.id.sendMessage);
         chatDefault = (Chat) getIntent().getSerializableExtra("chat");
         idSent = user.getUid();
 

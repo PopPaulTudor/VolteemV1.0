@@ -24,7 +24,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     private ArrayList<Chat> data = new ArrayList<>();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
+    private int contClick=1;
 
     public ConversationAdapter(ArrayList<Chat> data) {
         this.data = data;
@@ -40,7 +40,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     }
 
     @Override
-    public void onBindViewHolder(ConversationAdapter.EventViewHolder holder, int position) {
+    public void onBindViewHolder(final ConversationAdapter.EventViewHolder holder, int position) {
         if (data.get(position).getSentBy().equals(user.getUid())) {
 
             holder.relativeSent.setVisibility(View.VISIBLE);
@@ -56,6 +56,44 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             holder.textReceive.setText(data.get(position).getContent());
             holder.hourReceive.setText(CalendarUtil.getHourFromLong(data.get(position).getHour()));
         }
+
+        holder.relativeReceive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contClick%2==1) {
+                    contClick++;
+                    holder.hourReceive.setVisibility(View.VISIBLE);
+                    holder.hourReceive.setVisibility(View.VISIBLE);
+                    holder.textReceive.setPaddingRelative(15, 30, 15, 50);
+                }
+                else{
+                    contClick++;
+                    holder.hourReceive.setVisibility(View.GONE);
+                    holder.hourReceive.setVisibility(View.GONE);
+                    holder.textReceive.setPaddingRelative(15, 30, 15, 30);
+                }
+            }
+        });
+
+
+        holder.relativeSent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contClick%2==1) {
+                    contClick++;
+                    holder.hourSent.setVisibility(View.VISIBLE);
+                    holder.hourSent.setVisibility(View.VISIBLE);
+                    holder.textSent.setPaddingRelative(15, 30, 15, 50);
+                }
+                else{
+                    contClick++;
+                    holder.hourSent.setVisibility(View.GONE);
+                    holder.hourSent.setVisibility(View.GONE);
+                    holder.textSent.setPaddingRelative(15, 30, 15, 30);
+                }
+            }
+        });
+
     }
 
     @Override

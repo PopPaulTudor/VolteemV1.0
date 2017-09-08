@@ -15,15 +15,29 @@ public final class CalendarUtil {
         return dateFormat.format(date);
     }
 
-    public static String getHourFromLong(long milis){
+    public static String getHourFromLong(long milis) {
 
-        Calendar calendar= Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milis);
 
-        int hour=calendar.get(Calendar.HOUR_OF_DAY);
-        int minute=calendar.get(Calendar.MINUTE);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
 
-        return  hour+":"+minute;
+        String clock = null;
+
+        if (hour < 10) {
+            clock = 0 + hour + ":";
+        } else {
+            clock = hour + ":";
+        }
+
+        if (minute < 10) {
+            clock = clock + 0 + minute;
+        } else {
+            clock=clock+minute;
+        }
+
+        return clock;
     }
 
 }
