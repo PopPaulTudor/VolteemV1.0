@@ -57,8 +57,9 @@ public class VolunteerProfileFragment extends Fragment {
     public static final int GALLERY_INTENT = 1;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private EditText mFirstnameEdit, mLastname, mEmail, mAge, mCity, mPhone;
+    private EditText  mEmail, mAge, mCity, mPhone;
     private Volunteer volunteer1;
+    private TextView  mVolunteerName;
     private ProgressBar mProgressBar;
     private SharedPreferences prefs;
     private TextView mUserName;
@@ -81,8 +82,7 @@ public class VolunteerProfileFragment extends Fragment {
         mUserName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_name);
 
         volunteer1 = new Volunteer();
-        mFirstnameEdit = (EditText) view.findViewById(R.id.edit_firstname);
-        mLastname = (EditText) view.findViewById(R.id.edit_lastname);
+        mVolunteerName = (TextView)view.findViewById(R.id.volunteer_name);
         mEmail = (EditText) view.findViewById(R.id.edit_email);
         mAge = (EditText) view.findViewById(R.id.edit_age);
         mCity = (EditText) view.findViewById(R.id.edit_city);
@@ -90,8 +90,7 @@ public class VolunteerProfileFragment extends Fragment {
         circleImageView = (CircleImageView) view.findViewById(R.id.photo);
         circleImageViewMenu = (CircleImageView) navigationView.findViewById(R.id.photo);
 
-        mFirstnameEdit.setTag(mFirstnameEdit.getKeyListener());
-        mLastname.setTag(mLastname.getKeyListener());
+
         mEmail.setTag(mEmail.getKeyListener());
         mAge.setTag(mAge.getKeyListener());
         mCity.setTag(mCity.getKeyListener());
@@ -157,11 +156,10 @@ public class VolunteerProfileFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 volunteer1 = dataSnapshot.getValue(Volunteer.class);
-                mFirstnameEdit.setText(volunteer1.getFirstname());
                 mEmail.setText(volunteer1.getEmail());
-                mLastname.setText(volunteer1.getLastname());
                 mPhone.setText(volunteer1.getPhone());
                 mCity.setText(volunteer1.getCity());
+                mVolunteerName.setText(volunteer1.getLastname() + " " + volunteer1.getFirstname());
                 mAge.setText(volunteer1.getAge() + "");
 
 
@@ -256,27 +254,11 @@ public class VolunteerProfileFragment extends Fragment {
         String currentFirstName, currentLastName, currentCity, currentPhone, fullName = null;
         int currentAge;
         boolean changedName = false;
-        currentFirstName = mFirstnameEdit.getText().toString();
-        currentLastName = mLastname.getText().toString();
         currentAge = Integer.parseInt(mAge.getText().toString());
         currentCity = mCity.getText().toString();
         currentPhone = mPhone.getText().toString();
 
         if (validateForm()) {
-
-            fullName = currentFirstName + " " + currentLastName;
-
-            if (!currentFirstName.equals(volunteer1.getFirstname())) {
-                mDatabase.child("users").child("volunteers").child(user.getUid()).child("firstname").setValue(currentFirstName);
-                volunteer1.setFirstname(currentFirstName);
-                changedName = true;
-            }
-
-            if (!currentLastName.equals(volunteer1.getLastname())) {
-                mDatabase.child("users").child("volunteers").child(user.getUid()).child("lastname").setValue(currentLastName);
-                volunteer1.setLastname(currentLastName);
-                changedName = true;
-            }
 
             if (currentAge != volunteer1.getAge()) {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("age").setValue(currentAge);
@@ -311,13 +293,9 @@ public class VolunteerProfileFragment extends Fragment {
     }
 
     private void onCancelItemPressed() {
-        mFirstnameEdit.setText(volunteer1.getFirstname());
-        mLastname.setText(volunteer1.getLastname());
         mPhone.setText(volunteer1.getPhone());
         mCity.setText(volunteer1.getCity());
         mAge.setText(volunteer1.getAge() + "");
-        mFirstnameEdit.setError(null);
-        mLastname.setError(null);
         mPhone.setError(null);
         mCity.setError(null);
         mAge.setError(null);
@@ -328,8 +306,6 @@ public class VolunteerProfileFragment extends Fragment {
 
     private void toggleEditOn() {
 
-        mFirstnameEdit.setKeyListener((KeyListener) mFirstnameEdit.getTag());
-        mLastname.setKeyListener((KeyListener) mLastname.getTag());
         mPhone.setKeyListener((KeyListener) mPhone.getTag());
         mAge.setKeyListener((KeyListener) mAge.getTag());
         mCity.setKeyListener((KeyListener) mCity.getTag());
@@ -337,8 +313,7 @@ public class VolunteerProfileFragment extends Fragment {
 
     private void toggleEditOff() {
 
-        mFirstnameEdit.setKeyListener(null);
-        mLastname.setKeyListener(null);
+
         mPhone.setKeyListener(null);
         mCity.setKeyListener(null);
         mAge.setKeyListener(null);
@@ -348,10 +323,6 @@ public class VolunteerProfileFragment extends Fragment {
 
         mEmail.setFocusableInTouchMode(true);
         mEmail.setFocusable(true);
-        mFirstnameEdit.setFocusableInTouchMode(true);
-        mFirstnameEdit.setFocusable(true);
-        mLastname.setFocusableInTouchMode(true);
-        mLastname.setFocusable(true);
         mAge.setFocusableInTouchMode(true);
         mAge.setFocusable(true);
         mPhone.setFocusableInTouchMode(true);
@@ -364,10 +335,6 @@ public class VolunteerProfileFragment extends Fragment {
 
         mEmail.setFocusableInTouchMode(false);
         mEmail.setFocusable(false);
-        mFirstnameEdit.setFocusableInTouchMode(false);
-        mFirstnameEdit.setFocusable(false);
-        mLastname.setFocusableInTouchMode(false);
-        mLastname.setFocusable(false);
         mAge.setFocusableInTouchMode(false);
         mAge.setFocusable(false);
         mPhone.setFocusableInTouchMode(false);
@@ -379,8 +346,7 @@ public class VolunteerProfileFragment extends Fragment {
     private boolean validateForm() {
 
         boolean valid;
-        valid = (editTextIsValid(mFirstnameEdit) && editTextIsValid(mLastname) && editTextIsValid(mAge) &&
-                editTextIsValid(mPhone) && editTextIsValid(mCity));
+        valid = (editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity));
         return valid;
     }
 
