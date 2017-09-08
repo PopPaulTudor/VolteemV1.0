@@ -28,6 +28,7 @@ import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
+import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -196,13 +197,12 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
     public static void acceptVolunteer(final int position, Activity activity) {
 
-        String eventID = mDatabase.child("news").push().getKey();
-        mDatabase.child("news").child(eventID).setValue(new NewsMessage(Calendar.getInstance().getTimeInMillis(), eventID, event.getCreated_by(), volunteerIDs.get(position),
-                "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
-
         mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
         Toast.makeText(activity, "Accepted volunteer!", Toast.LENGTH_LONG).show();
 
+        String eventID = mDatabase.child("news").push().getKey();
+        mDatabase.child("news").child(eventID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), eventID, event.getEventID(), event.getCreated_by(), volunteerIDs.get(position),
+                "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
 
         mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -232,7 +232,5 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         volunteerIDs.remove(position);
 
         OrganiserEventsFragment.hasActionHappened = true;
-
-
     }
 }
