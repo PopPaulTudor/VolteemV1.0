@@ -110,7 +110,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             @Override
             public void onClick(View view) {
                 String eventID = mDatabase.child("news").push().getKey();
-                mDatabase.child("news").child(eventID).setValue(new NewsMessage(date.getTimeInMillis(), eventID, event.getCreated_by(), volunteerIDs.get(position),
+                mDatabase.child("news").child(eventID).setValue(new NewsMessage(date.getTimeInMillis(), eventID, event.getEventID(), event.getCreated_by(), volunteerIDs.get(position),
                         "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
 
                 mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");

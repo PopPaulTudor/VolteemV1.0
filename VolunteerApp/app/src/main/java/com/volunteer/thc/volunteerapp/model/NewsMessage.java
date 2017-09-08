@@ -6,24 +6,25 @@ package com.volunteer.thc.volunteerapp.model;
 
 public class NewsMessage extends Message {
 
-    public static final int ACCEPT = 1, FEEDBACK = 2, EVENT_FINISHED = 3;
+    public static final int ACCEPT = 1, FEEDBACK = 2, EVENT_FINISHED = 3, REGISTERED = 4;
     private int type;
     private boolean notified;
     private boolean starred;
-    private String newsID;
+    private String newsID, eventID;
     private long expireDate;
 
     public NewsMessage() {
 
     }
 
-    public NewsMessage(long expireDate, String newsID, String sentBy, String receivedBy, String content, final int type, boolean notified, boolean starred) {
+    public NewsMessage(long expireDate, String newsID, String eventID, String sentBy, String receivedBy, String content, final int type, boolean notified, boolean starred) {
         super(sentBy, receivedBy, content);
         this.type = type;
         this.notified = notified;
         this.starred = starred;
         this.newsID = newsID;
         this.expireDate = expireDate;
+        this.eventID = eventID;
     }
 
     public int getType() {
@@ -64,5 +65,13 @@ public class NewsMessage extends Message {
 
     public void setExpireDate(long expireDate) {
         this.expireDate = expireDate;
+    }
+
+    public String getEventID() {
+        return eventID;
+    }
+
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
     }
 }

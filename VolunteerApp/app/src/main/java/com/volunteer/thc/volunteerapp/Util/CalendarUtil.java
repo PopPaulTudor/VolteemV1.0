@@ -40,4 +40,8 @@ public final class CalendarUtil {
         return clock;
     }
 
+    public static long getCurrentTimeInMillis() {
+        Calendar calendar = Calendar.getInstance();
+        return calendar.getTimeInMillis();
+    }
 }
