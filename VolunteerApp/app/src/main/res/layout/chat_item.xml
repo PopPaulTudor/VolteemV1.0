@@ -8,8 +8,7 @@
         android:id="@+id/chat_icon_element"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_margin="10dp"
-        android:src="@drawable/ic_organiser" />
+        android:layout_margin="10dp" />
 
 
     <TextView
@@ -19,7 +18,7 @@
         android:layout_alignBottom="@+id/chat_icon_element"
         android:layout_marginBottom="11dp"
         android:layout_toEndOf="@+id/chat_icon_element"
-        android:text="Top fundation"
+        android:text=""
         android:textColor="@color/black"
         android:textSize="25dp" />
 

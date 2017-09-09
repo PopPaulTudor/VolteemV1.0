@@ -88,10 +88,12 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         if (classParent.contains("accept")) {
             holder.phoneVolunteer.setText("Experience: " + listVolunteer.get(position).getExperience());
             holder.acceptUser.setVisibility(View.GONE);
+            holder.sendMessage.setVisibility(View.GONE);
             holder.expPhoneVolunteer.setText(listVolunteer.get(position).getPhone());
         } else {
             holder.phoneVolunteer.setText("Phone: " + listVolunteer.get(position).getPhone());
             holder.acceptUser.setVisibility(View.VISIBLE);
+            holder.sendMessage.setVisibility(View.VISIBLE);
             holder.expPhoneVolunteer.setText(listVolunteer.get(position).getExperience() + "");
         }
 

@@ -70,6 +70,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
+                    ConversationActivity.nameChat=null;
                     viewHolder.textElement.setText(volunteer.getFirstname() + " " + volunteer.getLastname());
                     ConversationActivity.nameChat=volunteer.getFirstname() + " " + volunteer.getLastname();
 
@@ -79,7 +80,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             Organiser organiser = dataSnapshot.getValue(Organiser.class);
                             viewHolder.textElement.setText(organiser.getCompany());
-                            ConversationActivity.nameChat= organiser.getCompany();
+
 
 
                         }

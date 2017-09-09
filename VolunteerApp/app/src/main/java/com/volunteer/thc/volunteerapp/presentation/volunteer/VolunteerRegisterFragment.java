@@ -70,6 +70,8 @@ public class VolunteerRegisterFragment extends Fragment {
     private String mGender;
     private CircleImageView mImage;
     private Uri uri = null;
+    private Uri uriFemale;
+    private Uri uriMale;
 
 
     @Override
@@ -92,9 +94,15 @@ public class VolunteerRegisterFragment extends Fragment {
         mRegister = (Button) view.findViewById(R.id.register_user);
         mBack = (Button) view.findViewById(R.id.back);
         intent = new Intent(getActivity(), MainActivity.class);
-        uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+
+        uriFemale = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + getResources().getResourcePackageName(R.drawable.user_female)
+                + '/' + getResources().getResourceTypeName(R.drawable.user_female) + '/' + getResources().getResourceEntryName(R.drawable.user_female));
+        uriMale = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + getResources().getResourcePackageName(R.drawable.user)
                 + '/' + getResources().getResourceTypeName(R.drawable.user) + '/' + getResources().getResourceEntryName(R.drawable.user));
+
+        uri = uriMale;
         Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
         gender.add("Gender");
         gender.add("Male");
@@ -194,10 +202,22 @@ public class VolunteerRegisterFragment extends Fragment {
                             String user_phone = mPhone.getText().toString();
 
                             Volunteer volunteer1 = new Volunteer(user_firstname, user_lastname, email, user_age, user_city, user_phone, mGender);
-
                             mDatabase.child("users").child("volunteers").child(userID).setValue(volunteer1);
+
+                            if (mGender.equals("Male")) {
+                                uri = uriMale;
+                            } else {
+                                uri = uriFemale;
+                            }
+
                             StorageReference filePath = mStorage.child("Photos").child("User").child(userID);
-                            filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
+
+                            if (uri.equals(uriFemale) || uri.equals(uriMale)) {
+                                filePath.putFile(uri);
+
+                            } else {
+                                filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
+                            }
 
                             UserProfileChangeRequest mProfileUpdate = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(user_firstname)

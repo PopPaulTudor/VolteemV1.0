@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -78,6 +79,7 @@ public class ConversationActivity extends AppCompatActivity {
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                conversation.getLayoutManager().scrollToPosition(conversationAdapter.getItemCount() - 1);
                 if (!reply.getText().toString().isEmpty()) {
                     Chat chat = new Chat(idSent, idReceive, reply.getText().toString(), chatDefault.getUuid(), Calendar.getInstance().getTimeInMillis(),false);
                     mDatabase.child("conversation").push().setValue(chat);
@@ -93,6 +95,7 @@ public class ConversationActivity extends AppCompatActivity {
                 Chat chatData = dataSnapshot.getValue(Chat.class);
                 conversationAdapter.addElement(chatData);
                 conversation.getLayoutManager().scrollToPosition(conversationAdapter.getItemCount() - 1);
+
             }
 
             @Override
@@ -132,6 +135,11 @@ public class ConversationActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

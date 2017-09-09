@@ -1,5 +1,6 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.ChatAdapter;
 import com.volunteer.thc.volunteerapp.model.Chat;
+import com.volunteer.thc.volunteerapp.model.Organiser;
+import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
 
@@ -50,14 +53,15 @@ public class ChatFragment extends Fragment {
         final ArrayList<Chat> arrayCopy = new ArrayList<>();
         chatAdapter = new ChatAdapter(getContext(), array);
         listChat.setAdapter(chatAdapter);
-
+        final ProgressDialog progressDialog = ProgressDialog.show(getContext(), "Getting data", "", true);
+        progressDialog.show();
         noChatImage = (ImageView) v.findViewById(R.id.no_chat_image);
         noChatText = (TextView) v.findViewById(R.id.no_chat_text);
-
 
         mDatabase.child("conversation").orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                progressDialog.dismiss();
 
                 noChatImage.setVisibility(View.GONE);
                 noChatText.setVisibility(View.GONE);
@@ -65,8 +69,8 @@ public class ChatFragment extends Fragment {
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     Chat chatData = data.getValue(Chat.class);
                     boolean change = false;
-                    for (Chat chat : array) {
-                        if (chat.getReceivedBy().equals(chatData.getReceivedBy())) {
+                    for (Chat chat : arrayCopy) {
+                        if (chat.getSentBy().equals(chatData.getSentBy())) {
                             change = true;
                             break;
                         }
@@ -75,17 +79,54 @@ public class ChatFragment extends Fragment {
                         arrayCopy.add(chatData);
                         chatAdapter.add(chatData);
                         chatAdapter.notifyDataSetChanged();
-                    }
 
+                    }
                 }
+
+
 
                 listChat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent intent = new Intent(getContext(), ConversationActivity.class);
-                        intent.putExtra("chat", arrayCopy.get(position));
-                        intent.putExtra("class", "fragment");
-                        startActivity(intent);
+                    public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                        mDatabase.child("users").child("volunteers").child(arrayCopy.get(position).getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
+                                    ConversationActivity.nameChat=volunteer.getFirstname() + " " + volunteer.getLastname();
+                                    Intent intent = new Intent(getContext(), ConversationActivity.class);
+                                    intent.putExtra("chat", arrayCopy.get(position));
+                                    intent.putExtra("class", "fragment");
+                                    startActivity(intent);
+
+                                } else {
+                                    mDatabase.child("users").child("organisers").child(arrayCopy.get(position).getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            Organiser organiser = dataSnapshot.getValue(Organiser.class);
+                                            ConversationActivity.nameChat=organiser.getCompany();
+                                            Intent intent = new Intent(getContext(), ConversationActivity.class);
+                                            intent.putExtra("chat", arrayCopy.get(position));
+                                            intent.putExtra("class", "fragment");
+                                            startActivity(intent);
+
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
                     }
                 });
 
@@ -147,6 +188,9 @@ public class ChatFragment extends Fragment {
                 }
 
 
+
+
+
             }
 
             @Override
@@ -154,6 +198,7 @@ public class ChatFragment extends Fragment {
 
             }
         });
+
 
         return v;
 

@@ -125,6 +125,10 @@ public class FirebaseNewsService extends Service {
 
             }
         });
+
+
+
+
     }
 
     @Override
@@ -137,10 +141,11 @@ public class FirebaseNewsService extends Service {
     private void sendNotification(String content,String title,Chat chat) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Intent intent ;
-        if(!title.equals("news")){
+        if(!title.equals("News")){
             intent= new Intent(this, ConversationActivity.class);
             intent.putExtra("chat",chat);
             intent.putExtra("class","firebase");
+            ConversationActivity.nameChat=title;
         }else{
             intent= new Intent(this,MainActivity.class);
         }
