@@ -60,6 +60,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     private ArrayList<String> typeList = new ArrayList<>();
     private String filterType = "All";
     private Spinner actionFilter;
+    private MenuItem filter;
     protected static boolean hasActionHappened = false;
 
     @Override
@@ -72,7 +73,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
         recyclerView.setHasFixedSize(true);
         noEvents = (TextView) view.findViewById(R.id.no_events_text);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.colorPrimary);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.post(new Runnable() {
@@ -187,7 +188,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
         searchView.clearFocus();
 
         MenuItem searchMenu = menu.findItem(R.id.app_bar_search);
-        MenuItem filter = menu.findItem(R.id.action_filter);
+        filter = menu.findItem(R.id.action_filter);
         actionFilter = (Spinner) filter.getActionView().findViewById(R.id.filterSpinner);
         populateSpinnerArray();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, typeList) {
@@ -224,6 +225,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                     @Override
                     public boolean onMenuItemActionCollapse(MenuItem item) {
                         item.getActionView().clearFocus();
+                        filter.setVisible(true);
                         return true;  // Return true to collapse action view
                     }
 
@@ -231,6 +233,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                     public boolean onMenuItemActionExpand(MenuItem item) {
                         //get focus
                         item.getActionView().requestFocus();
+                        filter.setVisible(false);
                         //get input method
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);

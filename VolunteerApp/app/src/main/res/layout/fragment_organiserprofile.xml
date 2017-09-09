@@ -18,7 +18,7 @@
         android:id="@+id/volunteer_backimage"
         android:layout_width="match_parent"
         android:layout_height="120sp"
-        android:background="@color/green" />
+        android:background="@color/colorAccent" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/photo"

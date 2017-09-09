@@ -118,7 +118,6 @@ public class MainActivity extends AppCompatActivity
                     mUserName.setText(user.getEmail());
                 }
 
-
                 editor.putString("user_status", userType);
                 editor.putString("user_id", user.getUid());
                 editor.apply();
