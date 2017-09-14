@@ -18,19 +18,20 @@
             android:layout_marginStart="10dp"
             android:src="@drawable/ic_checked" />
 
-		<RelativeLayout
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerVertical="true"
-			android:layout_marginStart="38dp">
-        <ImageView
-            android:id="@+id/starred_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-			android:layout_marginBottom="25dp"
-            android:src="@drawable/ic_star"
-            android:visibility="gone" />
-		</RelativeLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="38dp">
+
+            <ImageView
+                android:id="@+id/starred_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginBottom="25dp"
+                android:src="@drawable/ic_star"
+                android:visibility="gone" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/content"
@@ -42,13 +43,22 @@
             android:text="News notification"
             android:textSize="20sp" />
 
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/content"
+            android:layout_marginStart="65dp"
+            android:layout_marginTop="5dp"
+            android:textSize="12sp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/content"
+            android:layout_below="@id/time"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:background="@android:color/darker_gray" />
 
     </RelativeLayout>

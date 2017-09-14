@@ -14,8 +14,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
+import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -27,7 +27,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     private List<NewsMessage> newsList;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private Context context;
-    private Calendar date = Calendar.getInstance();
 
     public NewsAdapter(List<NewsMessage> list, Context context) {
         newsList = list;
@@ -44,7 +43,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(final NewsAdapter.NewsViewHolder holder, final int position) {
 
-        if(newsList.get(position).isStarred()) {
+        if (newsList.get(position).isStarred()) {
             holder.starredIcon.setVisibility(View.VISIBLE);
         }
         //TODO: display news for organisers too
@@ -58,10 +57,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 break;
         }
         holder.content.setText(newsList.get(position).getContent());
+        holder.time.setText(CalendarUtil.getNewsStringDateFromMM(newsList.get(position).getExpireDate()));
         holder.item.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if(newsList.get(position).isStarred()) {
+                if (newsList.get(position).isStarred()) {
                     Toast.makeText(context, "News unstarred.", Toast.LENGTH_SHORT).show();
                     mDatabase.child("news/" + newsList.get(position).getNewsID() + "/starred").setValue(false);
                     holder.starredIcon.setVisibility(View.GONE);
@@ -84,7 +84,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     class NewsViewHolder extends RecyclerView.ViewHolder {
 
-        TextView content;
+        TextView content, time;
         RelativeLayout item;
         ImageView typeIcon, starredIcon;
 
@@ -92,6 +92,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             super(v);
             item = (RelativeLayout) v.findViewById(R.id.item_view);
             content = (TextView) v.findViewById(R.id.content);
+            time = (TextView) v.findViewById(R.id.time);
             typeIcon = (ImageView) v.findViewById(R.id.news_icon);
             starredIcon = (ImageView) v.findViewById(R.id.starred_icon);
         }

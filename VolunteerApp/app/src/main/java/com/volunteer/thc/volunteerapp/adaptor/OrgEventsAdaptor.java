@@ -20,11 +20,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
+import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,15 +34,16 @@ import java.util.List;
 
 public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.EventViewHolder> {
 
-
-    private List<Event> EventsList;
+    private List<Event> eventsList;
     private Context context;
     private Resources resources;
+    private ArrayList<Uri> imageUris = new ArrayList<>();
+    private ArrayList<String> typeList = new ArrayList<>();
 
-    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources){
-        EventsList = list;
+    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources) {
+        eventsList = list;
         this.context = context;
-        this.resources=resources;
+        this.resources = resources;
     }
 
     @Override
@@ -54,39 +56,35 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     @Override
     public void onBindViewHolder(final OrgEventsAdaptor.EventViewHolder holder, final int position) {
 
-        holder.cardName.setText(EventsList.get(position).getName());
-        holder.cardLocation.setText(EventsList.get(position).getLocation());
-        holder.cardDate.setText(CalendarUtil.getStringDateFromMM(EventsList.get(position).getDeadline()));
+        holder.cardName.setText(eventsList.get(position).getName());
+        holder.cardLocation.setText(eventsList.get(position).getLocation());
+        holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position).getDeadline()));
 
+        populateTypeList();
+        populateUriList();
 
-        Uri uriBackground = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-                "://" + resources.getResourcePackageName(R.drawable.background_default)
-                + '/' + resources.getResourceTypeName(R.drawable.background_default) + '/' + resources.getResourceEntryName(R.drawable.background_default));
-        Picasso.with(context).load(uriBackground).fit().centerCrop().into(holder.cardImage);
+        Picasso.with(context).load(imageUris.get(typeList.indexOf(eventsList.get(position).getType()))).fit().centerCrop().into(holder.cardImage);
 
-        StorageReference storageRef= FirebaseStorage.getInstance().getReference();
-        storageRef.child("Photos").child("Event").child(EventsList.get(position).getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        storageRef.child("Photos").child("Event").child(eventsList.get(position).getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.with(context).load(uri).fit().centerCrop().into(holder.cardImage);
             }
         });
 
-
-
-
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                if(TextUtils.equals(prefs.getString("user_status", null), "Organiser")) {
+                if (TextUtils.equals(prefs.getString("user_status", null), "Organiser")) {
                     Intent intent = new Intent(context.getApplicationContext(), OrganiserSingleEventActivity.class);
-                    intent.putExtra("SingleEvent", EventsList.get(position));
+                    intent.putExtra("SingleEvent", eventsList.get(position));
                     context.startActivity(intent);
                 } else {
                     Intent intent = new Intent(context.getApplicationContext(), VolunteerSingleEventActivity.class);
-                    intent.putExtra("SingleEvent", EventsList.get(position));
+                    intent.putExtra("SingleEvent", eventsList.get(position));
                     context.startActivity(intent);
                 }
             }
@@ -95,11 +93,10 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
     @Override
     public int getItemCount() {
-        return EventsList.size();
+        return eventsList.size();
     }
 
-
-    class EventViewHolder extends RecyclerView.ViewHolder{
+    class EventViewHolder extends RecyclerView.ViewHolder {
 
         TextView cardName;
         TextView cardDate;
@@ -110,12 +107,37 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         EventViewHolder(View v) {
             super(v);
 
-            cardName= (TextView) v.findViewById(R.id.NameCardElement);
-            cardDate= (TextView) v.findViewById(R.id.DateCardElement);
-            cardLocation= (TextView) v.findViewById(R.id.LocationCardElement);
-            cardView= (CardView) v.findViewById(R.id.CardElement);
-            cardImage=(ImageView)v.findViewById(R.id.ImageCardElement);
+            cardName = (TextView) v.findViewById(R.id.NameCardElement);
+            cardDate = (TextView) v.findViewById(R.id.DateCardElement);
+            cardLocation = (TextView) v.findViewById(R.id.LocationCardElement);
+            cardView = (CardView) v.findViewById(R.id.CardElement);
+            cardImage = (ImageView) v.findViewById(R.id.ImageCardElement);
 
         }
+    }
+
+    private Uri parseUri(int ID) {
+        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + resources.getResourcePackageName(ID)
+                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName(ID));
+
+    }
+
+    private void populateUriList() {
+        imageUris.add(parseUri(R.drawable.image_sports));
+        imageUris.add(parseUri(R.drawable.image_music));
+        imageUris.add(parseUri(R.drawable.image_festival));
+        imageUris.add(parseUri(R.drawable.image_charity));
+        imageUris.add(parseUri(R.drawable.image_training));
+        imageUris.add(parseUri(R.drawable.image_other));
+    }
+
+    private void populateTypeList() {
+        typeList.add("Sports");
+        typeList.add("Music");
+        typeList.add("Festival");
+        typeList.add("Charity");
+        typeList.add("Training");
+        typeList.add("Other");
     }
 }
