@@ -2,7 +2,8 @@
 <resources>
     <color name="colorPrimary">#199c88</color>
     <color name="colorPrimaryDark">#137a6a</color>
-    <color name="colorAccent">#ff8a65</color>
+    <color name="colorAccent">#004a65</color>
+    <color name="colorAccentDark">#003B50</color>
     <color name="floatingButtonBackgroundTint">#81C784</color>
     <!--<color name="green">#65ba69</color>-->
     <color name="green">#81c784</color>

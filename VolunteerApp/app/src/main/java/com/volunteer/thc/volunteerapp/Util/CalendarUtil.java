@@ -1,5 +1,7 @@
 package com.volunteer.thc.volunteerapp.util;
 
+import android.text.TextUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,6 +15,18 @@ public final class CalendarUtil {
         Date date = new Date(millis);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return dateFormat.format(date);
+    }
+
+    public static String getNewsStringDateFromMM(long millis) {
+        Date date = new Date(millis);
+        Date currentDate = new Date(getCurrentTimeInMillis());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
+        if (TextUtils.equals(dateFormat.format(date), dateFormat.format(currentDate))) {
+            return ("Today at " + hourFormat.format(date));
+        } else {
+            return dateFormat.format(date);
+        }
     }
 
     public static String getHourFromLong(long milis) {

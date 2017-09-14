@@ -82,7 +82,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
         recyclerView.setHasFixedSize(true);
         noEvents = (TextView) view.findViewById(R.id.no_events_text);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.colorPrimary);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
         mSwipeRefreshLayout.post(new Runnable() {
             @Override

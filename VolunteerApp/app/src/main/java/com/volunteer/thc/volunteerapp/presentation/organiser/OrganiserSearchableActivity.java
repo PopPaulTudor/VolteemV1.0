@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,35 +62,35 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     for (DataSnapshot event : dataSnapshot.getChildren()) {
+                        Event currentEvent = event.getValue(Event.class);
+                        if(currentEvent.getFinishDate() > CalendarUtil.getCurrentTimeInMillis()) {
 
-                        String eventName = event.child("name").getValue().toString();
-                        eventName = eventName.toLowerCase();
+                            String eventName = currentEvent.getName().toLowerCase();
+                            if (eventName.contains(query)) {
 
-                        if (eventName.contains(query)) {
+                                ArrayList<String> reg_users = new ArrayList<>();
+                                ArrayList<String> acc_users = new ArrayList<>();
 
-                            Event currentEvent = event.getValue(Event.class);
-                            ArrayList<String> reg_users = new ArrayList<>();
-
-                            for (DataSnapshot registered_users : event.child("registered_users").getChildren()) {
-                                reg_users.add(registered_users.child("user").getValue().toString());
+                                for (DataSnapshot registered_users : event.child("users").getChildren()) {
+                                    if (TextUtils.equals(registered_users.child("status").getValue().toString(), "pending")) {
+                                        reg_users.add(registered_users.child("id").getValue().toString());
+                                    } else {
+                                        acc_users.add(registered_users.child("id").getValue().toString());
+                                    }
+                                }
+                                currentEvent.setRegistered_volunteers(reg_users);
+                                currentEvent.setAccepted_volunteers(acc_users);
+                                mResultEvents.add(currentEvent);
                             }
-                            currentEvent.setRegistered_volunteers(reg_users);
-                            reg_users = new ArrayList<>();
-                            for (DataSnapshot accepted_users : event.child("accepted_users").getChildren()) {
-                                reg_users.add(accepted_users.child("user").getValue().toString());
-                            }
-                            currentEvent.setAccepted_volunteers(reg_users);
-                            mResultEvents.add(currentEvent);
                         }
                     }
                     mProgressBar.setVisibility(View.GONE);
 
                     if (mResultEvents.isEmpty()) {
-
                         mNoResultText.setVisibility(View.VISIBLE);
                     } else {
 
-                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, OrganiserSearchableActivity.this,getResources());
+                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, OrganiserSearchableActivity.this, getResources());
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrganiserSearchableActivity.this);
                         recyclerView.setLayoutManager(linearLayoutManager);

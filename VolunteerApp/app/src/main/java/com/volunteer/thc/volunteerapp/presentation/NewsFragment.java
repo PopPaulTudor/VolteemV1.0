@@ -23,6 +23,7 @@ import com.volunteer.thc.volunteerapp.adaptor.NewsAdapter;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by poppa on 25.08.2017.
@@ -57,6 +58,7 @@ public class NewsFragment extends Fragment {
                     noNewsImage.setVisibility(View.VISIBLE);
                     noNewsText.setVisibility(View.VISIBLE);
                 }
+                Collections.reverse(news);
                 NewsAdapter adapter = new NewsAdapter(news, getActivity());
                 newsRecView.setAdapter(adapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());

@@ -77,7 +77,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
         mSize.setText(mCurrentEvent.getSize() + "");
         currentStartDate = mCurrentEvent.getStartDate();
-        currentFinishDate = mCurrentEvent.getStartDate();
+        currentFinishDate = mCurrentEvent.getFinishDate();
         currentDeadline = mCurrentEvent.getDeadline();
 
         mStartDate.setOnClickListener(setonClickListenerCalendar(mStartDate));

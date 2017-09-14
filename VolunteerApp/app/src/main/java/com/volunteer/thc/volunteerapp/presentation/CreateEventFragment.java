@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -18,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -47,7 +50,6 @@ import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-
 /**
  * Created on 6/23/2017.
  */
@@ -64,6 +66,9 @@ public class CreateEventFragment extends Fragment {
     private StorageReference mStorage;
     private Uri uri = null;
     private ArrayList<String> typeList = new ArrayList<>();
+    private Resources resources;
+    private ArrayList<Uri> imageUris = new ArrayList<>();
+    private boolean hasUserSelectedPicture = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,7 +86,11 @@ public class CreateEventFragment extends Fragment {
         mImage = (ImageView) view.findViewById(R.id.event_image);
         mSize = (EditText) view.findViewById(R.id.event_size);
         mStorage = FirebaseStorage.getInstance().getReference();
+        resources = getResources();
 
+        populateUriList();
+
+        Picasso.with(getActivity()).load(imageUris.get(3)).fit().centerCrop().into(mImage);
         Button mSaveEvent = (Button) view.findViewById(R.id.save_event);
         Button mCancel = (Button) view.findViewById(R.id.cancel_event);
 
@@ -89,6 +98,20 @@ public class CreateEventFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, typeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mType.setAdapter(adapter);
+
+        mType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (!hasUserSelectedPicture) {
+                    Picasso.with(getActivity()).load(imageUris.get(mType.getSelectedItemPosition())).fit().centerCrop().into(mImage);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,8 +151,10 @@ public class CreateEventFragment extends Fragment {
                     final String eventID = mDatabase.child("events").push().getKey();
                     String type = mType.getSelectedItem().toString();
 
-                    StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
-                    filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
+                    if (hasUserSelectedPicture) {
+                        StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
+                        filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
+                    }
 
                     mDatabase.child("users/organisers/" + user.getUid())
                             .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -160,8 +185,6 @@ public class CreateEventFragment extends Fragment {
 
                     returnToEvents();
                     Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
-
                 }
             }
         });
@@ -183,6 +206,7 @@ public class CreateEventFragment extends Fragment {
 
         if (requestCode == GALLERY_INTENT && (data != null)) {
             uri = data.getData();
+            hasUserSelectedPicture = true;
             Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
         }
     }
@@ -267,5 +291,22 @@ public class CreateEventFragment extends Fragment {
                 datePickerDialog.show();
             }
         };
+    }
+
+    private Uri parseUri(int ID) {
+        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + resources.getResourcePackageName(ID)
+                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName(ID));
+
+    }
+
+    private void populateUriList() {
+        imageUris.add(parseUri(R.drawable.image_no_type));
+        imageUris.add(parseUri(R.drawable.image_sports));
+        imageUris.add(parseUri(R.drawable.image_music));
+        imageUris.add(parseUri(R.drawable.image_festival));
+        imageUris.add(parseUri(R.drawable.image_charity));
+        imageUris.add(parseUri(R.drawable.image_training));
+        imageUris.add(parseUri(R.drawable.image_other));
     }
 }

@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +34,9 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private RecyclerView recyclerView;
-    private List<Event> mResultEvents = new ArrayList<>();
-    private List<String> mUserEvents = new ArrayList<>();
+    private ArrayList<Event> mResultEvents = new ArrayList<>();
     private ProgressBar mProgressBar;
     private TextView mNoResultText;
-    private ValueEventListener mRetrieveEvents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,35 +71,16 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
     private void loadResultEvents() {
         mProgressBar.setVisibility(View.VISIBLE);
 
-        mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot usersSnapshot : dataSnapshot.child("events").getChildren()) {
-                    mUserEvents.add(usersSnapshot.getValue().toString());
-                }
-                mDatabase.child("events").addListenerForSingleValueEvent(mRetrieveEvents);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        mRetrieveEvents = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mResultEvents = new ArrayList<>();
-                for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
-
-                    String eventName = eventSnapshot.child("name").getValue().toString();
-                    eventName = eventName.toLowerCase();
-                    Event currentEvent = eventSnapshot.getValue(Event.class);
-                    if (!isUserRegisteredForEvent(currentEvent.getEventID()) && eventName.contains(query)) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    Event currentEvent = dataSnapshot1.getValue(Event.class);
+                    String eventName = currentEvent.getName().toLowerCase();
+                    if (eventName.contains(query) && currentEvent.getDeadline() > CalendarUtil.getCurrentTimeInMillis()) {
                         mResultEvents.add(currentEvent);
                     }
                 }
-
                 mProgressBar.setVisibility(View.GONE);
                 if (mResultEvents.isEmpty()) {
                     mNoResultText.setVisibility(View.VISIBLE);
@@ -115,22 +95,12 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        };
+        });
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
-    }
-
-    private boolean isUserRegisteredForEvent(String eventID) {
-
-        for (String event : mUserEvents) {
-            if (TextUtils.equals(eventID, event)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
