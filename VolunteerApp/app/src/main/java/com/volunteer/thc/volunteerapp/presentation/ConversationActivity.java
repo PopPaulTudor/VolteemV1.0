@@ -9,11 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,12 +19,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.ConversationAdapter;
 import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
 import com.volunteer.thc.volunteerapp.model.Chat;
-import com.volunteer.thc.volunteerapp.model.NewsMessage;
-import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventAcceptedUsersFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
 
 import java.util.ArrayList;
@@ -41,6 +37,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     final ArrayList<Chat> arrayList = new ArrayList<>();
     public static String nameChat = null;
+    public static String idActive="";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ConversationAdapter conversationAdapter;
     private EditText reply;
@@ -48,6 +45,7 @@ public class ConversationActivity extends AppCompatActivity {
     private String idSent, idReceive;
     private Chat chatDefault;
     public static OrganiserSingleEventRegisteredUsersFragment fragment;
+
 
 
     @Override
@@ -74,6 +72,8 @@ public class ConversationActivity extends AppCompatActivity {
         conversation.setLayoutManager(linearLayoutManager);
         conversationAdapter = new ConversationAdapter(arrayList);
         conversation.setAdapter(conversationAdapter);
+        conversation.setHasFixedSize(false  );
+
 
 
         sendMessage.setOnClickListener(new View.OnClickListener() {
@@ -87,6 +87,7 @@ public class ConversationActivity extends AppCompatActivity {
                 }
             }
         });
+
 
 
         mDatabase.child("conversation").orderByChild("uuid").equalTo(chatDefault.getUuid()).addChildEventListener(new ChildEventListener() {
@@ -139,6 +140,7 @@ public class ConversationActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+        idActive="";
     }
 
     @Override
@@ -183,5 +185,15 @@ public class ConversationActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        idActive=chatDefault.getUuid();
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        idActive="";
+    }
 }

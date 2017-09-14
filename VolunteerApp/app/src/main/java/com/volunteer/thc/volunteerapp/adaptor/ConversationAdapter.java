@@ -16,6 +16,7 @@ import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import java.util.ArrayList;
 
 
+
 /**
  * Created by poppa on 25.08.2017.
  */
@@ -24,7 +25,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     private ArrayList<Chat> data = new ArrayList<>();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private int contClick=1;
+    private int contClick = 1;
+
 
     public ConversationAdapter(ArrayList<Chat> data) {
         this.data = data;
@@ -45,28 +47,29 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
             holder.relativeSent.setVisibility(View.VISIBLE);
             holder.relativeReceive.setVisibility(View.GONE);
-
             holder.textSent.setText(data.get(position).getContent());
             holder.hourSent.setText(CalendarUtil.getHourFromLong(data.get(position).getHour()));
 
         } else {
             holder.relativeSent.setVisibility(View.GONE);
             holder.relativeReceive.setVisibility(View.VISIBLE);
-
             holder.textReceive.setText(data.get(position).getContent());
             holder.hourReceive.setText(CalendarUtil.getHourFromLong(data.get(position).getHour()));
+
+
+
         }
+
 
         holder.relativeReceive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(contClick%2==1) {
+                if (contClick % 2 == 1) {
                     contClick++;
                     holder.hourReceive.setVisibility(View.VISIBLE);
                     holder.hourReceive.setVisibility(View.VISIBLE);
                     holder.textReceive.setPaddingRelative(15, 30, 15, 50);
-                }
-                else{
+                } else {
                     contClick++;
                     holder.hourReceive.setVisibility(View.GONE);
                     holder.hourReceive.setVisibility(View.GONE);
@@ -79,17 +82,16 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         holder.relativeSent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(contClick%2==1) {
+                if (contClick % 2 == 1) {
                     contClick++;
                     holder.hourSent.setVisibility(View.VISIBLE);
                     holder.hourSent.setVisibility(View.VISIBLE);
-                    holder.textSent.setPaddingRelative(15, 30, 15, 50);
-                }
-                else{
+                    holder.textSent.setPaddingRelative(7, 15, 7, 25);
+                } else {
                     contClick++;
                     holder.hourSent.setVisibility(View.GONE);
                     holder.hourSent.setVisibility(View.GONE);
-                    holder.textSent.setPaddingRelative(15, 30, 15, 30);
+                    holder.textSent.setPaddingRelative(7, 15, 7, 15);
                 }
             }
         });
@@ -116,8 +118,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             textReceive = (TextView) v.findViewById(R.id.conversation_text_receive);
             hourSent = (TextView) v.findViewById(R.id.conversation_hour_sent);
             hourReceive = (TextView) v.findViewById(R.id.conversation_hour_receive);
-            relativeSent=(RelativeLayout) v.findViewById(R.id.layout_sent);
-            relativeReceive=(RelativeLayout) v.findViewById(R.id.layout_receive);
+            relativeSent = (RelativeLayout) v.findViewById(R.id.layout_sent);
+            relativeReceive = (RelativeLayout) v.findViewById(R.id.layout_receive);
 
 
         }

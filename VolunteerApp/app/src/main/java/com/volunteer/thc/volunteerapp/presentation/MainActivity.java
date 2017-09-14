@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 case R.id.nav_chat: {
                     replaceFragmentByClass(new ChatFragment());
-                    actionBarTitle = "Chat";
+                    actionBarTitle = "Interview";
                     break;
                 }
                 case R.id.nav_scoreboard: {

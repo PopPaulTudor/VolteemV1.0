@@ -7,10 +7,15 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -18,6 +23,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Chat;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
@@ -25,6 +32,7 @@ import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
+import com.volunteer.thc.volunteerapp.util.ImageUtils;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -39,6 +47,8 @@ public class FirebaseNewsService extends Service {
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private SharedPreferences prefs;
     private Calendar date = Calendar.getInstance();
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+
 
     @Nullable
     @Override
@@ -62,7 +72,7 @@ public class FirebaseNewsService extends Service {
                         } else {
                             if (!dataSnapshot1.child("notified").getValue(Boolean.class)) {
                                 if (prefs.getBoolean("notifications", true)) {
-                                    sendNotification(newsMessage.getContent(),"News",null);
+                                    sendNews(newsMessage.getContent(), "News");
                                 }
                                 mDatabase.child("news/" + dataSnapshot1.getKey() + "/notified").setValue(true);
                             }
@@ -82,39 +92,66 @@ public class FirebaseNewsService extends Service {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     final Chat chat = dataSnapshot1.getValue(Chat.class);
-                    if (!chat.isReceived()&&!chat.getContent().contains("You have been accepted to ")) {
+                    if (!chat.isReceived() && !chat.getContent().contains("You have been accepted to ")) {
                         mDatabase.child("conversation/" + dataSnapshot1.getKey() + "/received").setValue(true);
-                        mDatabase.child("users").child("volunteers").child(chat.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()) {
 
-                                    Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
-                                    sendNotification(chat.getContent(), volunteer.getFirstname() + " " + volunteer.getLastname(),chat);
+                        if (!ConversationActivity.idActive.equals(chat.getUuid())) {
+                            mDatabase.child("users").child("volunteers").child(chat.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
 
-                                } else {
-                                    mDatabase.child("users").child("organisers").child(chat.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            Organiser organiser = dataSnapshot.getValue(Organiser.class);
-                                            sendNotification(chat.getContent(), organiser.getCompany(),chat);
+                                        final Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
+
+                                        final long ONE_MEGABYTE = 1024 * 1024;
+                                        storageRef.child("Photos").child("User").child(user.getUid()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                            @Override
+                                            public void onSuccess(byte[] bytes) {
+                                                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                                sendConversation(chat.getContent(), volunteer.getFirstname() + " " + volunteer.getLastname(), chat,ImageUtils.getCroppedBitmap(bitmap,getResources()));
+
+                                            }
+                                        });
 
 
-                                        }
 
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
 
-                                        }
-                                    });
+
+                                    } else {
+                                        mDatabase.child("users").child("organisers").child(chat.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                final Organiser organiser = dataSnapshot.getValue(Organiser.class);
+
+                                                final long ONE_MEGABYTE = 1024 * 1024;
+                                                storageRef.child("Photos").child("User").child(user.getUid()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                                    @Override
+                                                    public void onSuccess(byte[] bytes) {
+                                                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                                        sendConversation(chat.getContent(), organiser.getCompany(), chat,ImageUtils.getCroppedBitmap(bitmap,getResources()));
+
+                                                    }
+                                                });
+
+
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                            }
-                        });
+                                }
+                            });
+                        }
                     }
                 }
 
@@ -127,8 +164,6 @@ public class FirebaseNewsService extends Service {
         });
 
 
-
-
     }
 
     @Override
@@ -138,19 +173,13 @@ public class FirebaseNewsService extends Service {
     }
 
 
-    private void sendNotification(String content,String title,Chat chat) {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Intent intent ;
-        if(!title.equals("News")){
-            intent= new Intent(this, ConversationActivity.class);
-            intent.putExtra("chat",chat);
-            intent.putExtra("class","firebase");
-            ConversationActivity.nameChat=title;
-        }else{
-            intent= new Intent(this,MainActivity.class);
-        }
+    private void sendNews(String content, String title) {
+
+
+        final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
-        Notification notification = new Notification.Builder(this)
+        final Notification notification = new Notification.Builder(this)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setContentIntent(pendingIntent)
@@ -158,10 +187,34 @@ public class FirebaseNewsService extends Service {
                 .setSmallIcon(R.mipmap.volunteer_logo)
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
                 .build();
+
+
         notificationManager.notify(new Random().nextInt(), notification);
     }
 
 
+    private void sendConversation(String content, String title, Chat chat, Bitmap largeIcon) {
+        final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Intent intent = new Intent(this, ConversationActivity.class);
+
+        intent.putExtra("chat", chat);
+        intent.putExtra("class", "firebase");
+        ConversationActivity.nameChat = title;
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
+        final Notification notification = new Notification.Builder(this)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setSmallIcon(R.mipmap.volunteer_logo)
+                .setLargeIcon(largeIcon)
+                .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
+                .build();
+
+
+        notificationManager.notify(new Random().nextInt(), notification);
+    }
 
 
 }
