@@ -223,7 +223,7 @@ public class CreateEventFragment extends Fragment {
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mStartDate) &&
                 editTextIsValid(mFinishDate) && editTextIsValid(mDescription) &&
-                editTextIsValid(mDeadline) && editTextIsValid(mSize) && (uri != null));
+                editTextIsValid(mDeadline) && editTextIsValid(mSize));
         if (valid && TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
             Toast.makeText(getActivity(), "Please select a type.", Toast.LENGTH_SHORT).show();
             return false;
