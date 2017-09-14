@@ -110,6 +110,26 @@ public class ChatFragment extends Fragment {
                                             intent.putExtra("class", "fragment");
                                             startActivity(intent);
 
+                                            mDatabase.child("conversation").orderByChild("uuid").equalTo(arrayCopy.get(position).getUuid()).addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    long size=dataSnapshot.getChildrenCount();
+                                                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                                        if(size>100) {
+                                                            dataSnapshot1.getRef().removeValue();
+                                                            size--;
+                                                        }else {
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
+
 
                                         }
 
