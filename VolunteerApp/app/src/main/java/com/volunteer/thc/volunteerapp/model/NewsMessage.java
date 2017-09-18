@@ -6,7 +6,7 @@ package com.volunteer.thc.volunteerapp.model;
 
 public class NewsMessage extends Message {
 
-    public static final int ACCEPT = 1, FEEDBACK = 2, EVENT_FINISHED = 3, REGISTERED = 4;
+    public static final int ACCEPT = 1, FEEDBACK = 2, EVENT_DELETED = 3, REGISTERED = 4;
     private int type;
     private boolean notified;
     private boolean starred;

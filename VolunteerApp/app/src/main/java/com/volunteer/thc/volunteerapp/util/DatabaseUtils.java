@@ -2,6 +2,8 @@ package com.volunteer.thc.volunteerapp.util;
 
 import android.support.annotation.Nullable;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
 /**
@@ -18,5 +20,10 @@ public final class DatabaseUtils {
      */
     public static void writeData(String path, @Nullable Object data) {
         FirebaseDatabase.getInstance().getReference().child(path).setValue(data);
+    }
+
+    public static String getUserID() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        return user.getUid();
     }
 }

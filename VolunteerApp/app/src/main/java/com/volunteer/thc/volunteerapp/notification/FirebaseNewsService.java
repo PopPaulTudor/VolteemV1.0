@@ -9,12 +9,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -75,6 +73,9 @@ public class FirebaseNewsService extends Service {
                                     sendNews(newsMessage.getContent(), "News");
                                 }
                                 mDatabase.child("news/" + dataSnapshot1.getKey() + "/notified").setValue(true);
+                                if (newsMessage.getType() == NewsMessage.EVENT_DELETED) {
+                                    mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
+                                }
                             }
                         }
                     }
@@ -108,14 +109,10 @@ public class FirebaseNewsService extends Service {
                                             @Override
                                             public void onSuccess(byte[] bytes) {
                                                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                                sendConversation(chat.getContent(), volunteer.getFirstname() + " " + volunteer.getLastname(), chat,ImageUtils.getCroppedBitmap(bitmap,getResources()));
+                                                sendConversation(chat.getContent(), volunteer.getFirstname() + " " + volunteer.getLastname(), chat, ImageUtils.getCroppedBitmap(bitmap, getResources()));
 
                                             }
                                         });
-
-
-
-
 
                                     } else {
                                         mDatabase.child("users").child("organisers").child(chat.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -129,11 +126,10 @@ public class FirebaseNewsService extends Service {
                                                     @Override
                                                     public void onSuccess(byte[] bytes) {
                                                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                                        sendConversation(chat.getContent(), organiser.getCompany(), chat,ImageUtils.getCroppedBitmap(bitmap,getResources()));
+                                                        sendConversation(chat.getContent(), organiser.getCompany(), chat, ImageUtils.getCroppedBitmap(bitmap, getResources()));
 
                                                     }
                                                 });
-
 
 
                                             }
