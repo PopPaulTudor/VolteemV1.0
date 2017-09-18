@@ -76,7 +76,7 @@ public class CreateEventFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_createevent, container, false);
 
-        mName = (EditText) view.findViewById(R.id.event_name);
+        mName = (EditText) view.findViewById(R.id.event_deadline);
         mLocation = (EditText) view.findViewById(R.id.event_location);
         mStartDate = (EditText) view.findViewById(R.id.event_date_start_create);
         mFinishDate = (EditText) view.findViewById(R.id.event_date_finish_create);

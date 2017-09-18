@@ -56,11 +56,11 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mCurrentEvent = (Event) getArguments().getSerializable("currentEvent");
         populateSpinnerArray();
 
-        mName = (EditText) view.findViewById(R.id.event_name);
+        mName = (EditText) view.findViewById(R.id.event_deadline);
         mLocation = (EditText) view.findViewById(R.id.event_location);
         mStartDate = (EditText) view.findViewById(R.id.event_date_start);
         mFinishDate = (EditText) view.findViewById(R.id.event_date_finish);
-        mDeadline = (EditText) view.findViewById(R.id.event_deadline);
+        mDeadline = (EditText) view.findViewById(R.id.event_name);
         mType = (Spinner) view.findViewById(R.id.event_type);
         mDescription = (EditText) view.findViewById(R.id.event_description);
         mSize = (EditText) view.findViewById(R.id.event_size);

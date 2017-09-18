@@ -105,7 +105,7 @@ public class FirebaseNewsService extends Service {
                                         final Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
 
                                         final long ONE_MEGABYTE = 1024 * 1024;
-                                        storageRef.child("Photos").child("User").child(user.getUid()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                        storageRef.child("Photos").child("User").child(chat.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                             @Override
                                             public void onSuccess(byte[] bytes) {
                                                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -122,7 +122,7 @@ public class FirebaseNewsService extends Service {
                                                 final Organiser organiser = dataSnapshot.getValue(Organiser.class);
 
                                                 final long ONE_MEGABYTE = 1024 * 1024;
-                                                storageRef.child("Photos").child("User").child(user.getUid()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                                storageRef.child("Photos").child("User").child(chat.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                                     @Override
                                                     public void onSuccess(byte[] bytes) {
                                                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);

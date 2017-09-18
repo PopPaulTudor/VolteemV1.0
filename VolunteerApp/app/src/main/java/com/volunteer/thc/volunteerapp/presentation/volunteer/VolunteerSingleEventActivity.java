@@ -62,6 +62,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarImage = (ImageView) findViewById(R.id.collapsing_toolbar_image);
+
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         storageRef.child("Photos").child("Event").child(currentEvent.getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -81,25 +82,23 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventSize = (TextView) findViewById(R.id.event_size);
         mStatus = (TextView) findViewById(R.id.event_status);
 
-        Button mSignupForEvent = (Button) findViewById(R.id.event_signup);
         FloatingActionButton mSignupForEventFloatingButton = (FloatingActionButton) findViewById(R.id.fab);
         Button mLeaveEvent = (Button) findViewById(R.id.event_leave);
 
         getSupportActionBar().setTitle(currentEvent.getName());
 
-        mEventName.setText("Name: " + currentEvent.getName());
-        mEventLocation.setText("Location: " + currentEvent.getLocation());
-        mEventStartDate.setText("Start Date: " + CalendarUtil.getStringDateFromMM(currentEvent.getStartDate()));
-        mEventFinishDate.setText("Finish Date: " + CalendarUtil.getStringDateFromMM(currentEvent.getFinishDate()));
-        mEventType.setText("Type: " + currentEvent.getType());
-        mEventDescription.setText("Description: " + currentEvent.getDescription());
-        mEventDeadline.setText("Deadline: " + CalendarUtil.getStringDateFromMM(currentEvent.getDeadline()));
-        mEventSize.setText("Volunteers needed: " + currentEvent.getSize() + "");
+        mEventName.setText(currentEvent.getName());
+        mEventLocation.setText( currentEvent.getLocation());
+        mEventStartDate.setText( CalendarUtil.getStringDateFromMM(currentEvent.getStartDate()));
+        mEventFinishDate.setText( CalendarUtil.getStringDateFromMM(currentEvent.getFinishDate()));
+        mEventType.setText(currentEvent.getType());
+        mEventDescription.setText( currentEvent.getDescription());
+        mEventDeadline.setText(CalendarUtil.getStringDateFromMM(currentEvent.getDeadline()));
+        mEventSize.setText( currentEvent.getSize() + " volunteers");
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
         if (prefs.getInt("cameFrom", 1) == 1) {
-            mSignupForEvent.setVisibility(View.VISIBLE);
             mSignupForEventFloatingButton.setVisibility(View.VISIBLE);
         } else {
             mStatus.setVisibility(View.VISIBLE);
@@ -142,6 +141,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("events")
                         .child(eventsNumber + "").setValue(currentEvent.getEventID());
                 Toast.makeText(VolunteerSingleEventActivity.this, "Sign up successful!", Toast.LENGTH_LONG).show();
+                VolunteerSearchableActivity.hasActionHappened = true;
                 finish();
             }
 
@@ -190,7 +190,6 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             }
         };
 
-        mSignupForEvent.setOnClickListener(registerClickListener);
         mSignupForEventFloatingButton.setOnClickListener(registerClickListener);
 
         mLeaveEvent.setOnClickListener(new View.OnClickListener() {

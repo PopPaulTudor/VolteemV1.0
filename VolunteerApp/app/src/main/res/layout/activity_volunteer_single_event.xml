@@ -46,6 +46,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
+
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -53,112 +54,181 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:minWidth="200dp"
-            android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp">
 
-            <TextView
-                android:id="@+id/event_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="280dp"
-                android:layout_marginTop="20dp"
-                android:text="TextView" />
 
-            <TextView
-                android:id="@+id/event_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/event_name"
-                android:maxWidth="280dp"
-                android:layout_marginTop="5dp"
-                android:text="TextView" />
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_deadline"
+                android:layout_width="100dp"
+                android:layout_height="70dp"
+                android:layout_marginLeft="10dp">
 
-            <TextView
-                android:id="@+id/event_start_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="280dp"
-                android:layout_below="@id/event_location"
-                android:layout_marginTop="5dp"
-                android:text="TextView" />
 
-            <TextView
-                android:id="@+id/event_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="280dp"
-                android:layout_below="@id/event_start_date"
-                android:layout_marginTop="5dp"
-                android:text="TextView" />
+                <TextView
+                    android:id="@+id/event_deadline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="280dp"
+                    android:text="99/99/\n2016"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="28dp" />
 
-            <TextView
-                android:id="@+id/event_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="280dp"
-                android:layout_below="@id/event_type"
-                android:layout_marginTop="5dp"
-                android:text="TextView" />
+            </android.support.v7.widget.CardView>
 
-            <TextView
-                android:id="@+id/event_deadline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="280dp"
-                android:layout_below="@id/event_description"
-                android:layout_marginTop="5dp"
-                android:text="TextView" />
+            <android.support.v7.widget.CardView
+                android:layout_width="230dp"
+                android:layout_height="70dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="11dp">
 
-            <TextView
-                android:id="@+id/event_size"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="280dp"
-                android:layout_below="@id/event_deadline"
-                android:layout_marginTop="5dp"
-                android:text="TextView" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_book_black_24dp" />
 
-            <TextView
-                android:id="@+id/event_finish_date"
-                android:layout_width="wrap_content"
+
+                <TextView
+                    android:id="@+id/event_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="10dp"
+                    android:maxWidth="280dp"
+                    android:text="Name"
+                    android:textSize="16dp" />
+
+
+                <TextView
+                    android:id="@+id/event_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="40dp"
+                    android:maxWidth="280dp"
+                    android:text="type"
+                    android:textSize="15dp" />
+
+
+                <TextView
+                    android:id="@+id/event_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="280dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginLeft="100dp"
+                    android:text="1000 volunteers"
+                    android:textSize="15dp"/>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_date"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxWidth="280dp"
-                android:layout_below="@id/event_size"
+                android:layout_below="@+id/card_deadline"
+                android:layout_margin="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_date_range_black_24dp" />
+
+
+                <TextView
+                    android:id="@+id/event_start_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="10dp"
+                    android:maxWidth="280dp"
+                    android:text="14/07/2017"
+                    android:textSize="15dp" />
+
+
+
+                <TextView
+                    android:id="@+id/event_finish_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="45dp"
+                    android:hint="18/07/2018"
+                    android:maxWidth="280dp"
+                    android:textSize="15dp" />
+
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/card_date"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_place_black_24dp" />
+
+                <TextView
+                    android:id="@+id/event_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="5dp"
+                    android:maxWidth="280dp"
+                    android:text="Cluj-Napoca"
+                    android:textSize="15dp" />
+
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="40dp"
+                    android:src="@drawable/ic_description_black_24dp" />
+
+                <TextView
+                    android:id="@+id/event_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="40dp"
+                    android:maxWidth="280dp"
+                    android:text="descriere"
+                    android:textSize="15dp"/>
+
+            </android.support.v7.widget.CardView>
+
+
+            <Button
+                android:id="@+id/event_leave"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:hint="Finish date" />
+                android:layout_weight="1"
+                android:text="LEAVE EVENT"
+                android:visibility="gone" />
+
 
             <TextView
                 android:id="@+id/event_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxWidth="280dp"
-                android:layout_below="@id/event_finish_date"
+                android:layout_below="@id/event_leave"
                 android:layout_marginTop="5dp"
                 android:text="Status: Pending"
                 android:visibility="gone" />
 
-            <Button
-                android:id="@+id/event_signup"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/event_status"
-                android:layout_marginTop="5dp"
-                android:text="SIGN UP FOR EVENT"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/event_leave"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/event_signup"
-                android:layout_marginTop="5dp"
-                android:layout_weight="1"
-                android:text="LEAVE EVENT"
-                android:visibility="gone" />
 
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
