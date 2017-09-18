@@ -1,9 +1,12 @@
 package com.volunteer.thc.volunteerapp.adaptor;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -26,10 +29,12 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     private ArrayList<Chat> data = new ArrayList<>();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int contClick = 1;
+    private Context context;
 
 
-    public ConversationAdapter(ArrayList<Chat> data) {
+    public ConversationAdapter(ArrayList<Chat> data, Context context) {
         this.data = data;
+        this.context=context;
     }
 
 

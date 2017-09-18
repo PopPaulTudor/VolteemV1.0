@@ -70,7 +70,7 @@ public class ConversationActivity extends AppCompatActivity {
         conversation.setHasFixedSize(true);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         conversation.setLayoutManager(linearLayoutManager);
-        conversationAdapter = new ConversationAdapter(arrayList);
+        conversationAdapter = new ConversationAdapter(arrayList,getApplicationContext());
         conversation.setAdapter(conversationAdapter);
         conversation.setHasFixedSize(false  );
 

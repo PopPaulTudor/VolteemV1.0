@@ -37,6 +37,7 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
     private ArrayList<Event> mResultEvents = new ArrayList<>();
     private ProgressBar mProgressBar;
     private TextView mNoResultText;
+    public static boolean hasActionHappened = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,12 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadResultEvents();
+        if(hasActionHappened) {
+            hasActionHappened = false;
+            finish();
+        } else {
+            loadResultEvents();
+        }
     }
 
     private void loadResultEvents() {
