@@ -30,6 +30,7 @@ import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 
 import java.util.Calendar;
@@ -46,7 +47,6 @@ public class FirebaseNewsService extends Service {
     private SharedPreferences prefs;
     private Calendar date = Calendar.getInstance();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-
 
     @Nullable
     @Override
@@ -70,7 +70,7 @@ public class FirebaseNewsService extends Service {
                         } else {
                             if (!dataSnapshot1.child("notified").getValue(Boolean.class)) {
                                 if (prefs.getBoolean("notifications", true)) {
-                                    sendNews(newsMessage.getContent(), "News");
+                                    sendNews(newsMessage);
                                 }
                                 mDatabase.child("news/" + dataSnapshot1.getKey() + "/notified").setValue(true);
                                 if (newsMessage.getType() == NewsMessage.EVENT_DELETED) {
@@ -168,16 +168,14 @@ public class FirebaseNewsService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-
-    private void sendNews(String content, String title) {
-
-
+    private void sendNews(NewsMessage message) {
         final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, message.getType() != NewsMessage.REGISTERED ? MainActivity.class : OrganiserSingleEventActivity.class);
+        intent.putExtra("eventID", message.getEventID());
         PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
         final Notification notification = new Notification.Builder(this)
-                .setContentTitle(title)
-                .setContentText(content)
+                .setContentTitle("News")
+                .setContentText(message.getContent())
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .setSmallIcon(R.mipmap.volunteer_logo)
@@ -187,7 +185,6 @@ public class FirebaseNewsService extends Service {
 
         notificationManager.notify(new Random().nextInt(), notification);
     }
-
 
     private void sendConversation(String content, String title, Chat chat, Bitmap largeIcon) {
         final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -211,6 +208,4 @@ public class FirebaseNewsService extends Service {
 
         notificationManager.notify(new Random().nextInt(), notification);
     }
-
-
 }

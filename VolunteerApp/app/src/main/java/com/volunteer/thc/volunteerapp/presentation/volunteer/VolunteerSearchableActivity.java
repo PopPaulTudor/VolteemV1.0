@@ -44,7 +44,9 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_volunteer_searchable);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         recyclerView = (RecyclerView) findViewById(R.id.RecViewVolSearchableEvents);
         recyclerView.setHasFixedSize(true);
@@ -68,15 +70,17 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
         super.onResume();
         if(hasActionHappened) {
             hasActionHappened = false;
-            finish();
-        } else {
-            loadResultEvents();
+            if (mResultEvents.size() == 1) {
+                finish();
+            }
         }
+        loadResultEvents();
     }
 
     private void loadResultEvents() {
         mProgressBar.setVisibility(View.VISIBLE);
 
+        mResultEvents = new ArrayList<>();
         mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

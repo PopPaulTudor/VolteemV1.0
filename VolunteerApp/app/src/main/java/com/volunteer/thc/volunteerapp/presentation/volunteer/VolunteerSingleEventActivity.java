@@ -1,10 +1,13 @@
 package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -20,7 +23,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,10 +37,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.NewsMessage;
-import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.RegisteredUser;
+import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
 
@@ -49,6 +54,9 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     private ArrayList<String> events = new ArrayList<>();
     private int eventsNumber;
     private ImageView collapsingToolbarImage;
+    private Resources resources;
+    private ArrayList<Uri> imageUris = new ArrayList<>();
+    private ArrayList<String> typeList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +68,23 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         currentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarImage = (ImageView) findViewById(R.id.collapsing_toolbar_image);
+
+        resources = getResources();
+        populateTypeList();
+        populateUriList();
 
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        storageRef.child("Photos").child("Event").child(currentEvent.getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageRef.child("Photos").child("Event").child(currentEvent.getEventID()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
-            public void onSuccess(Uri uri) {
-                Picasso.with(getApplicationContext()).load(uri).fit().centerCrop().into(collapsingToolbarImage);
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Picasso.with(getApplicationContext()).load(task.getResult()).fit().centerCrop().into(collapsingToolbarImage);
+                } else {
+                    Picasso.with(getApplicationContext()).load(imageUris.get(typeList.indexOf(currentEvent.getType()))).fit().centerCrop().into(collapsingToolbarImage);
+                }
             }
         });
 
@@ -88,13 +104,13 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(currentEvent.getName());
 
         mEventName.setText(currentEvent.getName());
-        mEventLocation.setText( currentEvent.getLocation());
-        mEventStartDate.setText( CalendarUtil.getStringDateFromMM(currentEvent.getStartDate()));
-        mEventFinishDate.setText( CalendarUtil.getStringDateFromMM(currentEvent.getFinishDate()));
+        mEventLocation.setText(currentEvent.getLocation());
+        mEventStartDate.setText(CalendarUtil.getStringDateFromMM(currentEvent.getStartDate()));
+        mEventFinishDate.setText(CalendarUtil.getStringDateFromMM(currentEvent.getFinishDate()));
         mEventType.setText(currentEvent.getType());
-        mEventDescription.setText( currentEvent.getDescription());
+        mEventDescription.setText(currentEvent.getDescription());
         mEventDeadline.setText(CalendarUtil.getStringDateFromMM(currentEvent.getDeadline()));
-        mEventSize.setText( currentEvent.getSize() + " volunteers");
+        mEventSize.setText(currentEvent.getSize() + " volunteers");
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
@@ -107,7 +123,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
+                            if (TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
                                 mStatus.setText("Accepted");
                             }
                         }
@@ -168,7 +184,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
                         VolunteerEventsFragment.hasActionHappened = true;
                         String newsID = mDatabase.child("news").push().getKey();
-                        mDatabase.child("news/"+newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(),
+                        mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(),
                                 newsID, currentEvent.getEventID(), user.getUid(), currentEvent.getCreated_by()
                                 , "A new volunteer registered for your event " + currentEvent.getName()
                                 , NewsMessage.REGISTERED, false, false));
@@ -243,5 +259,30 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    private Uri parseUri(int ID) {
+        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + resources.getResourcePackageName(ID)
+                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName(ID));
+
+    }
+
+    private void populateUriList() {
+        imageUris.add(parseUri(R.drawable.image_sports));
+        imageUris.add(parseUri(R.drawable.image_music));
+        imageUris.add(parseUri(R.drawable.image_festival));
+        imageUris.add(parseUri(R.drawable.image_charity));
+        imageUris.add(parseUri(R.drawable.image_training));
+        imageUris.add(parseUri(R.drawable.image_other));
+    }
+
+    private void populateTypeList() {
+        typeList.add("Sports");
+        typeList.add("Music");
+        typeList.add("Festival");
+        typeList.add("Charity");
+        typeList.add("Training");
+        typeList.add("Other");
     }
 }

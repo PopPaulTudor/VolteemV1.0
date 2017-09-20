@@ -197,8 +197,7 @@ public class SettingsFragment extends Fragment {
             public void onClick(View view) {
                 Intent Email = new Intent(Intent.ACTION_SEND);
                 Email.setType("text/email");
-                // TODO we should add a second account just for app feedback (for security reasons)
-                Email.putExtra(Intent.EXTRA_EMAIL, new String[] { "thcvolunteerapp@gmail.com" });
+                Email.putExtra(Intent.EXTRA_EMAIL, new String[] { "contact.volteem@gmail.com" });
                 Email.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
                 Email.putExtra(Intent.EXTRA_TEXT, "");
                 startActivity(Intent.createChooser(Email, "Send Feedback:"));

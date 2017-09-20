@@ -15,6 +15,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -130,12 +131,11 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.e("VolEventsF: loadEvents", databaseError.getMessage());
                 }
             });
 
         } else {
-
             mSwipeRefreshLayout.setRefreshing(false);
             Toast.makeText(getActivity(), "No internet connection.", Toast.LENGTH_LONG).show();
         }
@@ -170,7 +170,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("VolEventsF: loadFilterQ", databaseError.getMessage());
             }
         });
     }

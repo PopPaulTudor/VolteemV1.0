@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity
     private CircleImageView mImage;
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     private Intent serviceIntent;
+    private MenuItem eventsItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +79,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().getItem(0).setChecked(true);
+        eventsItem = navigationView.getMenu().findItem(R.id.item_general).getSubMenu().findItem(R.id.nav_events);
+        eventsItem.setChecked(true);
 
         View header = navigationView.getHeaderView(0);
         mImage = (CircleImageView) header.findViewById(R.id.photo);
@@ -145,7 +147,6 @@ public class MainActivity extends AppCompatActivity
             } else {
                 mUserName.setText(user.getEmail());
             }
-
 
             mUserStatus.setText(userStatus);
             showEvents(userStatus);
@@ -244,6 +245,9 @@ public class MainActivity extends AppCompatActivity
                 }
             }
 
+            if(eventsItem.isChecked()) {
+                eventsItem.setChecked(false);
+            }
             item.setChecked(true);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(actionBarTitle);
