@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.volunteer.thc.volunteerapp.adaptor.LeaderboardAdapter;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.OrganiserRating;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -64,13 +66,13 @@ public class OrganiserScoreboardFragment extends Fragment {
                 experience = dataSnapshot.child("experience").getValue(Integer.class);
                 organiserRating = dataSnapshot.child("org_rating").getValue(OrganiserRating.class);
                 mExperience.setText("XP: " + experience);
-                mRating.setText("Rating: " + organiserRating.getRating() + "/5");
+                mRating.setText("Rating: " + new DecimalFormat("#.##").format(organiserRating.getRating()) + "/5");
                 mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("OrgScoreF", databaseError.getMessage());
             }
         });
 

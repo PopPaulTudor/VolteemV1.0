@@ -39,11 +39,14 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     private Resources resources;
     private ArrayList<Uri> imageUris = new ArrayList<>();
     private ArrayList<String> typeList = new ArrayList<>();
+    private int flag;
+    public static final int ALL_EVENTS = 1, MY_EVENTS = 2;
 
-    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources) {
+    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources, final int FLAG) {
         eventsList = list;
         this.context = context;
         this.resources = resources;
+        this.flag = FLAG;
     }
 
     @Override
@@ -58,7 +61,12 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
 
         holder.cardName.setText(eventsList.get(position).getName());
         holder.cardLocation.setText(eventsList.get(position).getLocation());
-        holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position).getDeadline()));
+
+        if(flag == ALL_EVENTS) {
+            holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position).getDeadline()));
+        } else {
+            holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position).getStartDate()));
+        }
 
         populateTypeList();
         populateUriList();

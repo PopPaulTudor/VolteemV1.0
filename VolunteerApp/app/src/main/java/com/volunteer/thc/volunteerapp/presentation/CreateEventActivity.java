@@ -7,18 +7,18 @@ import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,7 +42,6 @@ import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.notification.NotificationEventReceiver;
-import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
@@ -54,7 +53,7 @@ import java.util.Calendar;
  * Created on 6/23/2017.
  */
 
-public class CreateEventFragment extends Fragment {
+public class CreateEventActivity extends AppCompatActivity {
 
     private static final int GALLERY_INTENT = 1;
     private EditText mName, mLocation, mDescription, mDeadline, mSize, mStartDate, mFinishDate;
@@ -71,31 +70,34 @@ public class CreateEventFragment extends Fragment {
     private boolean hasUserSelectedPicture = false;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_create_event);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("New event");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        View view = inflater.inflate(R.layout.fragment_createevent, container, false);
-
-        mName = (EditText) view.findViewById(R.id.event_deadline);
-        mLocation = (EditText) view.findViewById(R.id.event_location);
-        mStartDate = (EditText) view.findViewById(R.id.event_date_start_create);
-        mFinishDate = (EditText) view.findViewById(R.id.event_date_finish_create);
-        mType = (Spinner) view.findViewById(R.id.event_type);
-        mDescription = (EditText) view.findViewById(R.id.event_description);
-        mDeadline = (EditText) view.findViewById(R.id.event_deadline_create);
-        mImage = (ImageView) view.findViewById(R.id.event_image);
-        mSize = (EditText) view.findViewById(R.id.event_size);
+        mName = (EditText) findViewById(R.id.event_deadline);
+        mLocation = (EditText) findViewById(R.id.event_location);
+        mStartDate = (EditText) findViewById(R.id.event_date_start_create);
+        mFinishDate = (EditText) findViewById(R.id.event_date_finish_create);
+        mType = (Spinner) findViewById(R.id.event_type);
+        mDescription = (EditText) findViewById(R.id.event_description);
+        mDeadline = (EditText) findViewById(R.id.event_deadline_create);
+        mImage = (ImageView) findViewById(R.id.event_image);
+        mSize = (EditText) findViewById(R.id.event_size);
         mStorage = FirebaseStorage.getInstance().getReference();
         resources = getResources();
 
         populateUriList();
 
-        Picasso.with(getActivity()).load(imageUris.get(3)).fit().centerCrop().into(mImage);
-        Button mSaveEvent = (Button) view.findViewById(R.id.save_event);
-        Button mCancel = (Button) view.findViewById(R.id.cancel_event);
+        Picasso.with(this).load(imageUris.get(3)).fit().centerCrop().into(mImage);
+        Button mSaveEvent = (Button) findViewById(R.id.save_event);
+        Button mCancel = (Button) findViewById(R.id.cancel_event);
 
         populateSpinnerArray();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, typeList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, typeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mType.setAdapter(adapter);
 
@@ -103,7 +105,7 @@ public class CreateEventFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!hasUserSelectedPicture) {
-                    Picasso.with(getActivity()).load(imageUris.get(mType.getSelectedItemPosition())).fit().centerCrop().into(mImage);
+                    Picasso.with(CreateEventActivity.this).load(imageUris.get(mType.getSelectedItemPosition())).fit().centerCrop().into(mImage);
                 }
             }
 
@@ -117,7 +119,7 @@ public class CreateEventFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (PermissionUtil.isStoragePermissionGranted(getContext())) {
+                if (PermissionUtil.isStoragePermissionGranted(CreateEventActivity.this)) {
                     Intent intent = new Intent(Intent.ACTION_PICK);
                     intent.setType("image/*");
                     startActivityForResult(intent, GALLERY_INTENT);
@@ -126,7 +128,7 @@ public class CreateEventFragment extends Fragment {
                     Snackbar.make(view, "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                            ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                         }
                     }).show();
                 }
@@ -143,7 +145,7 @@ public class CreateEventFragment extends Fragment {
 
                 if (validateForm()) {
 
-                    hideKeyboardFrom(getActivity(), getView());
+                    hideKeyboardFrom(CreateEventActivity.this, view);
                     String name = mName.getText().toString();
                     String location = mLocation.getText().toString();
                     String description = mDescription.getText().toString();
@@ -153,7 +155,7 @@ public class CreateEventFragment extends Fragment {
 
                     if (hasUserSelectedPicture) {
                         StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
-                        filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
+                        filePath.putBytes(ImageUtils.compressImage(uri, CreateEventActivity.this));
                     }
 
                     mDatabase.child("users/organisers/" + user.getUid())
@@ -176,12 +178,11 @@ public class CreateEventFragment extends Fragment {
                     DatabaseUtils.writeData("events/" + eventID, new_event);
                     DatabaseUtils.writeData("events/" + eventID + "/validity", "valid");
 
-                    Intent alarm = new Intent(getContext(), NotificationEventReceiver.class);
+                    Intent alarm = new Intent(CreateEventActivity.this, NotificationEventReceiver.class);
                     alarm.putExtra("nameEvent", name);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 100, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
-                    AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(CreateEventActivity.this, 100, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                     alarmManager.set(0, finishDate, pendingIntent);
-
 
                     returnToEvents();
                     Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -196,8 +197,6 @@ public class CreateEventFragment extends Fragment {
                 returnToEvents();
             }
         });
-
-        return view;
     }
 
     @Override
@@ -207,15 +206,40 @@ public class CreateEventFragment extends Fragment {
         if (requestCode == GALLERY_INTENT && (data != null)) {
             uri = data.getData();
             hasUserSelectedPicture = true;
-            Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+            Picasso.with(this).load(uri).fit().centerCrop().into(mImage);
         }
     }
 
-    private void returnToEvents() {
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
 
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.main_container, new OrganiserEventsFragment());
-        fragmentTransaction.commit();
+    private void returnToEvents() {
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog leaveAlertDialog = new AlertDialog.Builder(this)
+                .setTitle("Are you sure?")
+                .setMessage("Are you sure you want to leave this page? Your event will not be created and the changes made will be lost.")
+                .setCancelable(true)
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        CreateEventActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .create();
+        leaveAlertDialog.show();
     }
 
     public boolean validateForm() {
@@ -225,15 +249,15 @@ public class CreateEventFragment extends Fragment {
                 editTextIsValid(mFinishDate) && editTextIsValid(mDescription) &&
                 editTextIsValid(mDeadline) && editTextIsValid(mSize));
         if (valid && TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
-            Toast.makeText(getActivity(), "Please select a type.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please select a type.", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (valid && (deadline > finishDate)) {
-            Toast.makeText(getActivity(), "The deadline can not be after the finish date.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "The deadline can not be after the finish date.", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (valid && (startDate > finishDate)) {
-            Toast.makeText(getActivity(), "The start date can not be after the finish date.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "The start date can not be after the finish date.", Toast.LENGTH_SHORT).show();
             return false;
         }
         return valid;
@@ -272,7 +296,7 @@ public class CreateEventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 final Calendar myCalendar = Calendar.getInstance();
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(CreateEventActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 

@@ -33,6 +33,8 @@ import com.volunteer.thc.volunteerapp.util.CalculateUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -160,7 +162,17 @@ public class VolunteerMyEventsFragment extends Fragment {
                 }
                 if(isFragmentActive()) {
                     mProgressBar.setVisibility(View.GONE);
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                    Collections.sort(mEventsList, new Comparator<Event>() {
+                        @Override
+                        public int compare(Event event, Event t1) {
+                            if(event.getStartDate() < t1.getStartDate())
+                                return -1;
+                            if(event.getStartDate() > t1.getStartDate())
+                                return 1;
+                            return 0;
+                        }
+                    });
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);

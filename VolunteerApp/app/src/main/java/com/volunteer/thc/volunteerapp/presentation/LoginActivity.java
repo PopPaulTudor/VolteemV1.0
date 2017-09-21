@@ -11,6 +11,8 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -63,6 +65,18 @@ public class LoginActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
+        InputFilter filter = new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    if (Character.isWhitespace(source.charAt(i))) {
+                        return "";
+                    }
+                }
+                return null;
+            }
+        };
+
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
             startActivityByClass(MainActivity.class);
@@ -70,6 +84,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
+
+        mEmail.setFilters(new InputFilter[]{filter});
 
         findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
