@@ -15,6 +15,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,6 +43,8 @@ import com.volunteer.thc.volunteerapp.model.Event;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -121,7 +124,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                     }
                     mSwipeRefreshLayout.setRefreshing(false);
                     if (isFragmentActive()) {
-                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.ALL_EVENTS);
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         recyclerView.setLayoutManager(linearLayoutManager);
@@ -130,12 +133,11 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.e("VolEventsF: loadEvents", databaseError.getMessage());
                 }
             });
 
         } else {
-
             mSwipeRefreshLayout.setRefreshing(false);
             Toast.makeText(getActivity(), "No internet connection.", Toast.LENGTH_LONG).show();
         }
@@ -160,7 +162,18 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                         noEvents.setVisibility(View.VISIBLE);
                     }
 
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                    Collections.sort(mEventsList, new Comparator<Event>() {
+                        @Override
+                        public int compare(Event event, Event t1) {
+                            if(event.getDeadline() < t1.getDeadline())
+                                return -1;
+                            if(event.getDeadline() > t1.getDeadline())
+                                return 1;
+                            return 0;
+                        }
+                    });
+
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.ALL_EVENTS);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);
@@ -170,7 +183,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("VolEventsF: loadFilterQ", databaseError.getMessage());
             }
         });
     }

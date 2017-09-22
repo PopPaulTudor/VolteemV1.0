@@ -25,8 +25,10 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -224,6 +226,18 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         OrganiserEventsFragment.hasActionHappened = true;
+                        for (String volunteer_id : mCurrentEvent.getRegistered_volunteers()) {
+                            String newsID = mDatabase.child("news").push().getKey();
+                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(), DatabaseUtils.getUserID(),
+                                    volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED, false, false);
+                            mDatabase.child("news/" + newsID).setValue(newsMessage);
+                        }
+                        for (String volunteer_id : mCurrentEvent.getAccepted_volunteers()) {
+                            String newsID = mDatabase.child("news").push().getKey();
+                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(), DatabaseUtils.getUserID(),
+                                    volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED, false, false);
+                            mDatabase.child("news/" + newsID).setValue(newsMessage);
+                        }
                         mDatabase.child("events").child(mCurrentEvent.getEventID()).setValue(null);
                         Toast.makeText(getActivity(), "Event deleted.", Toast.LENGTH_SHORT).show();
                         getActivity().finish();

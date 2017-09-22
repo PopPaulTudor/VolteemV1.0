@@ -1,6 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -14,6 +15,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity
     private CircleImageView mImage;
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     private Intent serviceIntent;
+    private MenuItem eventsItem, selectedItem;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +79,11 @@ public class MainActivity extends AppCompatActivity
         serviceIntent = new Intent(this, FirebaseNewsService.class);
         startService(serviceIntent);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().getItem(0).setChecked(true);
+        eventsItem = navigationView.getMenu().findItem(R.id.nav_events);
+        eventsItem.setChecked(true);
 
         View header = navigationView.getHeaderView(0);
         mImage = (CircleImageView) header.findViewById(R.id.photo);
@@ -146,7 +151,6 @@ public class MainActivity extends AppCompatActivity
                 mUserName.setText(user.getEmail());
             }
 
-
             mUserStatus.setText(userStatus);
             showEvents(userStatus);
         }
@@ -157,18 +161,31 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawers();
     }
 
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            int count = getFragmentManager().getBackStackEntryCount();
-            if (count == 0) {
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_container);
+            if (fragment instanceof OrganiserEventsFragment || fragment instanceof VolunteerEventsFragment) {
                 super.onBackPressed();
             } else {
-                getFragmentManager().popBackStackImmediate();
+                final String userStatus = prefs.getString("user_status", null);
+                prefs.edit().putInt("cameFrom", 1).apply();
+                if (TextUtils.equals(userStatus, "Volunteer")) {
+                    replaceFragmentByClass(new VolunteerEventsFragment());
+                } else {
+                    replaceFragmentByClass(new OrganiserEventsFragment());
+                }
+
+                if(selectedItem != null) {
+                    selectedItem.setChecked(false);
+                }
+                eventsItem.setChecked(true);
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle("Events");
+                }
             }
         }
     }
@@ -176,6 +193,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+        selectedItem = item;
         if (isNetworkAvailable()) {
             String actionBarTitle = getActionBar() == null ? "" : String.valueOf(getActionBar().getTitle());
             final String userStatus = prefs.getString("user_status", null);
@@ -231,19 +249,39 @@ public class MainActivity extends AppCompatActivity
                     break;
                 }
                 case R.id.nav_logout: {
-                    Auth.signOut();
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("user_status", null);
-                    editor.putString("name", null);
-                    editor.putString("gender", null);
-                    editor.apply();
-                    stopService(serviceIntent);
-                    startActivity(new Intent(this, LoginActivity.class));
-                    finish();
+                    AlertDialog logoutAlertDialog = new AlertDialog.Builder(this)
+                            .setTitle("Are you sure?")
+                            .setMessage("Are you sure you want to log out?")
+                            .setCancelable(true)
+                            .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Auth.signOut();
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.putString("user_status", null);
+                                    editor.putString("name", null);
+                                    editor.putString("gender", null);
+                                    editor.apply();
+                                    stopService(serviceIntent);
+                                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                }
+                            })
+                            .create();
+                    logoutAlertDialog.show();
                     break;
                 }
             }
 
+            if (eventsItem.isChecked()) {
+                eventsItem.setChecked(false);
+            }
             item.setChecked(true);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(actionBarTitle);

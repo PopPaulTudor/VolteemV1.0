@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,7 +25,6 @@ import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class VolunteerSearchableActivity extends AppCompatActivity {
 
@@ -44,7 +42,9 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_volunteer_searchable);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         recyclerView = (RecyclerView) findViewById(R.id.RecViewVolSearchableEvents);
         recyclerView.setHasFixedSize(true);
@@ -66,17 +66,19 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(hasActionHappened) {
+        if (hasActionHappened) {
             hasActionHappened = false;
-            finish();
-        } else {
-            loadResultEvents();
+            if (mResultEvents.size() == 1) {
+                finish();
+            }
         }
+        loadResultEvents();
     }
 
     private void loadResultEvents() {
         mProgressBar.setVisibility(View.VISIBLE);
 
+        mResultEvents = new ArrayList<>();
         mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -91,7 +93,7 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
                 if (mResultEvents.isEmpty()) {
                     mNoResultText.setVisibility(View.VISIBLE);
                 }
-                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this, getResources());
+                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this, getResources(), OrgEventsAdaptor.ALL_EVENTS);
                 recyclerView.setAdapter(adapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(VolunteerSearchableActivity.this);
                 recyclerView.setLayoutManager(linearLayoutManager);

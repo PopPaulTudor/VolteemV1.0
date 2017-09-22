@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:clickable="true"
     android:orientation="vertical"
-    tools:context="com.volunteer.thc.volunteerapp.presentation.CreateEventFragment">
+    android:background="@drawable/background7"
+    tools:context="com.volunteer.thc.volunteerapp.presentation.CreateEventActivity">
 
     <ScrollView
         android:id="@+id/create_event"

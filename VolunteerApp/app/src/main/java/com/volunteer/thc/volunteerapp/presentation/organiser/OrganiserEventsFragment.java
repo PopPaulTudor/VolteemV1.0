@@ -45,7 +45,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
 import com.volunteer.thc.volunteerapp.model.Event;
-import com.volunteer.thc.volunteerapp.presentation.CreateEventFragment;
+import com.volunteer.thc.volunteerapp.presentation.CreateEventActivity;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 
 import java.util.ArrayList;
@@ -95,7 +95,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
             @Override
             public void onClick(View view) {
                 //TODO: after testing is over: remember to only allow organisers which verified their email address to add events
-                openCreateEventFragment();
+                openCreateEventActivity();
             }
         });
 
@@ -285,13 +285,13 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                     snackbar.setAction("Add", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            openCreateEventFragment();
+                                            openCreateEventActivity();
                                         }
                                     });
                                     snackbar.show();
                                 }
 
-                                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS);
                                 recyclerView.setAdapter(adapter);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                                 recyclerView.setLayoutManager(linearLayoutManager);
@@ -344,7 +344,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                         noEvents.setVisibility(View.VISIBLE);
                     }
 
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources());
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);
@@ -354,20 +354,13 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("OrgEventsF", databaseError.getMessage());
             }
         });
     }
 
-    public void openCreateEventFragment() {
-
-        FragmentManager fragmentManager = getFragmentManager();
-        if (fragmentManager != null) {
-            FragmentTransaction mFragmentTransaction = fragmentManager.beginTransaction();
-            mFragmentTransaction.replace(R.id.main_container, new CreateEventFragment());
-            mFragmentTransaction.addToBackStack("createEvent");
-            mFragmentTransaction.commit();
-        }
+    public void openCreateEventActivity() {
+        startActivity(new Intent(getActivity(), CreateEventActivity.class));
     }
 
     private boolean isNetworkAvailable() {
