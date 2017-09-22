@@ -230,6 +230,10 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
             }
         });
+
+
+
+
         listVolunteer.remove(position);
         volunteerIDs.remove(position);
 

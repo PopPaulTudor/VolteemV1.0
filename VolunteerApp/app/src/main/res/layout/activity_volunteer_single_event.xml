@@ -61,11 +61,26 @@
             android:layout_marginTop="20dp">
 
 
+            <TextView
+                android:id="@+id/event_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:maxWidth="280dp"
+                android:text="Status: Pending"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="15dp"
+                android:visibility="gone" />
+
+
             <android.support.v7.widget.CardView
                 android:id="@+id/card_deadline"
                 android:layout_width="100dp"
-                android:layout_height="70dp"
-                android:layout_marginLeft="10dp">
+                android:layout_height="75dp"
+                android:layout_below="@+id/event_status"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp">
 
 
                 <TextView
@@ -73,17 +88,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxWidth="280dp"
-                    android:text="99/99/\n2016"
+                    android:text="99/99\n2016"
                     android:textColor="@color/colorAccent"
-                    android:textSize="28dp" />
+                    android:textSize="32dp" />
 
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
                 android:layout_width="230dp"
-                android:layout_height="70dp"
+                android:layout_height="75dp"
+                android:layout_alignBottom="@+id/card_deadline"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
                 android:layout_marginEnd="11dp">
 
                 <ImageView
@@ -118,11 +133,11 @@
                     android:id="@+id/event_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxWidth="280dp"
-                    android:layout_marginTop="40dp"
                     android:layout_marginLeft="100dp"
+                    android:layout_marginTop="40dp"
+                    android:maxWidth="280dp"
                     android:text="1000 volunteers"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
             </android.support.v7.widget.CardView>
 
 
@@ -150,14 +165,14 @@
                     android:textSize="15dp" />
 
 
-
                 <TextView
                     android:id="@+id/event_finish_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginTop="45dp"
+                    android:layout_marginLeft="180dp"
+                    android:layout_marginTop="10dp"
+
                     android:hint="18/07/2018"
                     android:maxWidth="280dp"
                     android:textSize="15dp" />
@@ -204,29 +219,22 @@
                     android:layout_marginTop="40dp"
                     android:maxWidth="280dp"
                     android:text="descriere"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
 
             </android.support.v7.widget.CardView>
 
 
             <Button
                 android:id="@+id/event_leave"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/card_location"
+                android:background="@drawable/button_shape_second"
+                android:gravity="center"
                 android:text="LEAVE EVENT"
-                android:visibility="gone" />
-
-
-            <TextView
-                android:id="@+id/event_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="280dp"
-                android:layout_below="@id/event_leave"
-                android:layout_marginTop="5dp"
-                android:text="Status: Pending"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="@dimen/login_page_text_size_big"
+                android:textStyle="bold"
                 android:visibility="gone" />
 
 

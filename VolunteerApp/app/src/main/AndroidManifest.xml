@@ -48,7 +48,8 @@
             android:name=".presentation.ConversationActivity"
             android:label="Conversation"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            />
 
 
         <activity

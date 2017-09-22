@@ -2,6 +2,7 @@ package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     private ArrayList<String> events = new ArrayList<>();
     private int eventsNumber;
     private ImageView collapsingToolbarImage;
+    private String deadline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,9 +95,14 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventFinishDate.setText( CalendarUtil.getStringDateFromMM(currentEvent.getFinishDate()));
         mEventType.setText(currentEvent.getType());
         mEventDescription.setText( currentEvent.getDescription());
-        mEventDeadline.setText(CalendarUtil.getStringDateFromMM(currentEvent.getDeadline()));
+        deadline=CalendarUtil.getStringDateFromMM(currentEvent.getDeadline());
         mEventSize.setText( currentEvent.getSize() + " volunteers");
 
+        int position= deadline.lastIndexOf('/');
+        deadline=deadline.substring(0,position)+deadline.substring(position+1);
+
+
+        mEventDeadline.setText(deadline);
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
         if (prefs.getInt("cameFrom", 1) == 1) {
@@ -108,7 +115,9 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if(TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
-                                mStatus.setText("Accepted");
+                                mStatus.setText("Status:Accepted");
+                                int color= Color.rgb(25,156,136);
+                                mStatus.setTextColor(color);
                             }
                         }
 

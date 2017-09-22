@@ -1,6 +1,5 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,6 +40,8 @@ public class ChatFragment extends Fragment {
     private ChatAdapter chatAdapter;
     private TextView noChatText;
     private ImageView noChatImage;
+    final ArrayList<Chat> array = new ArrayList<>();
+    final ArrayList<Chat> arrayCopy = new ArrayList<>();
 
 
     @Override
@@ -49,19 +50,15 @@ public class ChatFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
 
         listChat = (ListView) v.findViewById(R.id.list_chat);
-        final ArrayList<Chat> array = new ArrayList<>();
-        final ArrayList<Chat> arrayCopy = new ArrayList<>();
+
         chatAdapter = new ChatAdapter(getContext(), array);
         listChat.setAdapter(chatAdapter);
-        final ProgressDialog progressDialog = ProgressDialog.show(getContext(), "Getting data", "", true);
-        progressDialog.show();
         noChatImage = (ImageView) v.findViewById(R.id.no_chat_image);
         noChatText = (TextView) v.findViewById(R.id.no_chat_text);
 
         mDatabase.child("conversation").orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                progressDialog.dismiss();
 
                 noChatImage.setVisibility(View.GONE);
                 noChatText.setVisibility(View.GONE);
@@ -84,7 +81,6 @@ public class ChatFragment extends Fragment {
                 }
 
 
-
                 listChat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -93,7 +89,7 @@ public class ChatFragment extends Fragment {
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
                                     Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
-                                    ConversationActivity.nameChat=volunteer.getFirstname() + " " + volunteer.getLastname();
+                                    ConversationActivity.nameChat = volunteer.getFirstname() + " " + volunteer.getLastname();
                                     Intent intent = new Intent(getContext(), ConversationActivity.class);
                                     intent.putExtra("chat", arrayCopy.get(position));
                                     intent.putExtra("class", "fragment");
@@ -104,7 +100,7 @@ public class ChatFragment extends Fragment {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             Organiser organiser = dataSnapshot.getValue(Organiser.class);
-                                            ConversationActivity.nameChat=organiser.getCompany();
+                                            ConversationActivity.nameChat = organiser.getCompany();
                                             Intent intent = new Intent(getContext(), ConversationActivity.class);
                                             intent.putExtra("chat", arrayCopy.get(position));
                                             intent.putExtra("class", "fragment");
@@ -113,12 +109,12 @@ public class ChatFragment extends Fragment {
                                             mDatabase.child("conversation").orderByChild("uuid").equalTo(arrayCopy.get(position).getUuid()).addValueEventListener(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    long size=dataSnapshot.getChildrenCount();
+                                                    long size = dataSnapshot.getChildrenCount();
                                                     for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                                        if(size>100) {
+                                                        if (size > 100) {
                                                             dataSnapshot1.getRef().removeValue();
                                                             size--;
-                                                        }else {
+                                                        } else {
                                                             break;
                                                         }
                                                     }
@@ -208,9 +204,6 @@ public class ChatFragment extends Fragment {
                 }
 
 
-
-
-
             }
 
             @Override
@@ -220,9 +213,14 @@ public class ChatFragment extends Fragment {
         });
 
 
+
         return v;
 
     }
+
+
+
+
 
 
 }
