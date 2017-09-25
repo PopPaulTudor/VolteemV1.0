@@ -1,5 +1,6 @@
 package com.volunteer.thc.volunteerapp.presentation.organiser;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -16,6 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrganiserSingleEventViewAdapter;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 
 import java.util.ArrayList;
 
@@ -49,33 +51,11 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
 
         if (mCurrentEvent == null) {
             String eventID = getIntent().getStringExtra("eventID");
-            mDatabase.child("events/" + eventID).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    final Event currentEvent = dataSnapshot.getValue(Event.class);
-                    ArrayList<String> reg_users = new ArrayList<>();
-                    ArrayList<String> acc_users = new ArrayList<>();
+            if(eventID == null) {
+                eventID = getIntent().getStringExtra("newsEventID");
+            }
+            getEvent(eventID);
 
-                    for (DataSnapshot registered_users : dataSnapshot.child("users").getChildren()) {
-                        if (TextUtils.equals(registered_users.child("status").getValue().toString(), "pending")) {
-                            reg_users.add(registered_users.child("id").getValue().toString());
-                        } else {
-                            acc_users.add(registered_users.child("id").getValue().toString());
-                        }
-                    }
-                    currentEvent.setRegistered_volunteers(reg_users);
-                    currentEvent.setAccepted_volunteers(acc_users);
-
-                    mCurrentEvent = currentEvent;
-                    setUpUI();
-                    tabLayout.getTabAt(1).select();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e("OrgSingleEvA", databaseError.getMessage());
-                }
-            });
         } else {
             setUpUI();
         }
@@ -98,6 +78,44 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
         mViewPagerAdapter = new OrganiserSingleEventViewAdapter(getSupportFragmentManager(), fragmentInfo, fragmentRegistered, fragmentAccepted);
         mViewPager.setAdapter(mViewPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
+    }
+
+    private void getEvent(String eventID) {
+        mDatabase.child("events/" + eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final Event currentEvent = dataSnapshot.getValue(Event.class);
+                ArrayList<String> reg_users = new ArrayList<>();
+                ArrayList<String> acc_users = new ArrayList<>();
+
+                for (DataSnapshot registered_users : dataSnapshot.child("users").getChildren()) {
+                    if (TextUtils.equals(registered_users.child("status").getValue().toString(), "pending")) {
+                        reg_users.add(registered_users.child("id").getValue().toString());
+                    } else {
+                        acc_users.add(registered_users.child("id").getValue().toString());
+                    }
+                }
+                currentEvent.setRegistered_volunteers(reg_users);
+                currentEvent.setAccepted_volunteers(acc_users);
+
+                mCurrentEvent = currentEvent;
+                setUpUI();
+                tabLayout.getTabAt(1).select();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("OrgSingleEvA", databaseError.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getIntent().getStringExtra("eventID") != null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+        super.onBackPressed();
     }
 
     @Override

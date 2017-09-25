@@ -232,6 +232,8 @@
                 android:background="@drawable/button_shape_second"
                 android:gravity="center"
                 android:text="LEAVE EVENT"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:textColor="@android:color/holo_red_dark"
                 android:textSize="@dimen/login_page_text_size_big"
                 android:textStyle="bold"

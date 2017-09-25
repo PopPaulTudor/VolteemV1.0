@@ -12,11 +12,12 @@
 
 
     <TextView
+        android:layout_marginTop="10dp"
         android:id="@+id/chat_text_element"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/chat_icon_element"
-        android:layout_marginBottom="11dp"
+        android:layout_marginBottom="5dp"
         android:layout_toEndOf="@+id/chat_icon_element"
         android:text=""
         android:textColor="@color/black"

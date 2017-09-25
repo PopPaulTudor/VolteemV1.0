@@ -15,8 +15,8 @@
         android:id="@+id/no_news_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_above="@+id/no_news_text"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:src="@drawable/ic_news"
         android:visibility="gone" />
 
@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_below="@id/no_news_image"
         android:text="No news."
         android:textSize="20sp"
         android:visibility="gone" />
