@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -95,7 +96,6 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
         mSignupForEventFloatingButton = (FloatingActionButton) findViewById(R.id.fab);
         mLeaveEvent = (Button) findViewById(R.id.event_leave);
-
         currentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
 
         if (currentEvent != null) {
@@ -224,8 +224,12 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventFinishDate.setText(CalendarUtil.getStringDateFromMM(currentEvent.getFinishDate()));
         mEventType.setText(currentEvent.getType());
         mEventDescription.setText(currentEvent.getDescription());
-        mEventDeadline.setText(CalendarUtil.getStringDateFromMM(currentEvent.getDeadline()));
+        String deadline=CalendarUtil.getStringDateFromMM(currentEvent.getDeadline());
         mEventSize.setText(currentEvent.getSize() + " volunteers");
+
+        int index= deadline.lastIndexOf("/");
+        deadline= deadline.substring(0, index) + deadline.substring(index+1);
+        mEventDeadline.setText(deadline);
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
@@ -240,6 +244,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
                                 mStatus.setText("Accepted");
+                                mStatus.setTextColor(Color.rgb(25,156,136));
                             }
                         }
 
