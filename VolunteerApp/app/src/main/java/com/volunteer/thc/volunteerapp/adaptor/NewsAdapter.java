@@ -1,7 +1,10 @@
 package com.volunteer.thc.volunteerapp.adaptor;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +16,14 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.interrface.NewsDeletedListener;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
+import com.volunteer.thc.volunteerapp.presentation.MainActivity;
+import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by Cristi on 8/25/2017.
@@ -24,13 +31,16 @@ import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
 
-    private List<NewsMessage> newsList;
+    private ArrayList<NewsMessage> newsList;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private Context context;
+    private NewsDeletedListener newsDeletedListener;
+    private boolean itemWasLongClicked = false;
 
-    public NewsAdapter(List<NewsMessage> list, Context context) {
-        newsList = list;
+    public NewsAdapter(ArrayList<NewsMessage> newsList, Context context, NewsDeletedListener newsDeletedListener) {
+        this.newsList = newsList;
         this.context = context;
+        this.newsDeletedListener = newsDeletedListener;
     }
 
     @Override
@@ -43,24 +53,27 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(final NewsAdapter.NewsViewHolder holder, final int position) {
 
+        final SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+
         if (newsList.get(position).isStarred()) {
             holder.starredIcon.setVisibility(View.VISIBLE);
         }
-        //TODO: display news for organisers too
 
         switch (newsList.get(position).getType()) {
-            case 1:
+            case NewsMessage.ACCEPT:
                 holder.typeIcon.setImageResource(R.drawable.ic_checked);
                 break;
-            case 2:
+            case NewsMessage.FEEDBACK:
                 holder.typeIcon.setImageResource(R.drawable.ic_feedback_news);
                 break;
         }
+
         holder.content.setText(newsList.get(position).getContent());
         holder.time.setText(CalendarUtil.getNewsStringDateFromMM(newsList.get(position).getExpireDate()));
         holder.item.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                itemWasLongClicked = true;
                 if (newsList.get(position).isStarred()) {
                     Toast.makeText(context, "News unstarred.", Toast.LENGTH_SHORT).show();
                     mDatabase.child("news/" + newsList.get(position).getNewsID() + "/starred").setValue(false);
@@ -75,6 +88,51 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 return false;
             }
         });
+        holder.item.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent;
+                switch (newsList.get(position).getType()) {
+                    case NewsMessage.ACCEPT:
+                        prefs.edit().putInt("cameFrom", 2).apply();
+                        intent = new Intent(context, VolunteerSingleEventActivity.class);
+                        intent.putExtra("newsEventID", newsList.get(position).getEventID());
+                        break;
+                    case NewsMessage.REGISTERED:
+                        intent = new Intent(context, OrganiserSingleEventActivity.class);
+                        intent.putExtra("newsEventID", newsList.get(position).getEventID());
+                        break;
+                    default:
+                        intent = new Intent(context, MainActivity.class);
+                }
+                if (!itemWasLongClicked) {
+                    context.startActivity(intent);
+                }
+                itemWasLongClicked = false;
+            }
+        });
+    }
+
+    public ItemTouchHelper getItemTouchHelper() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                mDatabase.child("news/" + newsList.get(position).getNewsID()).setValue(null);
+                newsList.remove(position);
+                notifyDataSetChanged();
+                if(newsList.isEmpty()) {
+                    newsDeletedListener.onNewsEmpty();
+                }
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        return itemTouchHelper;
     }
 
     @Override

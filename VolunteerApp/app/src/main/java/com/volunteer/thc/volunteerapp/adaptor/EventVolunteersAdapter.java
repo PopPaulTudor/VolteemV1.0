@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,16 +42,16 @@ import java.util.UUID;
 
 public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteersAdapter.EventViewHolder> {
 
-    private static ArrayList<Volunteer> listVolunteer;
-    private static ArrayList<String> volunteerIDs;
+    private ArrayList<Volunteer> listVolunteer;
+    private ArrayList<String> volunteerIDs;
     private String classParent;
-    private static Event event;
+    private Event event;
     private int mExpandedPosition = -1;
-    private static DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ViewGroup parent;
     private Context context;
     private Calendar date = Calendar.getInstance();
-    private static FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private OrganiserSingleEventRegisteredUsersFragment fragment;
 
     public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context, OrganiserSingleEventRegisteredUsersFragment fragment) {
@@ -152,17 +153,18 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                         } else {
                             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                                 Chat chat = dataSnapshot1.getValue(Chat.class);
-                                intent.putExtra("chat", chat);
-                                break;
+                                if (TextUtils.equals(chat.getSentBy(), user.getUid())) {
+                                    intent.putExtra("chat", chat);
+                                    break;
+                                }
                             }
 
                         }
-                        ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() + listVolunteer.get(position).getLastname();
+                        ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() +" "+ listVolunteer.get(position).getLastname();
                         intent.putExtra("class", "adapter");
                         intent.putExtra("position", position);
                         ConversationActivity.fragment = fragment;
                         context.startActivity(intent);
-
                     }
 
                     @Override
@@ -206,7 +208,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         }
     }
 
-    public static void acceptVolunteer(final int position, Activity activity) {
+    public void acceptVolunteer(final int position, Activity activity) {
 
         mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
         Toast.makeText(activity, "Accepted volunteer!", Toast.LENGTH_LONG).show();
@@ -239,9 +241,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
             }
         });
-
-
-
 
         listVolunteer.remove(position);
         volunteerIDs.remove(position);

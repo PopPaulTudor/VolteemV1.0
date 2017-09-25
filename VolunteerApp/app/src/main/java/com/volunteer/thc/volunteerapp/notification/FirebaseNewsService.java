@@ -16,6 +16,7 @@ import android.util.Log;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +32,7 @@ import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 
 import java.util.Calendar;
@@ -59,23 +61,22 @@ public class FirebaseNewsService extends Service {
         super.onCreate();
         Log.w("FirebaseService", "created");
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        mDatabase.child("news").orderByChild("receivedBy").equalTo(user.getUid()).addValueEventListener(new ValueEventListener() {
+
+        mDatabase.child("news").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (user != null) {
-                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                        NewsMessage newsMessage = dataSnapshot1.getValue(NewsMessage.class);
-                        if (!newsMessage.isStarred() && (newsMessage.getExpireDate() + 604800000) < date.getTimeInMillis()) {
-                            mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
-                        } else {
-                            if (!dataSnapshot1.child("notified").getValue(Boolean.class)) {
-                                if (prefs.getBoolean("notifications", true)) {
-                                    sendNews(newsMessage);
-                                }
-                                mDatabase.child("news/" + dataSnapshot1.getKey() + "/notified").setValue(true);
-                                if (newsMessage.getType() == NewsMessage.EVENT_DELETED) {
-                                    mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
-                                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(user != null) {
+                    NewsMessage newsMessage = dataSnapshot.getValue(NewsMessage.class);
+                    if (!newsMessage.isStarred() && (newsMessage.getExpireDate() + 604800000) < date.getTimeInMillis()) {
+                        mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
+                    } else {
+                        if (!newsMessage.isNotified()) {
+                            if (prefs.getBoolean("notifications", true)) {
+                                sendNews(newsMessage);
+                            }
+                            mDatabase.child("news/" + dataSnapshot.getKey() + "/notified").setValue(true);
+                            if (newsMessage.getType() == NewsMessage.EVENT_DELETED) {
+                                mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
                             }
                         }
                     }
@@ -83,8 +84,23 @@ public class FirebaseNewsService extends Service {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("NewsService", databaseError.getMessage());
             }
         });
 
@@ -170,7 +186,18 @@ public class FirebaseNewsService extends Service {
 
     private void sendNews(NewsMessage message) {
         final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Intent intent = new Intent(this, message.getType() != NewsMessage.REGISTERED ? MainActivity.class : OrganiserSingleEventActivity.class);
+        Intent intent;
+        switch (message.getType()) {
+            case NewsMessage.ACCEPT:
+                prefs.edit().putInt("cameFrom", 2).apply();
+                intent = new Intent(this, VolunteerSingleEventActivity.class);
+                break;
+            case NewsMessage.REGISTERED:
+                intent = new Intent(this, OrganiserSingleEventActivity.class);
+                break;
+            default:
+                intent = new Intent(this, MainActivity.class);
+        }
         intent.putExtra("eventID", message.getEventID());
         PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
         final Notification notification = new Notification.Builder(this)
@@ -181,7 +208,6 @@ public class FirebaseNewsService extends Service {
                 .setSmallIcon(R.mipmap.volunteer_logo)
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
                 .build();
-
 
         notificationManager.notify(new Random().nextInt(), notification);
     }

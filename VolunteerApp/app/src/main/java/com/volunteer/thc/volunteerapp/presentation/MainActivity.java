@@ -282,7 +282,9 @@ public class MainActivity extends AppCompatActivity
             if (eventsItem.isChecked()) {
                 eventsItem.setChecked(false);
             }
+
             item.setChecked(true);
+
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(actionBarTitle);
             }

@@ -154,6 +154,12 @@ public class ChatFragment extends Fragment {
                         alert.setTitle("Delete conversation?")
                                 .setCancelable(true)
                                 .setMessage("Are you sure you want to delete this conversation?")
+                                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                })
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {

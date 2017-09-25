@@ -102,12 +102,14 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
     @Override
     public void onRefresh() {
+        actionFilter.setSelection(typeList.indexOf("All"));
         loadEvents();
     }
 
     private void loadEvents() {
 
         mSwipeRefreshLayout.setRefreshing(true);
+        noEvents.setVisibility(View.GONE);
         if (isNetworkAvailable()) {
             mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -124,6 +126,17 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                     }
                     mSwipeRefreshLayout.setRefreshing(false);
                     if (isFragmentActive()) {
+                        Collections.sort(mEventsList, new Comparator<Event>() {
+                            @Override
+                            public int compare(Event event, Event t1) {
+                                if(event.getDeadline() < t1.getDeadline())
+                                    return -1;
+                                if(event.getDeadline() > t1.getDeadline())
+                                    return 1;
+                                return 0;
+                            }
+                        });
+
                         OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.ALL_EVENTS);
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());

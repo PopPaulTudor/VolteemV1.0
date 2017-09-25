@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.NewsAdapter;
+import com.volunteer.thc.volunteerapp.interrface.NewsDeletedListener;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 
 import java.util.ArrayList;
@@ -29,7 +32,7 @@ import java.util.Collections;
  * Created by poppa on 25.08.2017.
  */
 
-public class NewsFragment extends Fragment {
+public class NewsFragment extends Fragment implements NewsDeletedListener {
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -59,18 +62,26 @@ public class NewsFragment extends Fragment {
                     noNewsText.setVisibility(View.VISIBLE);
                 }
                 Collections.reverse(news);
-                NewsAdapter adapter = new NewsAdapter(news, getActivity());
+                NewsAdapter adapter = new NewsAdapter(news, getActivity(), NewsFragment.this);
+                ItemTouchHelper itemTouchHelper = adapter.getItemTouchHelper();
                 newsRecView.setAdapter(adapter);
+                itemTouchHelper.attachToRecyclerView(newsRecView);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                 newsRecView.setLayoutManager(linearLayoutManager);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("NewsFragment", databaseError.getMessage());
             }
         });
 
         return view;
+    }
+
+    @Override
+    public void onNewsEmpty() {
+        noNewsImage.setVisibility(View.VISIBLE);
+        noNewsText.setVisibility(View.VISIBLE);
     }
 }

@@ -19,10 +19,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.ConversationAdapter;
-import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
 import com.volunteer.thc.volunteerapp.model.Chat;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
 
@@ -37,7 +35,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     final ArrayList<Chat> arrayList = new ArrayList<>();
     public static String nameChat = null;
-    public static String idActive="";
+    public static String idActive = "";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ConversationAdapter conversationAdapter;
     private EditText reply;
@@ -45,8 +43,6 @@ public class ConversationActivity extends AppCompatActivity {
     private String idSent, idReceive;
     private Chat chatDefault;
     public static OrganiserSingleEventRegisteredUsersFragment fragment;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,28 +62,24 @@ public class ConversationActivity extends AppCompatActivity {
             idReceive = chatDefault.getSentBy();
         }
 
-
         conversation.setHasFixedSize(true);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         conversation.setLayoutManager(linearLayoutManager);
-        conversationAdapter = new ConversationAdapter(arrayList,getApplicationContext());
+        conversationAdapter = new ConversationAdapter(arrayList, getApplicationContext());
         conversation.setAdapter(conversationAdapter);
-        conversation.setHasFixedSize(false  );
-
-
+        conversation.setHasFixedSize(false);
 
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 conversation.getLayoutManager().scrollToPosition(conversationAdapter.getItemCount() - 1);
                 if (!reply.getText().toString().isEmpty()) {
-                    Chat chat = new Chat(idSent, idReceive, reply.getText().toString(), chatDefault.getUuid(), Calendar.getInstance().getTimeInMillis(),false);
+                    Chat chat = new Chat(idSent, idReceive, reply.getText().toString(), chatDefault.getUuid(), Calendar.getInstance().getTimeInMillis(), false);
                     mDatabase.child("conversation").push().setValue(chat);
                     reply.setText(null);
                 }
             }
         });
-
 
 
         mDatabase.child("conversation").orderByChild("uuid").equalTo(chatDefault.getUuid()).addChildEventListener(new ChildEventListener() {
@@ -119,10 +111,7 @@ public class ConversationActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
-
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -140,18 +129,18 @@ public class ConversationActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-        idActive="";
+        idActive = "";
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         MenuItem acceptVolunteer = menu.findItem(R.id.chat_accept_volunteer);
-        final int position= getIntent().getIntExtra("position",0);
-        String parentClass =  getIntent().getStringExtra("class");
-        if(!parentClass.equals("adapter")) {
+        final int position = getIntent().getIntExtra("position", 0);
+        String parentClass = getIntent().getStringExtra("class");
+        if (!parentClass.equals("adapter")) {
             acceptVolunteer.setVisible(false);
-        }else {
+        } else {
             acceptVolunteer.setVisible(true);
             acceptVolunteer.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
@@ -161,12 +150,18 @@ public class ConversationActivity extends AppCompatActivity {
                     alert.setTitle("Accept Volunteer?")
                             .setCancelable(true)
                             .setMessage("Are you sure you want to accept this volunteer?")
+                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                }
+                            })
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
 
-                                    EventVolunteersAdapter.acceptVolunteer(position,ConversationActivity.this);
-                                    fragment.adapter.notifyDataSetChanged();
+                                    OrganiserSingleEventRegisteredUsersFragment.adapter.acceptVolunteer(position, ConversationActivity.this);
+                                    OrganiserSingleEventRegisteredUsersFragment.adapter.notifyDataSetChanged();
                                     finish();
 
                                 }
@@ -180,7 +175,6 @@ public class ConversationActivity extends AppCompatActivity {
             });
 
         }
-
         return super.onCreateOptionsMenu(menu);
 
     }
@@ -188,12 +182,12 @@ public class ConversationActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        idActive=chatDefault.getUuid();
+        idActive = chatDefault.getUuid();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        idActive="";
+        idActive = "";
     }
 }
