@@ -77,7 +77,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Accept Volunteer"
-                android:textColor="@color/black"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginLeft="6dp"
+                android:background="@android:color/transparent"
                 android:visibility="gone" />
 
             <Button
@@ -85,7 +87,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Start Interview"
-                android:textColor="@color/black" />
+                android:layout_marginLeft="7dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/colorPrimary" />
 
 
         </LinearLayout>

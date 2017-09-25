@@ -65,7 +65,19 @@
                     android:hint="Bontida"
                     android:textColor="@color/black" />
 
+
+
+
             </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/CardCheck"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_watch"
+                android:layout_alignParentRight="true"
+                android:layout_margin="3dp"
+                android:layout_alignParentTop="true"/>
 
 
         </RelativeLayout>

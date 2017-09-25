@@ -3,6 +3,7 @@ package com.volunteer.thc.volunteerapp.adaptor;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -112,6 +113,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         holder.acceptUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                holder.acceptUser.setTextColor(Color.rgb(0,74,101));
                 String eventID = mDatabase.child("news").push().getKey();
                 mDatabase.child("news").child(eventID).setValue(new NewsMessage(date.getTimeInMillis(), eventID, event.getEventID(), event.getCreated_by(), volunteerIDs.get(position),
                         "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
@@ -126,6 +129,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 volunteerIDs.remove(position);
                 notifyDataSetChanged();
 
+                holder.acceptUser.setTextColor(Color.rgb(25,156,136));
+
 
             }
         });
@@ -134,6 +139,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             @Override
             public void onClick(View v) {
 
+
+                holder.sendMessage.setTextColor(Color.rgb(0,74,101));
                 final Intent intent = new Intent(context, ConversationActivity.class);
 
                 mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -163,6 +170,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
                     }
                 });
+
+                holder.sendMessage.setTextColor(Color.rgb(25,156,136));
             }
         });
     }

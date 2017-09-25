@@ -44,7 +44,7 @@ import de.cketti.library.changelog.ChangeLog;
 public class SettingsFragment extends Fragment {
 
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private EditText mPassword, mOldPassword, mNewPassword;
+    private EditText mPassword, mOldPassword, mNewPassword,mNewPasswordAgain;
     private SwitchCompat notificationsSwitch;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private SharedPreferences prefs;
@@ -104,6 +104,7 @@ public class SettingsFragment extends Fragment {
 
                 mOldPassword = (EditText) parentView.findViewById(R.id.oldPassword);
                 mNewPassword = (EditText) parentView.findViewById(R.id.newPassword);
+                mNewPasswordAgain=(EditText) parentView.findViewById(R.id.newPasswordAgain) ;
 
                 parentView.findViewById(R.id.change_password).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -111,7 +112,7 @@ public class SettingsFragment extends Fragment {
 
                         String old_password = mOldPassword.getText().toString();
                         final String new_password = mNewPassword.getText().toString();
-                        if (!TextUtils.isEmpty(old_password) && valid(new_password)) {
+                        if (!TextUtils.isEmpty(old_password) && valid(new_password)&&mNewPassword.equals(mNewPasswordAgain)) {
                             Toast.makeText(getActivity(), "Changing password...", Toast.LENGTH_SHORT).show();
                             AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), old_password);
                             user.reauthenticate(credential)

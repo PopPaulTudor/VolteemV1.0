@@ -231,6 +231,8 @@
                 android:layout_below="@+id/card_location"
                 android:background="@drawable/button_shape_second"
                 android:gravity="center"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 android:text="LEAVE EVENT"
                 android:textColor="@android:color/holo_red_dark"
                 android:textSize="@dimen/login_page_text_size_big"
@@ -247,4 +249,7 @@
         android:visibility="gone"
         app:layout_anchor="@id/app_bar_layout"
         app:layout_anchorGravity="bottom|right|end" />
+
+
+
 </android.support.design.widget.CoordinatorLayout>

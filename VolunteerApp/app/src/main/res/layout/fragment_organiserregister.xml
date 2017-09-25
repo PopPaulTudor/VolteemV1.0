@@ -61,6 +61,26 @@
 
             </android.support.design.widget.TextInputLayout>
 
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/passwordConfirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Confirm Password"
+                    android:imeActionId="@+id/login"
+
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -110,7 +130,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:background="@color/colorAccent"
                 android:text="REGISTER"
+                android:textColor="@color/white"
                 android:textStyle="bold" />
 
             <Button
@@ -118,7 +140,10 @@
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:layout_marginTop="5dp"
                 android:text="BACK"
+                android:textColor="@color/white"
                 android:textStyle="bold" />
 
         </LinearLayout>

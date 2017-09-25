@@ -105,9 +105,9 @@
 		android:layout_above="@+id/text_settings"
 		android:layout_alignParentStart="true"
 		android:layout_marginBottom="15dp"
-		android:backgroundTint="@color/tint_delete_account"
-		android:text="@string/delete_account"
+		android:background="@android:color/transparent"
 		android:textColor="@color/red"
+		android:text="@string/delete_account"
 		android:textSize="20sp"/>
 
 	<TextView

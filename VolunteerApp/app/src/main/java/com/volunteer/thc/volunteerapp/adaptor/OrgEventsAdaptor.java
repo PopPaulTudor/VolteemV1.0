@@ -16,6 +16,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -38,8 +45,10 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     private Context context;
     private Resources resources;
     private ArrayList<Uri> imageUris = new ArrayList<>();
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ArrayList<String> typeList = new ArrayList<>();
     private int flag;
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     public static final int ALL_EVENTS = 1, MY_EVENTS = 2;
 
     public OrgEventsAdaptor(List<Event> list, Context context, Resources resources, final int FLAG) {
@@ -62,11 +71,44 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         holder.cardName.setText(eventsList.get(position).getName());
         holder.cardLocation.setText(eventsList.get(position).getLocation());
 
-        if(flag == ALL_EVENTS) {
+        if (flag == ALL_EVENTS) {
             holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position).getDeadline()));
         } else {
             holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position).getStartDate()));
+
+
         }
+        SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        if (prefs.getString("user_status", "").equals("Volunteer")) {
+            if (flag == ALL_EVENTS) {
+                holder.cardChecked.setVisibility(View.GONE);
+            } else {
+                holder.cardChecked.setVisibility(View.VISIBLE);
+
+                mDatabase.child("events").child(eventsList.get(position).getEventID()).child("users").child(user.getUid())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
+                                    holder.cardChecked.setImageResource(R.drawable.ic_checked);
+                                } else {
+                                    holder.cardChecked.setImageResource(R.drawable.ic_watch);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+
+                        });
+
+            }
+
+        }else  holder.cardChecked.setVisibility(View.GONE);
+
+
+
 
         populateTypeList();
         populateUriList();
@@ -80,6 +122,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
                 Picasso.with(context).load(uri).fit().centerCrop().into(holder.cardImage);
             }
         });
+
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,6 +153,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         TextView cardDate;
         TextView cardLocation;
         ImageView cardImage;
+        ImageView cardChecked;
         CardView cardView;
 
         EventViewHolder(View v) {
@@ -120,7 +164,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
             cardLocation = (TextView) v.findViewById(R.id.LocationCardElement);
             cardView = (CardView) v.findViewById(R.id.CardElement);
             cardImage = (ImageView) v.findViewById(R.id.ImageCardElement);
-
+            cardChecked = (ImageView) v.findViewById(R.id.CardCheck);
         }
     }
 

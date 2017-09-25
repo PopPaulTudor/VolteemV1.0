@@ -61,7 +61,7 @@ public class VolunteerRegisterFragment extends Fragment {
     private static final int GALLERY_INTENT = 1;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
-    private EditText mEmail, mPassword, mPhone, mCity, mAge, mFirstname, mLastname;
+    private EditText mEmail, mPassword, mPhone, mCity, mAge, mFirstname, mLastname, mConfirmPass;
     private Button mRegister, mBack;
     private Intent intent;
     private ProgressDialog mProgressDialog;
@@ -93,6 +93,7 @@ public class VolunteerRegisterFragment extends Fragment {
         mImage = (CircleImageView) view.findViewById(R.id.photo);
         mRegister = (Button) view.findViewById(R.id.register_user);
         mBack = (Button) view.findViewById(R.id.back);
+        mConfirmPass = (EditText) view.findViewById(R.id.passwordConfirm);
         intent = new Intent(getActivity(), MainActivity.class);
 
         uriFemale = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
@@ -259,7 +260,7 @@ public class VolunteerRegisterFragment extends Fragment {
     private boolean validateForm() {
         boolean valid;
         valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mFirstname) &&
-                editTextIsValid(mLastname) && editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity) && (uri != null));
+                editTextIsValid(mLastname) && editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity) && (uri != null) && checkPass());
         valid &= !TextUtils.isEmpty(mGender);
         return valid;
     }
@@ -285,6 +286,21 @@ public class VolunteerRegisterFragment extends Fragment {
             }
         }
         return true;
+    }
+
+    private boolean checkPass() {
+
+        if (!mPassword.getText().toString().equals(mConfirmPass.getText().toString())) {
+            mConfirmPass.setError("Passwords doesn't match");
+            mConfirmPass.requestFocus();
+            return false;
+        } else {
+
+            mConfirmPass.setError(null);
+            return true;
+        }
+
+
     }
 
     @Override

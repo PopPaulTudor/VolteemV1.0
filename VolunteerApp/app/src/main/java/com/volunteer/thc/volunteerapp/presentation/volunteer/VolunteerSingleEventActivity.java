@@ -136,9 +136,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                                 mStatus.setText("Status:Accepted");
                                 int color = Color.rgb(0, 74, 101);
                                 mStatus.setTextColor(color);
-                                if (TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
-                                    mStatus.setText("Accepted");
-                                }
+
                             }
                         }
 
@@ -181,7 +179,9 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                 }
             };
 
-            View.OnClickListener registerClickListener = new View.OnClickListener() {
+
+
+            mSignupForEventFloatingButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(VolunteerSingleEventActivity.this);
@@ -218,9 +218,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         }
                     });
                 }
-            };
-
-            mSignupForEventFloatingButton.setOnClickListener(registerClickListener);
+            });
 
             mLeaveEvent.setOnClickListener(new View.OnClickListener() {
                 @Override

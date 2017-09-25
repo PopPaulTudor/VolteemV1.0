@@ -53,7 +53,7 @@ public class OrganiserRegisterFragment extends Fragment {
     private static final int GALLERY_INTENT = 1;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
-    private EditText mEmail, mPassword, mPhone, mCity, mCompany;
+    private EditText mEmail, mPassword, mPhone, mCity, mCompany,mConfirmPass;
     private Button mRegister, mBack;
     private Intent intent;
     private ProgressDialog mProgressDialog;
@@ -72,6 +72,7 @@ public class OrganiserRegisterFragment extends Fragment {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         mEmail = (EditText) view.findViewById(R.id.email);
+        mConfirmPass=(EditText) view.findViewById(R.id.passwordConfirm);
         mPassword = (EditText) view.findViewById(R.id.password);
         mPhone = (EditText) view.findViewById(R.id.user_phone);
         mCity = (EditText) view.findViewById(R.id.user_city);
@@ -206,7 +207,7 @@ public class OrganiserRegisterFragment extends Fragment {
 
         boolean valid;
         valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mCompany) &&
-                editTextIsValid(mCity) && editTextIsValid(mPhone) && (uri != null));
+                editTextIsValid(mCity) && editTextIsValid(mPhone) && (uri != null)&&checkPass());
         return valid;
     }
 
@@ -232,6 +233,19 @@ public class OrganiserRegisterFragment extends Fragment {
         }
 
         return true;
+    }
+    private boolean checkPass(){
+
+
+        if (!mPassword.getText().toString().equals(mConfirmPass.getText().toString())) {
+            mConfirmPass.setError("Passwords doesn't match");
+            mConfirmPass.requestFocus();
+            return false;
+        } else {
+
+            mConfirmPass.setError(null);
+            return true;
+        }
     }
 
     @Override
