@@ -115,14 +115,13 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             @Override
             public void onClick(View view) {
 
-                holder.acceptUser.setTextColor(Color.rgb(0,74,101));
+                holder.acceptUser.setTextColor(Color.rgb(0, 74, 101));
                 String eventID = mDatabase.child("news").push().getKey();
                 mDatabase.child("news").child(eventID).setValue(new NewsMessage(date.getTimeInMillis(), eventID, event.getEventID(), event.getCreated_by(), volunteerIDs.get(position),
                         "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
 
                 mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
-
                 Chat chat = new Chat(event.getCreated_by(), volunteerIDs.get(position), "You have been accepted to " + event.getName(), UUID.randomUUID().toString(), Calendar.getInstance().getTimeInMillis(), false);
                 mDatabase.child("conversation").push().setValue(chat);
 
@@ -130,7 +129,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 volunteerIDs.remove(position);
                 notifyDataSetChanged();
 
-                holder.acceptUser.setTextColor(Color.rgb(25,156,136));
+                holder.acceptUser.setTextColor(Color.rgb(25, 156, 136));
 
 
             }
@@ -141,11 +140,12 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             public void onClick(View v) {
 
 
-                holder.sendMessage.setTextColor(Color.rgb(0,74,101));
+                holder.sendMessage.setTextColor(Color.rgb(0, 74, 101));
                 final Intent intent = new Intent(context, ConversationActivity.class);
 
                 mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
+
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (!dataSnapshot.exists()) {
                             Chat chat = new Chat(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
@@ -160,9 +160,10 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                             }
 
                         }
-                        ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() +" "+ listVolunteer.get(position).getLastname();
+                        ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname();
                         intent.putExtra("class", "adapter");
-                        intent.putExtra("position", position);
+
+                        intent.putExtra("id", volunteerIDs.get(position));
                         ConversationActivity.fragment = fragment;
                         context.startActivity(intent);
                     }
@@ -170,10 +171,19 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
+                        final Intent intent = new Intent(context, ConversationActivity.class);
+
+                        ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname();
+                        intent.putExtra("class", "adapter");
+                        Chat chat = new Chat(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
+                        intent.putExtra("chat", chat);
+                        intent.putExtra("id", volunteerIDs.get(position));
+                        ConversationActivity.fragment = fragment;
+                        context.startActivity(intent);
                     }
                 });
 
-                holder.sendMessage.setTextColor(Color.rgb(25,156,136));
+                holder.sendMessage.setTextColor(Color.rgb(25, 156, 136));
             }
         });
     }
@@ -208,30 +218,33 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         }
     }
 
-    public void acceptVolunteer(final int position, Activity activity) {
+    public void acceptVolunteer(final String id, Activity activity) {
 
-        mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
+        mDatabase.child("events").child(event.getEventID()).child("users").child(id).child("status").setValue("accepted");
         Toast.makeText(activity, "Accepted volunteer!", Toast.LENGTH_LONG).show();
 
         String eventID = mDatabase.child("news").push().getKey();
-        mDatabase.child("news").child(eventID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), eventID, event.getEventID(), event.getCreated_by(), volunteerIDs.get(position),
+        mDatabase.child("news").child(eventID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), eventID, event.getEventID(), event.getCreated_by(), id,
                 "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
 
-        mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("conversation").orderByChild("receivedBy").equalTo(id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String uuid = null;
-                if (dataSnapshot.exists()) {
+                boolean ifHasConv=false;
+                if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
                         Chat chatData = data.getValue(Chat.class);
-                        uuid = chatData.getUuid();
-                        break;
+                        if (chatData.getSentBy().equals(user.getUid())) {
+                            uuid = chatData.getUuid();
+                            ifHasConv = true;
+                            break;
+                        }
 
                     }
-                } else {
-                    uuid = UUID.randomUUID().toString();
                 }
-                Chat chat = new Chat(event.getCreated_by(), volunteerIDs.get(position), "You have been accepted to " + event.getName(), uuid, Calendar.getInstance().getTimeInMillis(), false);
+                if(!ifHasConv){uuid=UUID.randomUUID().toString();}
+                Chat chat = new Chat(event.getCreated_by(), id, "You have been accepted to " + event.getName(), uuid, Calendar.getInstance().getTimeInMillis(), false);
                 mDatabase.child("conversation").push().setValue(chat);
 
             }
@@ -242,6 +255,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             }
         });
 
+        int position = volunteerIDs.indexOf(id);
         listVolunteer.remove(position);
         volunteerIDs.remove(position);
 

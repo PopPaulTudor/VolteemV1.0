@@ -136,7 +136,7 @@ public class ConversationActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         MenuItem acceptVolunteer = menu.findItem(R.id.chat_accept_volunteer);
-        final int position = getIntent().getIntExtra("position", 0);
+        final String positionId = getIntent().getStringExtra("id");
         String parentClass = getIntent().getStringExtra("class");
         if (!parentClass.equals("adapter")) {
             acceptVolunteer.setVisible(false);
@@ -160,7 +160,7 @@ public class ConversationActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
 
-                                    OrganiserSingleEventRegisteredUsersFragment.adapter.acceptVolunteer(position, ConversationActivity.this);
+                                    OrganiserSingleEventRegisteredUsersFragment.adapter.acceptVolunteer(positionId, ConversationActivity.this);
                                     OrganiserSingleEventRegisteredUsersFragment.adapter.notifyDataSetChanged();
                                     finish();
 

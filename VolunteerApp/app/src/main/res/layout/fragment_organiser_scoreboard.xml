@@ -61,7 +61,11 @@
         android:layout_above="@+id/leaderboardRecView"
         android:layout_alignEnd="@+id/leaderboardRecView"
         android:layout_alignTop="@+id/experienceText"
-        android:text="SHOW RANKING" />
+        android:background="@color/colorPrimary"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:text="SHOW RANKING"
+        android:textColor="@color/white" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/leaderboardRecView"

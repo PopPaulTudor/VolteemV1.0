@@ -50,6 +50,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/leaderboardRecView"
         android:layout_alignEnd="@+id/leaderboardRecView"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/white"
         android:layout_alignTop="@+id/experienceText"
         android:text="SHOW RANKING" />
 
