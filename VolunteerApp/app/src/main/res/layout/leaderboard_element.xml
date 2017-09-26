@@ -26,7 +26,7 @@
             android:layout_alignBaseline="@+id/leaderboardPosition"
             android:layout_toEndOf="@+id/leaderboardPosition"
             android:maxLines="1"
-            android:maxWidth="200sp"
+            android:maxWidth="150sp"
             android:text="Prenume Nume"
             android:textColor="@color/black"
             android:textSize="20sp" />

@@ -147,7 +147,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                     @Override
 
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (!dataSnapshot.exists()) {
+                        boolean ifHasConv=false;
+                        if (!dataSnapshot.hasChildren()) {
                             Chat chat = new Chat(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
                             intent.putExtra("chat", chat);
                         } else {
@@ -155,8 +156,15 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                                 Chat chat = dataSnapshot1.getValue(Chat.class);
                                 if (TextUtils.equals(chat.getSentBy(), user.getUid())) {
                                     intent.putExtra("chat", chat);
+                                    ifHasConv=true;
                                     break;
                                 }
+                            }
+
+                            if(!ifHasConv){
+                                Chat chat = new Chat(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
+                                intent.putExtra("chat", chat);
+
                             }
 
                         }

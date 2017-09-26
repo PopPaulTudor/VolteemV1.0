@@ -224,17 +224,17 @@ public class OrganiserProfileFragment extends Fragment {
         currentPhone = mPhone.getText().toString();
 
         if (validateForm()) {
-            if (!currentCompany.equals(organiser.getCompany())) {
+            if (!currentCompany.equals(organiser.getCompany())&&!currentCompany.isEmpty()) {
                 mDatabase.child("users").child("organisers").child(user.getUid()).child("company").setValue(currentCompany);
                 organiser.setCompany(currentCompany);
             }
 
-            if (!currentCity.equals(organiser.getCity())) {
+            if (!currentCity.equals(organiser.getCity())&&!currentCity.isEmpty()) {
                 mDatabase.child("users").child("organisers").child(user.getUid()).child("city").setValue(currentCity);
                 organiser.setCity(currentCity);
             }
 
-            if (!currentPhone.equals(organiser.getPhone())) {
+            if (!currentPhone.equals(organiser.getPhone())&&!currentPhone.isEmpty()) {
                 mDatabase.child("users").child("organisers").child(user.getUid()).child("phone").setValue(currentPhone);
                 organiser.setPhone(currentPhone);
             }
