@@ -53,9 +53,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     private Event currentEvent;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private ValueEventListener mRegisterListener;
     private ArrayList<String> events = new ArrayList<>();
-    private int eventsNumber;
     private ImageView collapsingToolbarImage;
     private Resources resources;
     private ArrayList<Uri> imageUris = new ArrayList<>();
@@ -179,7 +177,6 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
                         mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid()).setValue(null);
                         events.remove(currentEvent.getEventID());
-                        mDatabase.child("users").child("volunteers").child(user.getUid()).child("events").setValue(events);
                         Toast.makeText(VolunteerSingleEventActivity.this, "Event left.", Toast.LENGTH_LONG).show();
                         finish();
                     }
@@ -224,11 +221,11 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventFinishDate.setText(CalendarUtil.getStringDateFromMM(currentEvent.getFinishDate()));
         mEventType.setText(currentEvent.getType());
         mEventDescription.setText(currentEvent.getDescription());
-        String deadline=CalendarUtil.getStringDateFromMM(currentEvent.getDeadline());
+        String deadline = CalendarUtil.getStringDateFromMM(currentEvent.getDeadline());
         mEventSize.setText(currentEvent.getSize() + " volunteers");
 
-        int index= deadline.lastIndexOf("/");
-        deadline= deadline.substring(0, index) + deadline.substring(index+1);
+        int index = deadline.lastIndexOf("/");
+        deadline = deadline.substring(0, index) + deadline.substring(index + 1);
         mEventDeadline.setText(deadline);
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
@@ -244,7 +241,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
                                 mStatus.setText("Accepted");
-                                mStatus.setTextColor(Color.rgb(25,156,136));
+                                mStatus.setTextColor(Color.rgb(25, 156, 136));
                             }
                         }
 

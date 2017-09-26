@@ -10,7 +10,7 @@ public class CalculateUtils {
     public static long calculateVolunteerExperience(int size, long nrOfDays) {
         long baseXp = 200;
         long bonusXp = size > 400 ? 400 : size;
-        long totalXp = (baseXp + bonusXp) * nrOfDays;
+        long totalXp = (baseXp + bonusXp) * (nrOfDays + 1);
         Log.d("Experience", "Total xp: " + totalXp);
 
         return totalXp;

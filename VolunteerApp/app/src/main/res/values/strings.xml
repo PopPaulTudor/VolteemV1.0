@@ -51,4 +51,5 @@
     <string name="search">Search</string>
     <string name="filter">Filter</string>
     <string name="chat">Interview</string>
+    <string name="event_register_disclaimer">Joining an event is a commitment. If you leave this event later on, you will lose experience. Are you sure you want to register for this event?</string>
 </resources>

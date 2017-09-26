@@ -252,6 +252,4 @@
         app:layout_anchor="@id/app_bar_layout"
         app:layout_anchorGravity="bottom|right|end" />
 
-
-
 </android.support.design.widget.CoordinatorLayout>

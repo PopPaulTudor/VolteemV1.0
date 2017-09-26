@@ -159,7 +159,7 @@ public class VolunteerProfileFragment extends Fragment {
                 mEmail.setText(volunteer1.getEmail());
                 mPhone.setText(volunteer1.getPhone());
                 mCity.setText(volunteer1.getCity());
-                mVolunteerName.setText(volunteer1.getLastname() + " " + volunteer1.getFirstname());
+                mVolunteerName.setText(volunteer1.getFirstname() + " " + volunteer1.getLastname());
                 mAge.setText(volunteer1.getAge() + "");
 
 

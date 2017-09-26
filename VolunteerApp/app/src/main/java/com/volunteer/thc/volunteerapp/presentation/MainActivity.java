@@ -162,6 +162,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if(selectedItem != null && eventsItem.isChecked()) {
+            selectedItem.setChecked(false);
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {

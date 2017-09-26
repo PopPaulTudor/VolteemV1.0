@@ -10,9 +10,9 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="15dp"
         android:textColor="@color/black"
-        android:text="Joining an event is a commitment. If you leave this event later, you will lose experience. Are you sure you want to register for this event?" />
+        android:text="@string/event_register_disclaimer" />
 
     <Button
         android:id="@+id/register_event"

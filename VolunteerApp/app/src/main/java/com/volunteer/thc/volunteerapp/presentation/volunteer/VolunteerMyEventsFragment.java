@@ -6,7 +6,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -71,7 +69,7 @@ public class VolunteerMyEventsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(hasActionHappened) {
+        if (hasActionHappened) {
             loadEvents();
             hasActionHappened = false;
         }
@@ -97,7 +95,7 @@ public class VolunteerMyEventsFragment extends Fragment {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         long experience = dataSnapshot.child("experience").getValue(Long.class);
-                                        long nrOfDays = TimeUnit.MILLISECONDS.convert(currentEvent.getFinishDate() - currentEvent.getStartDate(), TimeUnit.DAYS);
+                                        long nrOfDays = TimeUnit.MILLISECONDS.toDays(currentEvent.getFinishDate() - currentEvent.getStartDate());
                                         mDatabase.child("users").child("volunteers").child(user.getUid()).child("experience")
                                                 .setValue(experience + CalculateUtils.calculateVolunteerExperience(currentEvent.getSize(), nrOfDays));
                                     }
@@ -160,14 +158,14 @@ public class VolunteerMyEventsFragment extends Fragment {
                 if (mEventsList.isEmpty()) {
                     noEvents.setVisibility(View.VISIBLE);
                 }
-                if(isFragmentActive()) {
+                if (isFragmentActive()) {
                     mProgressBar.setVisibility(View.GONE);
                     Collections.sort(mEventsList, new Comparator<Event>() {
                         @Override
                         public int compare(Event event, Event t1) {
-                            if(event.getStartDate() < t1.getStartDate())
+                            if (event.getStartDate() < t1.getStartDate())
                                 return -1;
-                            if(event.getStartDate() > t1.getStartDate())
+                            if (event.getStartDate() > t1.getStartDate())
                                 return 1;
                             return 0;
                         }
