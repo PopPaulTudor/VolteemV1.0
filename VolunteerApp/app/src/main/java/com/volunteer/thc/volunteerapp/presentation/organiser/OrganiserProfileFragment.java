@@ -217,24 +217,34 @@ public class OrganiserProfileFragment extends Fragment {
     }
 
     private void onSaveItemPressed() {
-        String currentCompany, currentCity, currentPhone;
+        String currentCompany = null, currentCity = null, currentPhone = null;
 
-        currentCompany = mCompany.getText().toString();
-        currentCity = mCity.getText().toString();
-        currentPhone = mPhone.getText().toString();
+        if (mCompany.getText().length() != 0) {
+            currentCompany = mCompany.getText().toString();
+
+        }
+
+        if (mCity.getText().length() != 0) {
+            currentCity = mCity.getText().toString();
+
+        }
+
+        if (mPhone.getText().length() != 0) {
+            currentPhone = mPhone.getText().toString();
+        }
 
         if (validateForm()) {
-            if (!currentCompany.equals(organiser.getCompany())&&!currentCompany.isEmpty()) {
+            if (!currentCompany.equals(organiser.getCompany()) && !currentCompany.isEmpty()) {
                 mDatabase.child("users").child("organisers").child(user.getUid()).child("company").setValue(currentCompany);
                 organiser.setCompany(currentCompany);
             }
 
-            if (!currentCity.equals(organiser.getCity())&&!currentCity.isEmpty()) {
+            if (!currentCity.equals(organiser.getCity()) && !currentCity.isEmpty()) {
                 mDatabase.child("users").child("organisers").child(user.getUid()).child("city").setValue(currentCity);
                 organiser.setCity(currentCity);
             }
 
-            if (!currentPhone.equals(organiser.getPhone())&&!currentPhone.isEmpty()) {
+            if (!currentPhone.equals(organiser.getPhone()) && !currentPhone.isEmpty()) {
                 mDatabase.child("users").child("organisers").child(user.getUid()).child("phone").setValue(currentPhone);
                 organiser.setPhone(currentPhone);
             }

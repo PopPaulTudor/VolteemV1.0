@@ -55,7 +55,6 @@ public class ConversationActivity extends AppCompatActivity {
         ImageView sendMessage = (ImageView) findViewById(R.id.sendMessage);
         chatDefault = (Chat) getIntent().getSerializableExtra("chat");
         idSent = user.getUid();
-
         if (chatDefault.getSentBy().equals(idSent)) {
             idReceive = chatDefault.getReceivedBy();
         } else {

@@ -44,10 +44,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.util.ImageUtils;
-import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
+import com.volunteer.thc.volunteerapp.util.ImageUtils;
+import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -57,9 +57,9 @@ public class VolunteerProfileFragment extends Fragment {
     public static final int GALLERY_INTENT = 1;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private EditText  mEmail, mAge, mCity, mPhone;
+    private EditText mEmail, mAge, mCity, mPhone;
     private Volunteer volunteer1;
-    private TextView  mVolunteerName;
+    private TextView mVolunteerName;
     private ProgressBar mProgressBar;
     private SharedPreferences prefs;
     private TextView mUserName;
@@ -82,7 +82,7 @@ public class VolunteerProfileFragment extends Fragment {
         mUserName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_name);
 
         volunteer1 = new Volunteer();
-        mVolunteerName = (TextView)view.findViewById(R.id.volunteer_name);
+        mVolunteerName = (TextView) view.findViewById(R.id.volunteer_name);
         mEmail = (EditText) view.findViewById(R.id.edit_email);
         mAge = (EditText) view.findViewById(R.id.edit_age);
         mCity = (EditText) view.findViewById(R.id.edit_city);
@@ -251,26 +251,32 @@ public class VolunteerProfileFragment extends Fragment {
 
     private void onSaveItemPressed() {
 
-        String currentFirstName, currentLastName, currentCity, currentPhone, fullName = null;
-        int currentAge;
+        String currentFirstName, currentLastName, currentCity = null, currentPhone = null, fullName = null;
+        int currentAge = 0;
         boolean changedName = false;
-        currentAge = Integer.parseInt(mAge.getText().toString());
-        currentCity = mCity.getText().toString();
-        currentPhone = mPhone.getText().toString();
+        if (mAge.getText().length()!=0 ) {
+            currentAge = Integer.parseInt(mAge.getText().toString());
+        }
+        if (mCity.getText().length()!=0 ) {
+            currentCity = mCity.getText().toString();
+        }
+        if (mPhone.getText().length()!=0) {
+            currentPhone = mPhone.getText().toString();
+        }
 
         if (validateForm()) {
 
-            if (currentAge != volunteer1.getAge()) {
+            if (currentAge != volunteer1.getAge()&&currentAge!=0) {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("age").setValue(currentAge);
                 volunteer1.setAge(currentAge);
             }
 
-            if (!currentCity.equals(volunteer1.getCity())) {
+            if (!currentCity.equals(volunteer1.getCity())&&!currentCity.isEmpty()) {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("city").setValue(currentCity);
                 volunteer1.setCity(currentCity);
             }
 
-            if (!currentPhone.equals(volunteer1.getPhone())) {
+            if (!currentPhone.equals(volunteer1.getPhone())&&currentPhone.isEmpty()) {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("phone").setValue(currentPhone);
                 volunteer1.setPhone(currentPhone);
             }

@@ -58,14 +58,13 @@
         android:id="@+id/leaderboard_show_hide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/leaderboardRecView"
-        android:layout_alignEnd="@+id/leaderboardRecView"
-        android:layout_alignTop="@+id/experienceText"
         android:background="@color/colorPrimary"
-        android:paddingRight="5dp"
-        android:paddingLeft="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:text="SHOW RANKING"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:layout_above="@+id/leaderboardRecView"
+        android:layout_alignEnd="@+id/leaderboardRecView" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/leaderboardRecView"
