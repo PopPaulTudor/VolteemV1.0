@@ -61,6 +61,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     private FloatingActionButton mSignupForEventFloatingButton;
     private StorageReference storageRef;
     private Button mLeaveEvent;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +74,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarImage = (ImageView) findViewById(R.id.collapsing_toolbar_image);
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
         storageRef = FirebaseStorage.getInstance().getReference();
@@ -213,7 +214,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             }
         });
 
-        getSupportActionBar().setTitle(currentEvent.getName());
+        collapsingToolbarLayout.setTitle(currentEvent.getName());
 
         mEventName.setText(currentEvent.getName());
         mEventLocation.setText(currentEvent.getLocation());
@@ -239,7 +240,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
+                            if (dataSnapshot.exists() && TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
                                 mStatus.setText("Accepted");
                                 mStatus.setTextColor(Color.rgb(25, 156, 136));
                             }
