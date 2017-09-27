@@ -11,8 +11,8 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="15dp"
-        android:textColor="@color/black"
-        android:text="@string/event_register_disclaimer" />
+        android:text="@string/event_register_disclaimer"
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/register_event"
@@ -21,9 +21,9 @@
         android:layout_alignStart="@+id/textView"
         android:layout_below="@+id/textView"
         android:layout_marginTop="5dp"
-        android:textColor="@color/white"
         android:background="@color/colorPrimary"
-        android:text="Register" />
+        android:text="Register"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/cancel"
@@ -31,8 +31,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/register_event"
         android:layout_alignEnd="@+id/textView"
-        android:textColor="@color/white"
         android:background="@color/colorPrimary"
-        android:text="CANCEL" />
+        android:text="CANCEL"
+        android:textColor="@color/white" />
 
 </RelativeLayout>

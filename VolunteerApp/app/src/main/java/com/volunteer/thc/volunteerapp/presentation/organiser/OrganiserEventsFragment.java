@@ -189,7 +189,6 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                 });
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle item selection
@@ -206,6 +205,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
     private void loadEvents() {
 
+        noEvents.setVisibility(View.GONE);
         mSwipeRefreshLayout.setRefreshing(true);
         mEventsList = new ArrayList<>();
 
@@ -312,6 +312,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     }
 
     private void loadFilterQuery(final String filter) {
+        noEvents.setVisibility(View.GONE);
         mSwipeRefreshLayout.setRefreshing(true);
         mEventsList = new ArrayList<>();
         mDatabase.child("events").orderByChild("created_by").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -349,7 +350,6 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);
                 }
-
             }
 
             @Override

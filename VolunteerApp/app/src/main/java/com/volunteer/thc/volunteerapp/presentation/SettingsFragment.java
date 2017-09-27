@@ -44,7 +44,7 @@ import de.cketti.library.changelog.ChangeLog;
 public class SettingsFragment extends Fragment {
 
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private EditText mPassword, mOldPassword, mNewPassword,mNewPasswordAgain;
+    private EditText mPassword, mOldPassword, mNewPassword ,mNewPasswordAgain;
     private SwitchCompat notificationsSwitch;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private SharedPreferences prefs;
@@ -99,12 +99,12 @@ public class SettingsFragment extends Fragment {
                 mBottomSheetDialog.setContentView(parentView);
                 BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
                 mBottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension
-                        (TypedValue.COMPLEX_UNIT_DIP, 250, getResources().getDisplayMetrics()));
+                        (TypedValue.COMPLEX_UNIT_DIP, 300, getResources().getDisplayMetrics()));
                 mBottomSheetDialog.show();
 
                 mOldPassword = (EditText) parentView.findViewById(R.id.oldPassword);
                 mNewPassword = (EditText) parentView.findViewById(R.id.newPassword);
-                mNewPasswordAgain=(EditText) parentView.findViewById(R.id.newPasswordAgain) ;
+                mNewPasswordAgain = (EditText) parentView.findViewById(R.id.newPasswordAgain) ;
 
                 parentView.findViewById(R.id.change_password).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -112,8 +112,10 @@ public class SettingsFragment extends Fragment {
 
                         String old_password = mOldPassword.getText().toString();
                         final String new_password = mNewPassword.getText().toString();
-                        if (!TextUtils.isEmpty(old_password) && valid(new_password)&&mNewPassword.equals(mNewPasswordAgain)) {
+                        final String new_password_again = mNewPasswordAgain.getText().toString();
+                        if (!TextUtils.isEmpty(old_password) && valid(new_password) && TextUtils.equals(new_password, new_password_again)) {
                             Toast.makeText(getActivity(), "Changing password...", Toast.LENGTH_SHORT).show();
+                            mBottomSheetDialog.dismiss();
                             AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), old_password);
                             user.reauthenticate(credential)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -123,7 +125,6 @@ public class SettingsFragment extends Fragment {
                                                 user.updatePassword(new_password).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
-                                                        mBottomSheetDialog.dismiss();
                                                         if (task.isSuccessful()) {
                                                             Toast.makeText(getActivity(), "Password changed!", Toast.LENGTH_SHORT).show();
                                                         } else {
@@ -132,7 +133,6 @@ public class SettingsFragment extends Fragment {
                                                     }
                                                 });
                                             } else {
-                                                mBottomSheetDialog.dismiss();
                                                 Toast.makeText(getActivity(), "Authentication failed. Check if your password is correct and try again.", Toast.LENGTH_SHORT).show();
                                             }
                                         }

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="36dp"
-        android:text="Are you sure you want to leave this event? You will lose experience!"
-        android:layout_alignParentTop="true" />
+        android:layout_marginTop="15dp"
+        android:text="Are you sure you want to leave this event? You will lose experience!" />
 
     <Button
         android:id="@+id/leave"
@@ -18,13 +19,19 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/textView"
         android:layout_below="@+id/textView"
-        android:text="Leave event" />
+        android:layout_marginTop="5dp"
+        android:background="@color/colorPrimary"
+        android:text="Leave event"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/stay"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/leave"
+        android:layout_alignEnd="@+id/textView"
+        android:layout_marginTop="5dp"
+        android:background="@color/colorPrimary"
         android:text="CANCEL"
-        android:layout_alignEnd="@+id/textView" />
+        android:textColor="@color/white" />
 </RelativeLayout>
