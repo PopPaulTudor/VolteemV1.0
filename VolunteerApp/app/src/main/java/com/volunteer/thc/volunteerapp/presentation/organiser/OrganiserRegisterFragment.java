@@ -3,6 +3,7 @@ package com.volunteer.thc.volunteerapp.presentation.organiser;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,8 +31,11 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -53,14 +59,14 @@ public class OrganiserRegisterFragment extends Fragment {
     private static final int GALLERY_INTENT = 1;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
-    private EditText mEmail, mPassword, mPhone, mCity, mCompany,mConfirmPass;
+    private EditText mEmail, mPassword, mPhone, mCity, mCompany, mConfirmPass, mRegisterCode;
     private Button mRegister, mBack;
     private Intent intent;
     private ProgressDialog mProgressDialog;
     private CircleImageView mImage;
     private Uri uri = null;
     private StorageReference mStorage;
-
+    private boolean foundCode = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,13 +78,14 @@ public class OrganiserRegisterFragment extends Fragment {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         mEmail = (EditText) view.findViewById(R.id.email);
-        mConfirmPass=(EditText) view.findViewById(R.id.passwordConfirm);
+        mConfirmPass = (EditText) view.findViewById(R.id.passwordConfirm);
         mPassword = (EditText) view.findViewById(R.id.password);
         mPhone = (EditText) view.findViewById(R.id.user_phone);
         mCity = (EditText) view.findViewById(R.id.user_city);
         mCompany = (EditText) view.findViewById(R.id.user_company);
         mRegister = (Button) view.findViewById(R.id.register_user);
         mImage = (CircleImageView) view.findViewById(R.id.photo);
+        mRegisterCode = (EditText) view.findViewById(R.id.user_register_code);
         mBack = (Button) view.findViewById(R.id.back);
         intent = new Intent(getActivity(), MainActivity.class);
 
@@ -87,14 +94,39 @@ public class OrganiserRegisterFragment extends Fragment {
                 + '/' + getResources().getResourceTypeName(R.drawable.user) + '/' + getResources().getResourceEntryName(R.drawable.user));
         Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
 
-
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (validateForm()) {
                     mProgressDialog = ProgressDialog.show(getActivity(), "Registering", "", true);
+                    final String code = mRegisterCode.getText().toString();
+                    foundCode = false;
+                    mDatabase.child("codes").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                if (TextUtils.equals(code, dataSnapshot1.getValue().toString())) {
+                                    foundCode = true;
+                                    createAccount(mEmail.getText().toString(), mPassword.getText().toString());
+                                    mDatabase.child("codes/" + dataSnapshot1.getKey()).setValue(null);
+                                    break;
+                                }
+                            }
+                            if (!foundCode) {
+                                mProgressDialog.dismiss();
+                                mRegisterCode.setError("This code is invalid or has already been used.");
+                                mRegisterCode.requestFocus();
+                            } else {
+                                mRegisterCode.setError(null);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 }
-                createAccount(mEmail.getText().toString(), mPassword.getText().toString());
             }
         });
 
@@ -129,11 +161,34 @@ public class OrganiserRegisterFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            AlertDialog needCodeDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle("Registration code")
+                    .setMessage("To avoid spam, please submit an email to contact.volteem@gmail.com to receive your organiser registration code.")
+                    .setCancelable(false)
+                    .setPositiveButton("I have a code", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    })
+                    .setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            startActivity(new Intent(getActivity(), LoginActivity.class));
+                            getActivity().finish();
+                        }
+                    })
+                    .create();
+            needCodeDialog.show();
+        }
+    }
+
     private void createAccount(final String email, String password) {
         Log.d("TAG", "CreateAccount: " + email);
-        if (!validateForm()) {
-            return;
-        }
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
@@ -206,8 +261,8 @@ public class OrganiserRegisterFragment extends Fragment {
     private boolean validateForm() {
 
         boolean valid;
-        valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mCompany) &&
-                editTextIsValid(mCity) && editTextIsValid(mPhone) && (uri != null)&&checkPass());
+        valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mCompany) && editTextIsValid(mRegisterCode) &&
+                editTextIsValid(mCity) && editTextIsValid(mPhone) && (uri != null) && checkPass());
         return valid;
     }
 
@@ -234,15 +289,15 @@ public class OrganiserRegisterFragment extends Fragment {
 
         return true;
     }
-    private boolean checkPass(){
+
+    private boolean checkPass() {
 
 
         if (!mPassword.getText().toString().equals(mConfirmPass.getText().toString())) {
-            mConfirmPass.setError("Passwords doesn't match");
+            mConfirmPass.setError("Passwords do not match");
             mConfirmPass.requestFocus();
             return false;
         } else {
-
             mConfirmPass.setError(null);
             return true;
         }

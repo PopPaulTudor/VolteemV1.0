@@ -1,6 +1,8 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +22,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -35,6 +38,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 
+import java.util.UUID;
+
 import de.cketti.library.changelog.ChangeLog;
 
 /**
@@ -49,6 +54,7 @@ public class SettingsFragment extends Fragment {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private SharedPreferences prefs;
     private boolean notifications;
+    private Button generateOrganiserRegisterCode;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
@@ -56,6 +62,7 @@ public class SettingsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         setAppVersionName(view);
+        generateOrganiserRegisterCode = (Button) view.findViewById(R.id.settings_generate_code);
         notificationsSwitch = (SwitchCompat) view.findViewById(R.id.notification_button);
         prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
         notifications = prefs.getBoolean("notifications", true);
@@ -88,6 +95,35 @@ public class SettingsFragment extends Fragment {
                         muteNotificationsAlert.show();
                     }
                 }
+            }
+        });
+
+        if (TextUtils.equals(user.getUid(), "QopA0aWk1uNibuwDHtqNvbYCKQE3") ||
+                TextUtils.equals(user.getUid(), "1leJRayuwnhdB1oxVB9mWqWODE93") ||
+                TextUtils.equals(user.getUid(), "OT1yfzTTKadOdRZ1ivLCBJCzIaR2")) {
+            generateOrganiserRegisterCode.setVisibility(View.VISIBLE);
+        }
+
+        generateOrganiserRegisterCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String code = UUID.randomUUID().toString();
+                mDatabase.child("codes").push().setValue(code);
+                AlertDialog codeAlertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle("Generated code")
+                        .setMessage("Code: " + code)
+                        .setCancelable(false)
+                        .setPositiveButton("Copy to clipboard", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ClipboardManager clipboardManager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                                ClipData clip = ClipData.newPlainText("Code", code);
+                                clipboardManager.setPrimaryClip(clip);
+                                Toast.makeText(getActivity(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .create();
+                codeAlertDialog.show();
             }
         });
 

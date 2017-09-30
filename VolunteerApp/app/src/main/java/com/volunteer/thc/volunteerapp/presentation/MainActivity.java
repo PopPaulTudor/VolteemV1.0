@@ -162,14 +162,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if(selectedItem != null && eventsItem.isChecked()) {
-            selectedItem.setChecked(false);
-        }
-    }
-
-    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -329,5 +321,11 @@ public class MainActivity extends AppCompatActivity
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    private void setCheckedFalse (MenuItem item) {
+        if(item.isChecked()) {
+            item.setChecked(false);
+        }
     }
 }
