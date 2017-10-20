@@ -22,7 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.NewsAdapter;
-import com.volunteer.thc.volunteerapp.interrface.NewsDeletedListener;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.Collections;
  * Created by poppa on 25.08.2017.
  */
 
-public class NewsFragment extends Fragment implements NewsDeletedListener {
+public class NewsFragment extends Fragment implements ActionListener.NewsDeletedListener {
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -80,7 +80,7 @@ public class NewsFragment extends Fragment implements NewsDeletedListener {
     }
 
     @Override
-    public void onNewsEmpty() {
+    public void onNewsDeleted() {
         noNewsImage.setVisibility(View.VISIBLE);
         noNewsText.setVisibility(View.VISIBLE);
     }

@@ -76,7 +76,7 @@
                 android:id="@+id/view_feedback"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="View Feedback"
+                android:text="@string/view_feedback"
                 android:layout_marginLeft="7dp"
                 android:background="@android:color/transparent"
                 android:textColor="@color/colorPrimary" />
@@ -85,7 +85,7 @@
                 android:id="@+id/send_volunteer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Start Interview"
+                android:text="@string/start_interview"
                 android:layout_marginLeft="7dp"
                 android:background="@android:color/transparent"
                 android:textColor="@color/colorPrimary" />
@@ -94,10 +94,19 @@
                 android:id="@+id/accept_volunteer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Accept Volunteer"
+                android:text="@string/accept_volunteer"
                 android:textColor="@color/colorPrimary"
-                android:layout_marginLeft="6dp"
+                android:layout_marginStart="6dp"
                 android:background="@android:color/transparent" />
+
+            <Button
+                android:id="@+id/kick_volunteer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/remove_volunteer"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginStart="6dp"
+                android:background="@android:color/transparent"/>
 
         </LinearLayout>
 

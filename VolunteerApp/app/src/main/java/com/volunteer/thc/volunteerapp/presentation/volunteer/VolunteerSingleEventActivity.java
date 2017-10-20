@@ -174,11 +174,13 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
                         VolunteerMyEventsFragment.hasActionHappened = true;
                         mBottomSheetDialog.dismiss();
-                        Toast.makeText(VolunteerSingleEventActivity.this, "Leaving event...", Toast.LENGTH_LONG).show();
-
+                        Toast.makeText(VolunteerSingleEventActivity.this, "Leaving event...", Toast.LENGTH_SHORT).show();
+                        String newsID = mDatabase.child("news").push().getKey();
+                        mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, currentEvent.getEventID(),
+                                user.getUid(), currentEvent.getCreated_by(), "A volunteer has left your event " + currentEvent.getName() + ".", NewsMessage.VOLUNTEER_LEFT,
+                                false, false));
                         mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid()).setValue(null);
                         events.remove(currentEvent.getEventID());
-                        Toast.makeText(VolunteerSingleEventActivity.this, "Event left.", Toast.LENGTH_LONG).show();
                         finish();
                     }
                 });

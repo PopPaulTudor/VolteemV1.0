@@ -6,9 +6,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
@@ -26,13 +30,15 @@ import java.util.ArrayList;
  * Created by Cristi on 7/27/2017.
  */
 
-public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
+public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implements ActionListener.VolunteersRemovedListener{
 
-    private ArrayList<String> mRegisteredUsers = new ArrayList<>();
+    private ArrayList<String> mRegisteredUsers;
     private ArrayList<Volunteer> mVolunteers = new ArrayList<>();
     private RecyclerView mRegisteredUsersRecView;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private Event currentEvent;
+    private ProgressBar progressBar;
+    private TextView noVolunteersText;
     public static EventVolunteersAdapter adapter;
 
 
@@ -42,36 +48,63 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_registered_users, container, false);
 
+        progressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
+        noVolunteersText = (TextView) view.findViewById(R.id.no_volunteers);
         currentEvent = (Event) getArguments().getSerializable("currentEvent");
-        mRegisteredUsers = currentEvent.getRegistered_volunteers();
         mRegisteredUsersRecView = (RecyclerView) view.findViewById(R.id.RecViewRegUsers);
         mRegisteredUsersRecView.setHasFixedSize(true);
 
+        progressBar.setVisibility(View.VISIBLE);
 
+        mDatabase.child("events/" + currentEvent.getEventID() + "/users").orderByChild("status").equalTo("pending").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    mRegisteredUsers = new ArrayList<>();
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        mRegisteredUsers.add(dataSnapshot1.child("id").getValue().toString());
+                    }
+                    getVolunteersData();
+                } else {
+                    noVolunteersText.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("OrgSingleRegF", databaseError.getMessage());
+            }
+        });
+
+        return view;
+    }
+
+    private void getVolunteersData() {
         for (final String volunteerID : mRegisteredUsers) {
             mVolunteers = new ArrayList<>();
             mDatabase.child("users").child("volunteers").child(volunteerID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Volunteer volunteer;
-                    volunteer = dataSnapshot.getValue(Volunteer.class);
-                    mVolunteers.add(volunteer);
-                    if (TextUtils.equals(mRegisteredUsers.get(mRegisteredUsers.size() - 1), volunteerID)) {
-                        quicksort(0, mVolunteers.size() - 1);
-                        adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", currentEvent,getContext(),OrganiserSingleEventRegisteredUsersFragment.this, getActivity());
-                        mRegisteredUsersRecView.setAdapter(adapter);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                        mRegisteredUsersRecView.setLayoutManager(linearLayoutManager);
-                    }
+                        Volunteer volunteer;
+                        volunteer = dataSnapshot.getValue(Volunteer.class);
+                        mVolunteers.add(volunteer);
+                        if (TextUtils.equals(mRegisteredUsers.get(mRegisteredUsers.size() - 1), volunteerID)) {
+                            progressBar.setVisibility(View.GONE);
+                            quicksort(0, mVolunteers.size() - 1);
+                            adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", currentEvent, getContext(), OrganiserSingleEventRegisteredUsersFragment.this, getActivity(), OrganiserSingleEventRegisteredUsersFragment.this);
+                            mRegisteredUsersRecView.setAdapter(adapter);
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                            mRegisteredUsersRecView.setLayoutManager(linearLayoutManager);
+                        }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.e("OrgSingleRegFGetData", databaseError.getMessage());
                 }
             });
         }
-        return view;
     }
 
     private void quicksort(int inf, int sup) {
@@ -97,5 +130,10 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment {
         }
         if (inf < j) quicksort(inf, j);
         if (i < sup) quicksort(i, sup);
+    }
+
+    @Override
+    public void onAllVolunteersRemoved() {
+        noVolunteersText.setVisibility(View.VISIBLE);
     }
 }

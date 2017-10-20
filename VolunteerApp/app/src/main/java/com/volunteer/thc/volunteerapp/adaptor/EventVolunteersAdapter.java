@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.IdRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -14,9 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Chat;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
@@ -63,8 +67,9 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     private OrganiserSingleEventRegisteredUsersFragment fragment;
     private Activity activity;
     private int counter = 0;
+    private ActionListener.VolunteersRemovedListener volunteersRemovedListener;
 
-    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context, OrganiserSingleEventRegisteredUsersFragment fragment, Activity activity) {
+    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context, OrganiserSingleEventRegisteredUsersFragment fragment, Activity activity, ActionListener.VolunteersRemovedListener volunteersRemovedListener) {
         listVolunteer = list;
         this.classParent = classParent;
         this.volunteerIDs = volunteerIDs;
@@ -72,14 +77,17 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         this.context = context;
         this.fragment = fragment;
         this.activity = activity;
+        this.volunteersRemovedListener = volunteersRemovedListener;
     }
 
-    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context) {
+    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context, Activity activity, ActionListener.VolunteersRemovedListener volunteersRemovedListener) {
         listVolunteer = list;
         this.classParent = classParent;
         this.volunteerIDs = volunteerIDs;
         this.event = event;
         this.context = context;
+        this.activity = activity;
+        this.volunteersRemovedListener = volunteersRemovedListener;
     }
 
     @Override
@@ -102,12 +110,14 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             holder.acceptUser.setVisibility(View.GONE);
             holder.sendMessage.setVisibility(View.GONE);
             holder.viewFeedback.setVisibility(View.GONE);
+            holder.kickVolunteer.setVisibility(View.VISIBLE);
             holder.expPhoneVolunteer.setText(listVolunteer.get(position).getPhone());
         } else {
             holder.phoneVolunteer.setText("Phone: " + listVolunteer.get(position).getPhone());
             holder.acceptUser.setVisibility(View.VISIBLE);
             holder.sendMessage.setVisibility(View.VISIBLE);
             holder.viewFeedback.setVisibility(View.VISIBLE);
+            holder.kickVolunteer.setVisibility(View.GONE);
             holder.expPhoneVolunteer.setText(listVolunteer.get(position).getExperience() + "");
         }
 
@@ -214,6 +224,9 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                                 listVolunteer.remove(position);
                                 volunteerIDs.remove(position);
                                 notifyDataSetChanged();
+                                if(listVolunteer.isEmpty()) {
+                                    volunteersRemovedListener.onAllVolunteersRemoved();
+                                }
                             }
                         })
                         .setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -286,6 +299,81 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 holder.sendMessage.setTextColor(Color.rgb(25, 156, 136));
             }
         });
+
+        holder.kickVolunteer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final View parentView = activity.getLayoutInflater().inflate(R.layout.kick_volunteer_alert_dialog, null);
+                final RadioGroup radioGroup = (RadioGroup) parentView.findViewById(R.id.kick_volunteer_radio);
+                final EditText otherText = (EditText) parentView.findViewById(R.id.feedback);
+                radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+                        if(radioGroup.getCheckedRadioButtonId() == R.id.radio_other) {
+                            otherText.setVisibility(View.VISIBLE);
+                        } else {
+                            otherText.setVisibility(View.GONE);
+                        }
+                    }
+                });
+                ///TODO: continue radiogroup
+                final AlertDialog kickVolunteerDialog = new AlertDialog.Builder(context)
+                        .setView(parentView)
+                        .setCancelable(true)
+                        .setTitle("Remove volunteer?")
+                        .setMessage("Please tell us the reason why you want to remove this volunteer:")
+                        .setPositiveButton("REMOVE", null)
+                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .create();
+                kickVolunteerDialog.show();
+                kickVolunteerDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int selectedItemID = radioGroup.getCheckedRadioButtonId();
+                        switch (selectedItemID) {
+                            case R.id.not_respect_duties:
+                                mDatabase.child("users/volunteers/" + volunteerIDs.get(position) + "/feedback" + user.getUid()).setValue("This" +
+                                        " user has been kicked out from " + event.getName() + " for not respecting his duties.");
+                                removeVolunteerFromEvent(position);
+                                kickVolunteerDialog.dismiss();
+                                break;
+                            case R.id.inappropriate_behaviour:
+                                mDatabase.child("users/volunteers/" + volunteerIDs.get(position) + "/feedback" + user.getUid()).setValue("This" +
+                                        " user has been kicked out from " + event.getName() + " for having inappropriate behaviour.");
+                                removeVolunteerFromEvent(position);
+                                kickVolunteerDialog.dismiss();
+                                break;
+                            case R.id.cant_come:
+                                removeVolunteerFromEvent(position);
+                                kickVolunteerDialog.dismiss();
+                                break;
+                            case R.id.too_many_volunteer:
+                                removeVolunteerFromEvent(position);
+                                kickVolunteerDialog.dismiss();
+                                break;
+                            case R.id.radio_other:
+                                String reason = otherText.getText().toString();
+                                if(reason.isEmpty()) {
+                                    Toast.makeText(context, "You've selected Other, please write the reason.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    mDatabase.child("users/volunteers/" + volunteerIDs.get(position) + "/feedback" + user.getUid()).setValue("This" +
+                                            " user has been kicked out from " + event.getName() + " with the feedback: \"" + reason + "\".");
+                                    removeVolunteerFromEvent(position);
+                                    kickVolunteerDialog.dismiss();
+                                }
+                                break;
+                            default:
+                                Toast.makeText(context, "Please select an option", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -298,7 +386,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         TextView nameVolunteer, expPhoneVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer, emailVolunteer;
         RelativeLayout item;
         LinearLayout expandableItem;
-        Button acceptUser, sendMessage, viewFeedback;
+        Button acceptUser, sendMessage, viewFeedback, kickVolunteer;
 
         EventViewHolder(View itemView) {
             super(itemView);
@@ -315,6 +403,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             acceptUser = (Button) itemView.findViewById(R.id.accept_volunteer);
             sendMessage = (Button) itemView.findViewById(R.id.send_volunteer);
             viewFeedback = (Button) itemView.findViewById(R.id.view_feedback);
+            kickVolunteer = (Button) itemView.findViewById(R.id.kick_volunteer);
         }
     }
 
@@ -361,5 +450,19 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         volunteerIDs.remove(position);
 
         OrganiserEventsFragment.hasActionHappened = true;
+    }
+
+    private void removeVolunteerFromEvent(int position) {
+        mDatabase.child("events/" + event.getEventID() + "/users/" + volunteerIDs.get(position)).setValue(null);
+        String newsID = mDatabase.child("news").push().getKey();
+        mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID,
+                event.getEventID(), user.getUid(), volunteerIDs.get(position), "You have been removed from the event " +
+                event.getName(), NewsMessage.VOLUNTEER_LEFT, false , false));
+        volunteerIDs.remove(position);
+        listVolunteer.remove(position);
+        if(volunteerIDs.isEmpty()) {
+            volunteersRemovedListener.onAllVolunteersRemoved();
+        }
+        notifyDataSetChanged();
     }
 }

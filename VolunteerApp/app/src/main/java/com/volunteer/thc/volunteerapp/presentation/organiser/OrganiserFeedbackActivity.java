@@ -16,12 +16,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.EventFeedbackVolunteersAdapter;
-import com.volunteer.thc.volunteerapp.interrface.FeedbackDoneListener;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;
 
-public class OrganiserFeedbackActivity extends AppCompatActivity implements FeedbackDoneListener{
+public class OrganiserFeedbackActivity extends AppCompatActivity implements ActionListener.FeedbackDoneListener{
     private ArrayList<Volunteer> mVolunteers;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private RecyclerView mAcceptedUsersList;
@@ -79,7 +79,7 @@ public class OrganiserFeedbackActivity extends AppCompatActivity implements Feed
     }
 
     @Override
-    public void showDoneTextView() {
+    public void onFeedbackCompleted() {
         done.setVisibility(View.VISIBLE);
         text1.setVisibility(View.VISIBLE);
         text2.setVisibility(View.VISIBLE);
