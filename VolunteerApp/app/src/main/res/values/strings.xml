@@ -53,4 +53,10 @@
     <string name="chat">Interview</string>
     <string name="event_register_disclaimer">Joining an event is a commitment. If you leave this event later on, you will lose experience. Are you sure you want to register for this event?</string>
     <string name="no_feedback">This volunteer has no feedback.</string>
+    <string name="remove_volunteer">Remove volunteer</string>
+    <string name="accept_volunteer">Accept Volunteer</string>
+    <string name="start_interview">Start Interview</string>
+    <string name="view_feedback">View Feedback</string>
+    <string name="no_acc_volunteers">No accepted volunteers.</string>
+    <string name="no_reg_volunteers">No new volunteers.</string>
 </resources>

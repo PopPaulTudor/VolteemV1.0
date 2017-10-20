@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.interrface.FeedbackDoneListener;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
@@ -36,11 +36,11 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
     private ViewGroup parent;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private FeedbackDoneListener feedbackDoneListener;
+    private ActionListener.FeedbackDoneListener feedbackDoneListener;
     private String eventName;
     private Calendar date = Calendar.getInstance();
 
-    public EventFeedbackVolunteersAdapter(ArrayList<Volunteer> list, String eventName, ArrayList<String> volunteerIDs, FeedbackDoneListener feedbackDoneListener) {
+    public EventFeedbackVolunteersAdapter(ArrayList<Volunteer> list, String eventName, ArrayList<String> volunteerIDs, ActionListener.FeedbackDoneListener feedbackDoneListener) {
         listVolunteer = list;
         this.volunteerIDs = volunteerIDs;
         this.feedbackDoneListener = feedbackDoneListener;
@@ -109,7 +109,7 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
                             listVolunteer.remove(position);
                             Toast.makeText(parent.getContext(), "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
                             if (volunteerIDs.isEmpty()) {
-                                feedbackDoneListener.showDoneTextView();
+                                feedbackDoneListener.onFeedbackCompleted();
                             }
                         }
                     }

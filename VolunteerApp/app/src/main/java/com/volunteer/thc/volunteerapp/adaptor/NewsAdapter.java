@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.interrface.NewsDeletedListener;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
@@ -34,10 +34,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     private ArrayList<NewsMessage> newsList;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private Context context;
-    private NewsDeletedListener newsDeletedListener;
+    private ActionListener.NewsDeletedListener newsDeletedListener;
     private boolean itemWasLongClicked = false;
 
-    public NewsAdapter(ArrayList<NewsMessage> newsList, Context context, NewsDeletedListener newsDeletedListener) {
+    public NewsAdapter(ArrayList<NewsMessage> newsList, Context context, ActionListener.NewsDeletedListener newsDeletedListener) {
         this.newsList = newsList;
         this.context = context;
         this.newsDeletedListener = newsDeletedListener;
@@ -65,6 +65,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 break;
             case NewsMessage.FEEDBACK:
                 holder.typeIcon.setImageResource(R.drawable.ic_feedback_news);
+                break;
+            case NewsMessage.VOLUNTEER_LEFT:
+                holder.typeIcon.setImageResource(R.drawable.ic_delete);
                 break;
         }
 
@@ -127,7 +130,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 newsList.remove(position);
                 notifyDataSetChanged();
                 if(newsList.isEmpty()) {
-                    newsDeletedListener.onNewsEmpty();
+                    newsDeletedListener.onNewsDeleted();
                 }
             }
         };
