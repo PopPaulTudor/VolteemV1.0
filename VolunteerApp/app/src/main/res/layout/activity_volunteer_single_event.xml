@@ -225,16 +225,36 @@
 
 
             <Button
+                android:id="@+id/event_pdf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/card_location"
+                android:background="@drawable/button_shape_second"
+                android:gravity="center"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="Download Contract"
+                android:paddingEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:textColor="@color/colorAccent"
+                android:textSize="@dimen/login_page_text_size_big"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+
+            <Button
                 android:id="@+id/event_leave"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_below="@+id/card_location"
+                android:layout_below="@+id/event_pdf"
                 android:background="@drawable/button_shape_second"
                 android:gravity="center"
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
                 android:text="LEAVE EVENT"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:textColor="@android:color/holo_red_dark"
                 android:textSize="@dimen/login_page_text_size_big"

@@ -141,7 +141,7 @@ public class VolunteerRegisterFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (PermissionUtil.isStoragePermissionGranted(getContext())) {
+                if (PermissionUtil.isStorageReadPermissionGranted(getContext())) {
                     Intent intent = new Intent(Intent.ACTION_PICK);
                     intent.setType("image/*");
                     startActivityForResult(intent, GALLERY_INTENT);
@@ -217,7 +217,7 @@ public class VolunteerRegisterFragment extends Fragment {
                                 filePath.putFile(uri);
 
                             } else {
-                                filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
+                                filePath.putBytes(ImageUtils.compressImage(uri, getActivity(),getResources()));
                             }
 
                             UserProfileChangeRequest mProfileUpdate = new UserProfileChangeRequest.Builder()

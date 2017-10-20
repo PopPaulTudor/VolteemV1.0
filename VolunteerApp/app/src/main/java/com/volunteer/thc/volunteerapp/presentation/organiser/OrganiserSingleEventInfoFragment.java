@@ -1,12 +1,18 @@
 package com.volunteer.thc.volunteerapp.presentation.organiser;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -17,18 +23,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.NewsMessage;
-import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.NewsMessage;
+import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
+import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
+import com.volunteer.thc.volunteerapp.util.ImageUtils;
+import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,13 +54,21 @@ import java.util.Calendar;
 
 public class OrganiserSingleEventInfoFragment extends Fragment {
 
+    private static final int GALLERY_INTENT = 1;
+    private static final int PICK_PDF = 2;
     private Event mCurrentEvent = new Event();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private EditText mName, mLocation, mStartDate, mDescription, mDeadline, mSize, mFinishDate;
     private MenuItem mEdit, mSave, mCancel, mDelete;
     private long currentStartDate, currentFinishDate, currentDeadline;
     private Spinner mType;
+    private ImageView mImage;
     private ArrayList<String> typeList = new ArrayList<>();
+    private boolean hasSelectedPDF = false;
+    private Uri uriPicture = null;
+    private boolean hasUserSelectedPicture = false;
+    Button changeContract;
+    private Uri uriPDF;
 
     @Nullable
     @Override
@@ -64,6 +87,12 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mType = (Spinner) view.findViewById(R.id.event_type);
         mDescription = (EditText) view.findViewById(R.id.event_description);
         mSize = (EditText) view.findViewById(R.id.event_size);
+        mImage = (ImageView) view.findViewById(R.id.event_org_image);
+        changeContract = (Button) view.findViewById(R.id.event_contract);
+
+        changeContract.setClickable(false);
+        mImage.setClickable(false);
+
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, typeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -85,6 +114,88 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mStartDate.setOnClickListener(setonClickListenerCalendar(mStartDate));
         mFinishDate.setOnClickListener(setonClickListenerCalendar(mFinishDate));
         mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
+
+
+        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+        StorageReference filePath = mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID());
+
+        filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+            }
+        });
+
+
+        mImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.select_dialog_item);
+                arrayAdapter.add("Change Image");
+                arrayAdapter.add("View Image");
+
+                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String choice = arrayAdapter.getItem(which);
+                        if (choice.contains("Change")) {
+                            if (PermissionUtil.isStorageReadPermissionGranted(getContext())) {
+                                Intent intent = new Intent(Intent.ACTION_PICK);
+                                intent.setType("image/*");
+                                startActivityForResult(intent, GALLERY_INTENT);
+
+                            } else {
+                                Snackbar.make(getView(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                                    }
+                                }).show();
+                            }
+
+                        } else {
+
+                            DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
+                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("type", "event");
+                            bundle.putString("eventID", mCurrentEvent.getEventID());
+                            displayPhotoFragment.setArguments(bundle);
+                            fragmentTransaction.add(R.id.event_detailed_photo, displayPhotoFragment).addToBackStack("showImage");
+                            fragmentTransaction.commit();
+
+                        }
+
+                    }
+                });
+                builderSingle.show();
+
+
+            }
+        });
+
+
+        changeContract.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (PermissionUtil.isStorageReadPermissionGranted(getActivity())) {
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("application/pdf");
+                    startActivityForResult(intent, PICK_PDF);
+
+                } else {
+                    Snackbar.make(v, "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                        }
+                    }).show();
+                }
+
+
+            }
+        });
 
         toggleEdit(false);
 
@@ -128,16 +239,21 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mSave.setVisible(true);
         mCancel.setVisible(true);
         mDelete.setVisible(false);
+
+        mImage.setClickable(true);
+        changeContract.setClickable(true);
     }
 
     private void onSaveItemPressed() {
         String currentName, currentLocation, currentType, currentDescription, currentSize;
-
         currentName = mName.getText().toString();
         currentLocation = mLocation.getText().toString();
         currentType = mType.getSelectedItem().toString();
         currentDescription = mDescription.getText().toString();
         currentSize = mSize.getText().toString();
+
+        mImage.setClickable(false);
+        changeContract.setClickable(false);
 
         if (validateForm()) {
             if (!currentName.equals(mCurrentEvent.getName())) {
@@ -179,6 +295,19 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 mCurrentEvent.setSize(Integer.parseInt(currentSize));
             }
 
+            if (hasUserSelectedPicture) {
+                StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+                StorageReference filePath = mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID());
+                filePath.putBytes(ImageUtils.compressImage(uriPicture, getActivity(), getResources()));
+            }
+
+            if (hasSelectedPDF) {
+                StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+                StorageReference filePath = mStorage.child("Contracts").child("Event").child(mCurrentEvent.getEventID());
+                filePath.putFile(uriPDF);
+            }
+
+
             Toast.makeText(getActivity(), "Event updated!", Toast.LENGTH_LONG).show();
 
             mEdit.setVisible(true);
@@ -215,6 +344,9 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mSave.setVisible(false);
         mDelete.setVisible(true);
         hideKeyboardFrom(getActivity(), getView());
+
+        mImage.setClickable(false);
+        changeContract.setClickable(false);
     }
 
     private void onDeleteItemPressed() {
@@ -252,6 +384,30 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 .create();
         deleteDialog.show();
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (data != null) {
+
+            if (requestCode == GALLERY_INTENT) {
+                uriPicture = data.getData();
+                hasUserSelectedPicture = true;
+                Picasso.with(getActivity()).load(uriPicture).fit().centerCrop().into(mImage);
+            } else {
+                if (requestCode == PICK_PDF) {
+                    uriPDF = data.getData();
+                    hasSelectedPDF = true;
+                    changeContract.setText(ImageUtils.getFileName(uriPDF, getActivity()));
+
+
+                }
+            }
+
+        }
+    }
+
 
     public void toggleEdit(boolean bool) {
 

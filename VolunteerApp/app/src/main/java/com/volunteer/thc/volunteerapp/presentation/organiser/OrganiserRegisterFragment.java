@@ -12,7 +12,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -134,7 +133,7 @@ public class OrganiserRegisterFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (PermissionUtil.isStoragePermissionGranted(getContext())) {
+                if (PermissionUtil.isStorageReadPermissionGranted(getContext())) {
                     Intent intent = new Intent(Intent.ACTION_PICK);
                     intent.setType("image/*");
                     startActivityForResult(intent, GALLERY_INTENT);
@@ -209,7 +208,7 @@ public class OrganiserRegisterFragment extends Fragment {
                             Organiser organiser = new Organiser(email, user_company, user_city, user_phone);
 
                             StorageReference filePath = mStorage.child("Photos").child("User").child(userID);
-                            filePath.putBytes(ImageUtils.compressImage(uri, getActivity()));
+                            filePath.putBytes(ImageUtils.compressImage(uri, getActivity(),getResources()));
 
                             mDatabase.child("users").child("organisers").child(userID).setValue(organiser);
 

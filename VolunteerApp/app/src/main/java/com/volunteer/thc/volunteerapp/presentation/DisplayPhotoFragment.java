@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -36,8 +36,7 @@ public class DisplayPhotoFragment extends Fragment {
         imageView = (ImageView) view.findViewById(R.id.photo_display);
         button = (ImageView) view.findViewById(R.id.photo_button);
 
-        String userID = getArguments().getString("userID");
-        String userName = getArguments().getString("userName");
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,14 +45,33 @@ public class DisplayPhotoFragment extends Fragment {
         });
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
+        if (getArguments().getString("type").equals("user")) {
+            String userID = getArguments().getString("userID");
 
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        storageRef.child("Photos").child("User").child(userID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.with(getContext()).load(uri).fit().centerCrop().into(imageView);
+
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+            if (userID != null) {
+                storageRef.child("Photos").child("User").child(userID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.with(getContext()).load(uri).fit().centerCrop().into(imageView);
+                    }
+                });
+
+            }else{
+                Toast.makeText(getContext(),"You don't have a photo",Toast.LENGTH_SHORT).show();
             }
-        });
+        } else {
+            String eventID = getArguments().getString("eventID");
+
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+            storageRef.child("Photos").child("Event").child(eventID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.with(getContext()).load(uri).fit().centerCrop().into(imageView);
+                }
+            });
+        }
 
 
         return view;

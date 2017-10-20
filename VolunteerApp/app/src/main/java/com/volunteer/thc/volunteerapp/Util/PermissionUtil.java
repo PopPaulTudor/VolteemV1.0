@@ -15,9 +15,10 @@ import java.util.List;
 
 public final  class PermissionUtil {
 
-    public  static boolean isStoragePermissionGranted(Context context) {
+    public  static boolean isStorageReadPermissionGranted(Context context) {
         return Build.VERSION.SDK_INT < 23 || ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
+
 
 
     public static boolean isRunning(Context context) {

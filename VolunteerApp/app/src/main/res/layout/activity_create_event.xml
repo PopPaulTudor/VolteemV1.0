@@ -128,6 +128,18 @@
 
                 </android.support.design.widget.TextInputLayout>
 
+
+                <Button
+                    android:id="@+id/upload_pdf"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Upload Contract"
+                    android:layout_margin="5dp"
+                    android:background="@color/colorPrimary"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+
                 <Button
                     android:id="@+id/save_event"
                     style="?android:textAppearanceSmall"

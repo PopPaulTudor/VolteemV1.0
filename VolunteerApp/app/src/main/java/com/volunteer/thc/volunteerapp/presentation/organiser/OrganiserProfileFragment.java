@@ -113,7 +113,7 @@ public class OrganiserProfileFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         String choice = arrayAdapter.getItem(which);
                         if (choice.contains("Change")) {
-                            if (PermissionUtil.isStoragePermissionGranted(getContext())) {
+                            if (PermissionUtil.isStorageReadPermissionGranted(getContext())) {
                                 Intent intent = new Intent(Intent.ACTION_PICK);
                                 intent.setType("image/*");
                                 startActivityForResult(intent, GALLERY_INTENT);
@@ -132,7 +132,7 @@ public class OrganiserProfileFragment extends Fragment {
                             DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
                             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             Bundle bundle = new Bundle();
-                            bundle.putString("userID", user.getUid());
+                            bundle.putString("type","user");
                             bundle.putString("userName", user.getDisplayName());
                             displayPhotoFragment.setArguments(bundle);
                             fragmentTransaction.add(R.id.organiser_profile_container, displayPhotoFragment).addToBackStack("showImage");
@@ -350,7 +350,7 @@ public class OrganiserProfileFragment extends Fragment {
             StorageReference filePath = storageRef.child("Photos").child("User").child(user.getUid());
             final ProgressDialog progressDialog = new ProgressDialog(getContext());
             progressDialog.show();
-            filePath.putBytes(ImageUtils.compressImage(uri, getActivity())).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            filePath.putBytes(ImageUtils.compressImage(uri, getActivity(),getResources())).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     progressDialog.dismiss();

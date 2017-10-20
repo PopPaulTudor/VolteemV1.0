@@ -12,7 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.snatik.storage.Storage;
 import com.volunteer.thc.volunteerapp.R;
+
+import java.io.FileOutputStream;
 
 /**
  * Created by poppa on 14.08.2017.
@@ -29,13 +32,22 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
 
+        Storage storage = new Storage(getApplicationContext());
+        String path = storage.getInternalFilesDirectory();
+        storage.createDirectory("Volteem");
+
+
         if (sharedPreferences.getInt("opened", 0) == 0) {
             SharedPreferences.Editor edit = sharedPreferences.edit();
             edit.putInt("opened", 1).apply();
             ActivityCompat.requestPermissions(SplashActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+
         } else {
             openLogin();
         }
+
+
     }
 
     @Override

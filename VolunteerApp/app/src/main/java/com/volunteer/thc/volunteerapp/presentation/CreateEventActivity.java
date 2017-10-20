@@ -56,6 +56,7 @@ import java.util.Calendar;
 public class CreateEventActivity extends AppCompatActivity {
 
     private static final int GALLERY_INTENT = 1;
+    private static final int PICK_PDF = 2;
     private EditText mName, mLocation, mDescription, mDeadline, mSize, mStartDate, mFinishDate;
     private ImageView mImage;
     private Spinner mType;
@@ -63,11 +64,14 @@ public class CreateEventActivity extends AppCompatActivity {
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private long startDate = -1, finishDate, deadline;
     private StorageReference mStorage;
-    private Uri uri = null;
+    private Uri uriPicture = null, uriPDF = null;
     private ArrayList<String> typeList = new ArrayList<>();
     private Resources resources;
     private ArrayList<Uri> imageUris = new ArrayList<>();
     private boolean hasUserSelectedPicture = false;
+    private boolean hasSelectedPDF = false;
+    private Button mLoadPdf;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,6 +99,7 @@ public class CreateEventActivity extends AppCompatActivity {
         Picasso.with(this).load(imageUris.get(3)).fit().centerCrop().into(mImage);
         Button mSaveEvent = (Button) findViewById(R.id.save_event);
         Button mCancel = (Button) findViewById(R.id.cancel_event);
+        mLoadPdf = (Button) findViewById(R.id.upload_pdf);
 
         populateSpinnerArray();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, typeList);
@@ -119,13 +124,32 @@ public class CreateEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (PermissionUtil.isStoragePermissionGranted(CreateEventActivity.this)) {
+                if (PermissionUtil.isStorageReadPermissionGranted(CreateEventActivity.this)) {
                     Intent intent = new Intent(Intent.ACTION_PICK);
                     intent.setType("image/*");
                     startActivityForResult(intent, GALLERY_INTENT);
 
                 } else {
                     Snackbar.make(view, "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                        }
+                    }).show();
+                }
+            }
+        });
+
+        mLoadPdf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (PermissionUtil.isStorageReadPermissionGranted(CreateEventActivity.this)) {
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("application/pdf");
+                    startActivityForResult(intent, PICK_PDF);
+
+                } else {
+                    Snackbar.make(v, "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
@@ -152,10 +176,15 @@ public class CreateEventActivity extends AppCompatActivity {
                     int size = Integer.parseInt(mSize.getText().toString());
                     final String eventID = mDatabase.child("events").push().getKey();
                     String type = mType.getSelectedItem().toString();
+                    StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
 
                     if (hasUserSelectedPicture) {
-                        StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
-                        filePath.putBytes(ImageUtils.compressImage(uri, CreateEventActivity.this));
+                        filePath.putBytes(ImageUtils.compressImage(uriPicture, CreateEventActivity.this, getResources()));
+                    }
+                    if(hasSelectedPDF){
+                        filePath = mStorage.child("Contracts").child("Event").child(eventID);
+                        filePath.putFile(uriPDF);
+
                     }
 
                     mDatabase.child("users/organisers/" + user.getUid())
@@ -203,10 +232,22 @@ public class CreateEventActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == GALLERY_INTENT && (data != null)) {
-            uri = data.getData();
-            hasUserSelectedPicture = true;
-            Picasso.with(this).load(uri).fit().centerCrop().into(mImage);
+        if (data != null) {
+
+            if (requestCode == GALLERY_INTENT) {
+                uriPicture = data.getData();
+                hasUserSelectedPicture = true;
+                Picasso.with(this).load(uriPicture).fit().centerCrop().into(mImage);
+            } else {
+                if (requestCode == PICK_PDF) {
+                    uriPDF = data.getData();
+                    hasSelectedPDF = true;
+                    mLoadPdf.setText(ImageUtils.getFileName(uriPDF,CreateEventActivity.this));
+
+
+                }
+            }
+
         }
     }
 
@@ -247,7 +288,7 @@ public class CreateEventActivity extends AppCompatActivity {
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mStartDate) &&
                 editTextIsValid(mFinishDate) && editTextIsValid(mDescription) &&
-                editTextIsValid(mDeadline) && editTextIsValid(mSize));
+                editTextIsValid(mDeadline) && editTextIsValid(mSize) && hasSelectedPDF);
         if (valid && TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
             Toast.makeText(this, "Please select a type.", Toast.LENGTH_SHORT).show();
             return false;

@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
@@ -27,6 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,6 +38,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -45,6 +49,8 @@ import com.volunteer.thc.volunteerapp.model.RegisteredUser;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class VolunteerSingleEventActivity extends AppCompatActivity {
@@ -60,7 +66,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     private ArrayList<String> typeList = new ArrayList<>();
     private FloatingActionButton mSignupForEventFloatingButton;
     private StorageReference storageRef;
-    private Button mLeaveEvent;
+    private Button mLeaveEvent, mDownloadContract;
     private CollapsingToolbarLayout collapsingToolbarLayout;
 
     @Override
@@ -95,6 +101,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
         mSignupForEventFloatingButton = (FloatingActionButton) findViewById(R.id.fab);
         mLeaveEvent = (Button) findViewById(R.id.event_leave);
+        mDownloadContract = (Button) findViewById(R.id.event_pdf);
         currentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
 
         if (currentEvent != null) {
@@ -117,6 +124,32 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                 }
             });
         }
+
+        mDownloadContract.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                File rootPath = new File(Environment.getExternalStorageDirectory(), "Volteem");
+                if (!rootPath.exists()) {
+                    rootPath.mkdirs();
+                }
+
+                final File localFile = new File(rootPath,currentEvent.getName());
+
+                storageRef.child("Contracts").child("Event").child(currentEvent.getEventID()).getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(VolunteerSingleEventActivity.this, "Contract Downloaded",Toast.LENGTH_LONG).show();
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(VolunteerSingleEventActivity.this, e.getMessage(),Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
 
         mSignupForEventFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,7 +240,9 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    Picasso.with(getApplicationContext()).load(task.getResult()).fit().centerCrop().into(collapsingToolbarImage);
+                    Picasso.with(getApplicationContext()).load(task.getResult()).fit().centerInside()
+
+                            .into(collapsingToolbarImage);
                 } else {
                     Picasso.with(getApplicationContext()).load(imageUris.get(typeList.indexOf(currentEvent.getType()))).fit().centerCrop().into(collapsingToolbarImage);
                 }
@@ -225,6 +260,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         String deadline = CalendarUtil.getStringDateFromMM(currentEvent.getDeadline());
         mEventSize.setText(currentEvent.getSize() + " volunteers");
 
+
         int index = deadline.lastIndexOf("/");
         deadline = deadline.substring(0, index) + deadline.substring(index + 1);
         mEventDeadline.setText(deadline);
@@ -236,6 +272,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         } else {
             mStatus.setVisibility(View.VISIBLE);
             mLeaveEvent.setVisibility(View.VISIBLE);
+
             mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid())
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -243,6 +280,8 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                             if (dataSnapshot.exists() && TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
                                 mStatus.setText("Accepted");
                                 mStatus.setTextColor(Color.rgb(25, 156, 136));
+                                mDownloadContract.setVisibility(View.VISIBLE);
+
                             }
                         }
 
@@ -292,4 +331,6 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         typeList.add("Training");
         typeList.add("Other");
     }
+
+
 }
