@@ -66,7 +66,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private OrganiserSingleEventRegisteredUsersFragment fragment;
     private Activity activity;
-    private int counter = 0;
+    private int counter = 0, mShortAnimTime;
     private ActionListener.VolunteersRemovedListener volunteersRemovedListener;
 
     public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context, OrganiserSingleEventRegisteredUsersFragment fragment, Activity activity, ActionListener.VolunteersRemovedListener volunteersRemovedListener) {
@@ -101,6 +101,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     @Override
     public void onBindViewHolder(final EventVolunteersAdapter.EventViewHolder holder, final int position) {
 
+        mShortAnimTime = context.getResources().getInteger(android.R.integer.config_shortAnimTime);
+
         holder.nameVolunteer.setText(listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname());
         holder.cityVolunteer.setText("City: " + listVolunteer.get(position).getCity());
         holder.ageVolunteer.setText("Age: " + listVolunteer.get(position).getAge());
@@ -122,7 +124,16 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         }
 
         final boolean isExpanded = position == mExpandedPosition;
-        holder.expandableItem.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+        if(isExpanded) {
+            holder.expandableItem.setAlpha(0f);
+            holder.expandableItem.setVisibility(View.VISIBLE);
+            holder.expandableItem.animate()
+                    .alpha(1f)
+                    .setDuration(mShortAnimTime)
+                    .setListener(null);
+        } else {
+            holder.expandableItem.setVisibility(View.GONE);
+        }
         holder.item.setActivated(isExpanded);
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -316,7 +327,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                         }
                     }
                 });
-                ///TODO: continue radiogroup
+
                 final AlertDialog kickVolunteerDialog = new AlertDialog.Builder(context)
                         .setView(parentView)
                         .setCancelable(true)

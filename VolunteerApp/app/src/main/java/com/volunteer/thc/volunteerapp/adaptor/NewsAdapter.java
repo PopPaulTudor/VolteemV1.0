@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -126,16 +127,15 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
-                mDatabase.child("news/" + newsList.get(position).getNewsID()).setValue(null);
+               // mDatabase.child("news/" + newsList.get(position).getNewsID()).setValue(null);
                 newsList.remove(position);
-                notifyDataSetChanged();
+                notifyItemRemoved(position);
                 if(newsList.isEmpty()) {
                     newsDeletedListener.onNewsDeleted();
                 }
             }
         };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        return itemTouchHelper;
+        return new ItemTouchHelper(simpleCallback);
     }
 
     @Override

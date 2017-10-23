@@ -6,16 +6,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,8 +28,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
@@ -49,13 +54,16 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     private ArrayList<String> typeList = new ArrayList<>();
     private int flag;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private ActionListener.EventPicturesLoadingListener eventPicturesLoadingListener;
+    private boolean wasUIActivated = false;
     public static final int ALL_EVENTS = 1, MY_EVENTS = 2;
 
-    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources, final int FLAG) {
+    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources, final int FLAG, ActionListener.EventPicturesLoadingListener eventPicturesLoadingListener) {
         eventsList = list;
         this.context = context;
         this.resources = resources;
         this.flag = FLAG;
+        this.eventPicturesLoadingListener = eventPicturesLoadingListener;
     }
 
     @Override
@@ -75,8 +83,6 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
             holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position).getDeadline()));
         } else {
             holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position).getStartDate()));
-
-
         }
         SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
         if (prefs.getString("user_status", "").equals("Volunteer")) {
@@ -100,15 +106,12 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
                             public void onCancelled(DatabaseError databaseError) {
 
                             }
-
                         });
-
             }
 
-        }else  holder.cardChecked.setVisibility(View.GONE);
-
-
-
+        } else {
+            holder.cardChecked.setVisibility(View.GONE);
+        }
 
         populateTypeList();
         populateUriList();
@@ -116,13 +119,40 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         Picasso.with(context).load(imageUris.get(typeList.indexOf(eventsList.get(position).getType()))).fit().centerCrop().into(holder.cardImage);
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        storageRef.child("Photos").child("Event").child(eventsList.get(position).getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageRef.child("Photos").child("Event").child(eventsList.get(position).getEventID()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
-            public void onSuccess(Uri uri) {
-                Picasso.with(context).load(uri).fit().centerCrop().into(holder.cardImage);
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Log.w(eventsList.get(position).getName(), " has an image.");
+                    Picasso.with(context).load(task.getResult()).fit().centerCrop().into(holder.cardImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            if (!wasUIActivated && (position == 2 || position == eventsList.size() - 1)) {
+                                if (eventPicturesLoadingListener != null) {
+                                    wasUIActivated = true;
+                                    eventPicturesLoadingListener.onPicturesLoaded();
+									//TODO aici se apeleaza metoda pt animatie daca ultimul event are poza
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+                } else {
+                    Log.w(eventsList.get(position).getName(), " doesn't have an image.");
+                    if (!wasUIActivated && (position == 2 || position == eventsList.size() - 1)) {
+                        if (eventPicturesLoadingListener != null) {
+                            wasUIActivated = true;
+                            eventPicturesLoadingListener.onPicturesLoaded();
+							//TODO aici se apeleaza metoda pt animatie daca ultimul event nu are poza
+                        }
+                    }
+                }
             }
         });
-
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override

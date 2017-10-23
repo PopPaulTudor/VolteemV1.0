@@ -14,4 +14,7 @@ public interface ActionListener {
     interface VolunteersRemovedListener {
         void onAllVolunteersRemoved();
     }
+    interface EventPicturesLoadingListener {
+        void onPicturesLoaded();
+    }
 }

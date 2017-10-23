@@ -26,6 +26,7 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.OrganiserRating;
 import com.volunteer.thc.volunteerapp.util.CalculateUtils;
@@ -41,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Cristi on 7/15/2017.
  */
 
-public class VolunteerMyEventsFragment extends Fragment {
+public class VolunteerMyEventsFragment extends Fragment implements ActionListener.EventPicturesLoadingListener{
 
     private List<Event> mEventsList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -50,6 +51,7 @@ public class VolunteerMyEventsFragment extends Fragment {
     private RecyclerView recyclerView;
     private TextView noEvents;
     private Calendar date = Calendar.getInstance();
+    private int mLongAnimTime;
     protected static boolean hasActionHappened = false;
 
     @Override
@@ -57,10 +59,12 @@ public class VolunteerMyEventsFragment extends Fragment {
                              final Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_volunteer_my_events, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
+        recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolMyEvents);
         recyclerView.setHasFixedSize(true);
         mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
         noEvents = (TextView) view.findViewById(R.id.no_events_text);
+
+        mLongAnimTime = getResources().getInteger(android.R.integer.config_longAnimTime);
 
         loadEvents();
         return view;
@@ -157,9 +161,9 @@ public class VolunteerMyEventsFragment extends Fragment {
                 }
                 if (mEventsList.isEmpty()) {
                     noEvents.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
                 }
                 if (isFragmentActive()) {
-                    mProgressBar.setVisibility(View.GONE);
                     Collections.sort(mEventsList, new Comparator<Event>() {
                         @Override
                         public int compare(Event event, Event t1) {
@@ -170,7 +174,7 @@ public class VolunteerMyEventsFragment extends Fragment {
                             return 0;
                         }
                     });
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS);
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS, VolunteerMyEventsFragment.this);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);
@@ -186,5 +190,17 @@ public class VolunteerMyEventsFragment extends Fragment {
 
     private boolean isFragmentActive() {
         return isAdded() && !isDetached() && !isRemoving();
+    }
+
+    @Override
+    public void onPicturesLoaded() {
+		//TODO asta e metoda care se apeleaza pt animatie in my events, aproape identica cu cealalta
+        recyclerView.setAlpha(0f);
+        recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.animate()
+                .alpha(1f)
+                .setDuration(mLongAnimTime)
+                .setListener(null);
+        mProgressBar.setVisibility(View.GONE);
     }
 }

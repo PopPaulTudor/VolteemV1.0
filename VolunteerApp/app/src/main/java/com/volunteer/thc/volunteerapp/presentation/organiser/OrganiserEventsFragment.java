@@ -1,5 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation.organiser;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -44,6 +46,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.CreateEventActivity;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
@@ -56,7 +59,7 @@ import java.util.List;
  * Created by Cristi on 6/17/2017.
  */
 
-public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, ActionListener.EventPicturesLoadingListener {
 
     private final String pending = "pending";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -71,6 +74,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     public static boolean hasActionHappened = false;
     private MenuItem filter;
     private String filterType = "All";
+    private int mLongAnimTime;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,6 +87,8 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
         noEvents = (TextView) view.findViewById(R.id.no_events_text);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+
+        mLongAnimTime = getResources().getInteger(android.R.integer.config_longAnimTime);
 
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
@@ -291,12 +297,11 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                     snackbar.show();
                                 }
 
-                                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS);
+                                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS, OrganiserEventsFragment.this);
                                 recyclerView.setAdapter(adapter);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                                 recyclerView.setLayoutManager(linearLayoutManager);
                             }
-                            mSwipeRefreshLayout.setRefreshing(false);
                         }
 
                         @Override
@@ -338,14 +343,13 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                         mEventsList.add(currentEvent);
                     }
                 }
-                mSwipeRefreshLayout.setRefreshing(false);
                 if (isFragmentActive()) {
 
                     if (mEventsList.isEmpty()) {
                         noEvents.setVisibility(View.VISIBLE);
                     }
 
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS);
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS, OrganiserEventsFragment.this);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);
@@ -382,5 +386,16 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
     private boolean isFragmentActive() {
         return isAdded() && !isDetached() && !isRemoving();
+    }
+
+    @Override
+    public void onPicturesLoaded() {
+        recyclerView.setAlpha(0f);
+        recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.animate()
+                .alpha(1f)
+                .setDuration(mLongAnimTime)
+                .setListener(null);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }
