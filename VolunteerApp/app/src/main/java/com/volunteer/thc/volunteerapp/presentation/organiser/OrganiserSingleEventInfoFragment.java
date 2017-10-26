@@ -37,6 +37,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.model.ChangeEvent;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
@@ -305,6 +306,9 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 StorageReference mStorage = FirebaseStorage.getInstance().getReference();
                 StorageReference filePath = mStorage.child("Contracts").child("Event").child(mCurrentEvent.getEventID());
                 filePath.putFile(uriPDF);
+
+                mDatabase.child("changes").setValue(new ChangeEvent(mCurrentEvent.getName(),"A new contract has been uploaded",mCurrentEvent,false));
+
             }
 
 

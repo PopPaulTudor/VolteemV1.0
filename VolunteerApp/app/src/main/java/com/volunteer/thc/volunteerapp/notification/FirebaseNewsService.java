@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.model.ChangeEvent;
 import com.volunteer.thc.volunteerapp.model.Chat;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.Organiser;
@@ -62,10 +63,57 @@ public class FirebaseNewsService extends Service {
         Log.w("FirebaseService", "created");
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
+
+        mDatabase.child("changes").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if (user != null) {
+                    final ChangeEvent changeEvent = dataSnapshot.getValue(ChangeEvent.class);
+                    if (!changeEvent.isNotified()) {
+                        mDatabase.child("events/" + changeEvent.getEvent().getEventID() + "/users").orderByChild("status").equalTo("pending").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                sendChangesEvent(changeEvent);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        mDatabase.child("changes/" + dataSnapshot.getKey() + "/notified").setValue(true);
+
+                    }
+
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         mDatabase.child("news").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(user != null) {
+                if (user != null) {
                     NewsMessage newsMessage = dataSnapshot.getValue(NewsMessage.class);
                     if (!newsMessage.isStarred() && (newsMessage.getExpireDate() + 604800000) < date.getTimeInMillis()) {
                         mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
@@ -119,7 +167,6 @@ public class FirebaseNewsService extends Service {
                                     if (dataSnapshot.exists()) {
 
                                         final Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
-
                                         final long ONE_MEGABYTE = 1024 * 1024;
                                         storageRef.child("Photos").child("User").child(chat.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                             @Override
@@ -231,6 +278,25 @@ public class FirebaseNewsService extends Service {
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
                 .build();
 
+
+        notificationManager.notify(new Random().nextInt(), notification);
+    }
+
+
+    private void sendChangesEvent(ChangeEvent changeEvent) {
+        final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Intent intent = new Intent(this, VolunteerSingleEventActivity.class);
+
+        intent.putExtra("eventID", changeEvent.getEvent().getEventID());
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
+        final Notification notification = new Notification.Builder(this)
+                .setContentTitle(changeEvent.getTitle())
+                .setContentText(changeEvent.getContent())
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setSmallIcon(R.mipmap.volunteer_logo)
+                .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
+                .build();
 
         notificationManager.notify(new Random().nextInt(), notification);
     }

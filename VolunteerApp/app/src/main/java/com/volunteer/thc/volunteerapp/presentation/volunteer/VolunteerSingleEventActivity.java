@@ -1,5 +1,6 @@
 package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -46,8 +49,10 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.RegisteredUser;
+import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
+import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -129,25 +134,37 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                File rootPath = new File(Environment.getExternalStorageDirectory(), "Volteem");
-                if (!rootPath.exists()) {
-                    rootPath.mkdirs();
+                if(PermissionUtil.isStorageWritePermissionGranted(VolunteerSingleEventActivity.this)) {
+                    File rootPath = new File(Environment.getExternalStorageDirectory(), "Volteem");
+                    if (!rootPath.exists()) {
+                        rootPath.mkdirs();
+                    }
+                    final File localFile = new File(rootPath, currentEvent.getName()+".pdf");
+
+                    storageRef.child("Contracts").child("Event").child(currentEvent.getEventID()).getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+
+                            Snackbar.make(getCurrentFocus(), "Contract downloaded", Snackbar.LENGTH_LONG).show();
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if(e.toString().contains("does not exist at location")) {
+                                Snackbar.make(getCurrentFocus(), "Contract is not uploaded yet. We will notify you when the contract will be available", Snackbar.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }else{
+                    Snackbar.make(getCurrentFocus(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ActivityCompat.requestPermissions(VolunteerSingleEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                        }
+                    }).show();
                 }
 
-                final File localFile = new File(rootPath,currentEvent.getName());
-
-                storageRef.child("Contracts").child("Event").child(currentEvent.getEventID()).getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(VolunteerSingleEventActivity.this, "Contract Downloaded",Toast.LENGTH_LONG).show();
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(VolunteerSingleEventActivity.this, e.getMessage(),Toast.LENGTH_LONG).show();
-                    }
-                });
             }
         });
 
