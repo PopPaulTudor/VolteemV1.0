@@ -94,7 +94,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         changeContract.setClickable(false);
         mImage.setClickable(false);
 
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, typeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mType.setAdapter(adapter);
@@ -116,7 +115,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mFinishDate.setOnClickListener(setonClickListenerCalendar(mFinishDate));
         mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
 
-
         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
         StorageReference filePath = mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID());
 
@@ -126,7 +124,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
             }
         });
-
 
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,17 +162,12 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                             displayPhotoFragment.setArguments(bundle);
                             fragmentTransaction.add(R.id.event_detailed_photo, displayPhotoFragment).addToBackStack("showImage");
                             fragmentTransaction.commit();
-
                         }
-
                     }
                 });
                 builderSingle.show();
-
-
             }
         });
-
 
         changeContract.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,13 +185,10 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                         }
                     }).show();
                 }
-
-
             }
         });
 
         toggleEdit(false);
-
         setHasOptionsMenu(true);
         return view;
     }
@@ -311,7 +300,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
             }
 
-
             Toast.makeText(getActivity(), "Event updated!", Toast.LENGTH_LONG).show();
 
             mEdit.setVisible(true);
@@ -404,14 +392,10 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                     uriPDF = data.getData();
                     hasSelectedPDF = true;
                     changeContract.setText(ImageUtils.getFileName(uriPDF, getActivity()));
-
-
                 }
             }
-
         }
     }
-
 
     public void toggleEdit(boolean bool) {
 

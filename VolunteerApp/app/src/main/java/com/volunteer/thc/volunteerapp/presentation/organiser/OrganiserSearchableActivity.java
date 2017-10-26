@@ -20,13 +20,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrganiserSearchableActivity extends AppCompatActivity {
+public class OrganiserSearchableActivity extends AppCompatActivity implements ActionListener.EventPicturesLoadingListener {
 
     private String query;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -35,6 +36,7 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
     private List<Event> mResultEvents = new ArrayList<>();
     private TextView mNoResultText;
     private ProgressBar mProgressBar;
+    private int mLongAnimTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,8 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.RecViewOrgSearchableEvents);
         recyclerView.setHasFixedSize(true);
+
+        mLongAnimTime = getResources().getInteger(android.R.integer.config_longAnimTime);
 
         mNoResultText = (TextView) findViewById(R.id.nothing_found_text);
         mProgressBar = (ProgressBar) findViewById(R.id.indeterminateBar);
@@ -63,7 +67,7 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
 
                     for (DataSnapshot event : dataSnapshot.getChildren()) {
                         Event currentEvent = event.getValue(Event.class);
-                        if(currentEvent.getFinishDate() > CalendarUtil.getCurrentTimeInMillis()) {
+                        if (currentEvent.getFinishDate() > CalendarUtil.getCurrentTimeInMillis()) {
 
                             String eventName = currentEvent.getName().toLowerCase();
                             if (eventName.contains(query)) {
@@ -84,13 +88,12 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
                             }
                         }
                     }
-                    mProgressBar.setVisibility(View.GONE);
-
                     if (mResultEvents.isEmpty()) {
                         mNoResultText.setVisibility(View.VISIBLE);
+                        mProgressBar.setVisibility(View.GONE);
                     } else {
 
-                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, OrganiserSearchableActivity.this, getResources(), OrgEventsAdaptor.MY_EVENTS);
+                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, OrganiserSearchableActivity.this, getResources(), OrgEventsAdaptor.MY_EVENTS, OrganiserSearchableActivity.this);
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrganiserSearchableActivity.this);
                         recyclerView.setLayoutManager(linearLayoutManager);
@@ -109,5 +112,16 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    @Override
+    public void onPicturesLoaded() {
+        recyclerView.setAlpha(0f);
+        recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.animate()
+                .alpha(1f)
+                .setDuration(mLongAnimTime)
+                .setListener(null);
+        mProgressBar.setVisibility(View.GONE);
     }
 }

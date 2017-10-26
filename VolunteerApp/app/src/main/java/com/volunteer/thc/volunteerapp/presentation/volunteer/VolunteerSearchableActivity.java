@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -21,12 +22,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
+import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
 
-public class VolunteerSearchableActivity extends AppCompatActivity {
+public class VolunteerSearchableActivity extends AppCompatActivity implements ActionListener.EventPicturesLoadingListener{
 
     private String query;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -35,6 +37,7 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
     private ArrayList<Event> mResultEvents = new ArrayList<>();
     private ProgressBar mProgressBar;
     private TextView mNoResultText;
+    private int mLongAnimTime;
     public static boolean hasActionHappened = false;
 
     @Override
@@ -49,6 +52,8 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.RecViewVolSearchableEvents);
         recyclerView.setHasFixedSize(true);
 
+        mLongAnimTime = getResources().getInteger(android.R.integer.config_longAnimTime);
+
         mProgressBar = (ProgressBar) findViewById(R.id.indeterminateBar);
         mNoResultText = (TextView) findViewById(R.id.nothing_found_text);
 
@@ -58,6 +63,7 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(query);
             query = query.toLowerCase();
 
+            //TODO the line bellow sometimes makes app crash
             Answers.getInstance().logSearch(new SearchEvent().putQuery("SearchEvent")
                     .putCustomAttribute("Query", query));
         }
@@ -89,11 +95,14 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
                         mResultEvents.add(currentEvent);
                     }
                 }
-                mProgressBar.setVisibility(View.GONE);
                 if (mResultEvents.isEmpty()) {
                     mNoResultText.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
+                    Log.w("VolunteerSearchQuery", " nothing found");
+                }  else {
+                    Log.w("VolunteerSearchQuery", " event(s) found");
                 }
-                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this, getResources(), OrgEventsAdaptor.ALL_EVENTS);
+                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this, getResources(), OrgEventsAdaptor.ALL_EVENTS, VolunteerSearchableActivity.this);
                 recyclerView.setAdapter(adapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(VolunteerSearchableActivity.this);
                 recyclerView.setLayoutManager(linearLayoutManager);
@@ -110,5 +119,16 @@ public class VolunteerSearchableActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    @Override
+    public void onPicturesLoaded() {
+        recyclerView.setAlpha(0f);
+        recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.animate()
+                .alpha(1f)
+                .setDuration(mLongAnimTime)
+                .setListener(null);
+        mProgressBar.setVisibility(View.GONE);
     }
 }
