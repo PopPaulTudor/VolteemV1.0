@@ -1,7 +1,5 @@
 package com.volunteer.thc.volunteerapp.presentation.organiser;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,10 +10,9 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -29,9 +26,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -71,6 +71,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     private TextView noEvents;
     private Spinner actionFilter;
     private ArrayList<String> typeList = new ArrayList<>();
+    private FloatingActionButton fab;
     public static boolean hasActionHappened = false;
     private MenuItem filter;
     private String filterType = "All";
@@ -82,8 +83,21 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
         View view = inflater.inflate(R.layout.fragment_organiserevents, container, false);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        fab = (FloatingActionButton) view.findViewById(R.id.add_event);
         recyclerView = (RecyclerView) view.findViewById(R.id.RecViewOrgEvents);
         recyclerView.setHasFixedSize(true);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 && fab.isShown()) {
+                    fab.hide();
+                } else {
+                    if (dy < 0 && !fab.isShown()) {
+                        fab.show();
+                    }
+                }
+            }
+        });
         noEvents = (TextView) view.findViewById(R.id.no_events_text);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
