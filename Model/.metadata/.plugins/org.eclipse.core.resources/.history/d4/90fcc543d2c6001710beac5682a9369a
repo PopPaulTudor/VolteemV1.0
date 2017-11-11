@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_7VBy8MbMEeeMmZdJUdtPOg" name="Model">
+  <packagedElement xmi:type="uml:Package" xmi:id="_dFA7oMbNEeeMmZdJUdtPOg" name="Model" visibility="public">
+    <packagedElement xmi:type="uml:Class" xmi:id="_Gq2mQMbOEeeMmZdJUdtPOg" name="Volunteer" visibility="public">
+      <ownedAttribute xmi:id="_JvjtYMbOEeeMmZdJUdtPOg" name="id">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cgFNIMbOEeeMmZdJUdtPOg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cpVPwMbOEeeMmZdJUdtPOg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_KnHAcMbOEeeMmZdJUdtPOg" name="firstName">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_C_9hgMbREeeMmZdJUdtPOg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_C_-IkMbREeeMmZdJUdtPOg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_KwPuUMbOEeeMmZdJUdtPOg" name="lastName">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_EJ4-AMbREeeMmZdJUdtPOg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_EJ5lEMbREeeMmZdJUdtPOg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_h3MUYMbREeeMmZdJUdtPOg" name="email">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ij7ekMbREeeMmZdJUdtPOg" name="city">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ilb6cMbREeeMmZdJUdtPOg" name="phone">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_j__z8MbREeeMmZdJUdtPOg" name="gender">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_kJP2kMbREeeMmZdJUdtPOg" name="age">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_6S_cQMbOEeeMmZdJUdtPOg" name="Organiser" visibility="public">
+      <ownedAttribute xmi:id="_a6R3gMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_a7zhgMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_a9LagMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_a-sdcMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_bJFvkMbPEeeMmZdJUdtPOg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_9p_NQMbOEeeMmZdJUdtPOg" name="Organisation" visibility="public">
+      <ownedAttribute xmi:id="_btpOIMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_bu8OoMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_bwPPIMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_bxnvMMbPEeeMmZdJUdtPOg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="__4oPEMbOEeeMmZdJUdtPOg" name="FeedbackVolunteer" visibility="public">
+      <ownedAttribute xmi:id="_cL5QYMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_cNLp0MbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_cO1PoMbPEeeMmZdJUdtPOg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_Bl0JoMbPEeeMmZdJUdtPOg" name="Event" visibility="public">
+      <ownedAttribute xmi:id="_c_6HQMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_dBRZMMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_dD85wMbPEeeMmZdJUdtPOg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_FWyg4MbPEeeMmZdJUdtPOg" name="FeedbackOrganisation" visibility="public">
+      <ownedAttribute xmi:id="_cljtkMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_cm1f8MbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_coGEMMbPEeeMmZdJUdtPOg"/>
+    </packagedElement>
+  </packagedElement>
+</uml:Model>

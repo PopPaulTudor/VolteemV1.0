@@ -107,6 +107,9 @@
       <ownedAttribute xmi:id="_dBRZMMbPEeeMmZdJUdtPOg" name="organisationId">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
       </ownedAttribute>
+      <ownedAttribute xmi:id="_pZSvsMbYEeeMmZdJUdtPOg" name="organiserId">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
       <ownedAttribute xmi:id="_dD85wMbPEeeMmZdJUdtPOg" name="name">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
       </ownedAttribute>
@@ -247,136 +250,6 @@
       <ownedAttribute xmi:id="_d50mRcbZEeeMmZdJUdtPOg" name="createdTimestamp">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
       </ownedAttribute>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_nvCicMbaEeeMmZdJUdtPOg" memberEnd="_nvCiccbaEeeMmZdJUdtPOg _nvCidMbaEeeMmZdJUdtPOg" navigableOwnedEnd="_nvCiccbaEeeMmZdJUdtPOg _nvCidMbaEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_nvCiccbaEeeMmZdJUdtPOg" name="organisers" type="_6S_cQMbOEeeMmZdJUdtPOg" association="_nvCicMbaEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_nvCicsbaEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_nvCic8baEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_nvCidMbaEeeMmZdJUdtPOg" name="organiserAndOrganisations" type="_sYR4EMbSEeeMmZdJUdtPOg" association="_nvCicMbaEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_nvCidcbaEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_nvCidsbaEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_2KxMMMbaEeeMmZdJUdtPOg" memberEnd="_2KxMMcbaEeeMmZdJUdtPOg _2KxMNMbaEeeMmZdJUdtPOg" navigableOwnedEnd="_2KxMMcbaEeeMmZdJUdtPOg _2KxMNMbaEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_2KxMMcbaEeeMmZdJUdtPOg" name="organiserAndOrganisations" type="_sYR4EMbSEeeMmZdJUdtPOg" association="_2KxMMMbaEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2KxMMsbaEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_2KxMM8baEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_2KxMNMbaEeeMmZdJUdtPOg" name="organisations" type="_9p_NQMbOEeeMmZdJUdtPOg" association="_2KxMMMbaEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2KxMNcbaEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_2KxMNsbaEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="__Q64YMbaEeeMmZdJUdtPOg" memberEnd="__Q64YcbaEeeMmZdJUdtPOg __Q64ZMbaEeeMmZdJUdtPOg" navigableOwnedEnd="__Q64YcbaEeeMmZdJUdtPOg __Q64ZMbaEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="__Q64YcbaEeeMmZdJUdtPOg" name="registrations" type="_cp6sUMbTEeeMmZdJUdtPOg" association="__Q64YMbaEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="__Q64YsbaEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="__Q64Y8baEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="__Q64ZMbaEeeMmZdJUdtPOg" name="organisations" type="_9p_NQMbOEeeMmZdJUdtPOg" association="__Q64YMbaEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="__Q64ZcbaEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="__Q64ZsbaEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_e_imQMbbEeeMmZdJUdtPOg" memberEnd="_e_imQcbbEeeMmZdJUdtPOg _e_imRMbbEeeMmZdJUdtPOg" navigableOwnedEnd="_e_imQcbbEeeMmZdJUdtPOg _e_imRMbbEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_e_imQcbbEeeMmZdJUdtPOg" name="experienceOrganisations" type="_d50mQMbZEeeMmZdJUdtPOg" association="_e_imQMbbEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_e_imQsbbEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_e_imQ8bbEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_e_imRMbbEeeMmZdJUdtPOg" name="organisations" type="_9p_NQMbOEeeMmZdJUdtPOg" association="_e_imQMbbEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_e_imRcbbEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_e_imRsbbEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_5uYAYMbbEeeMmZdJUdtPOg" memberEnd="_5uYAYcbbEeeMmZdJUdtPOg _5uYAZMbbEeeMmZdJUdtPOg" navigableOwnedEnd="_5uYAYcbbEeeMmZdJUdtPOg _5uYAZMbbEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_5uYAYcbbEeeMmZdJUdtPOg" name="events" type="_Bl0JoMbPEeeMmZdJUdtPOg" association="_5uYAYMbbEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_5uYAYsbbEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_5uYAY8bbEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_5uYAZMbbEeeMmZdJUdtPOg" name="organisations" type="_9p_NQMbOEeeMmZdJUdtPOg" association="_5uYAYMbbEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_5uYAZcbbEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_5uYAZsbbEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_C0jhwMbcEeeMmZdJUdtPOg" memberEnd="_C0jhwcbcEeeMmZdJUdtPOg _C0jhxMbcEeeMmZdJUdtPOg" navigableOwnedEnd="_C0jhwcbcEeeMmZdJUdtPOg _C0jhxMbcEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_C0jhwcbcEeeMmZdJUdtPOg" name="experienceVolunteers" type="_0jNHkMbREeeMmZdJUdtPOg" association="_C0jhwMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_C0jhwsbcEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_C0jhw8bcEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_C0jhxMbcEeeMmZdJUdtPOg" name="volunteers" type="_Gq2mQMbOEeeMmZdJUdtPOg" association="_C0jhwMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_C0jhxcbcEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_C0jhxsbcEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_XKzpMMbcEeeMmZdJUdtPOg" memberEnd="_XKzpMcbcEeeMmZdJUdtPOg _XKzpNMbcEeeMmZdJUdtPOg" navigableOwnedEnd="_XKzpMcbcEeeMmZdJUdtPOg _XKzpNMbcEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_XKzpMcbcEeeMmZdJUdtPOg" name="feedbackOrganisations" type="_FWyg4MbPEeeMmZdJUdtPOg" association="_XKzpMMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_XKzpMsbcEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_XKzpM8bcEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_XKzpNMbcEeeMmZdJUdtPOg" name="organisations" type="_9p_NQMbOEeeMmZdJUdtPOg" association="_XKzpMMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_XKzpNcbcEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_XKzpNsbcEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_iX3XgMbcEeeMmZdJUdtPOg" memberEnd="_iX3XgcbcEeeMmZdJUdtPOg _iX3XhMbcEeeMmZdJUdtPOg" navigableOwnedEnd="_iX3XgcbcEeeMmZdJUdtPOg _iX3XhMbcEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_iX3XgcbcEeeMmZdJUdtPOg" name="volunteers" type="_Gq2mQMbOEeeMmZdJUdtPOg" association="_iX3XgMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_iX3XgsbcEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_iX3Xg8bcEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_iX3XhMbcEeeMmZdJUdtPOg" name="feedbackOrganisations" type="_FWyg4MbPEeeMmZdJUdtPOg" association="_iX3XgMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_iX3XhcbcEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_iX3XhsbcEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_ny5c0MbcEeeMmZdJUdtPOg" memberEnd="_ny5c0cbcEeeMmZdJUdtPOg _ny5c1MbcEeeMmZdJUdtPOg" navigableOwnedEnd="_ny5c0cbcEeeMmZdJUdtPOg _ny5c1MbcEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_ny5c0cbcEeeMmZdJUdtPOg" name="eventAndVolunteers" type="_7xNCgMbVEeeMmZdJUdtPOg" association="_ny5c0MbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ny5c0sbcEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ny5c08bcEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_ny5c1MbcEeeMmZdJUdtPOg" name="volunteers" type="_Gq2mQMbOEeeMmZdJUdtPOg" association="_ny5c0MbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ny5c1cbcEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ny5c1sbcEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_qj7aAMbcEeeMmZdJUdtPOg" memberEnd="_qj7aAcbcEeeMmZdJUdtPOg _qj7aBMbcEeeMmZdJUdtPOg" navigableOwnedEnd="_qj7aAcbcEeeMmZdJUdtPOg _qj7aBMbcEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_qj7aAcbcEeeMmZdJUdtPOg" name="eventAndVolunteers" type="_7xNCgMbVEeeMmZdJUdtPOg" association="_qj7aAMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_qj7aAsbcEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_qj7aA8bcEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_qj7aBMbcEeeMmZdJUdtPOg" name="events" type="_Bl0JoMbPEeeMmZdJUdtPOg" association="_qj7aAMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_qj8BEMbcEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_qj8BEcbcEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_thFusMbcEeeMmZdJUdtPOg" memberEnd="_thFuscbcEeeMmZdJUdtPOg _thFutMbcEeeMmZdJUdtPOg" navigableOwnedEnd="_thFuscbcEeeMmZdJUdtPOg _thFutMbcEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_thFuscbcEeeMmZdJUdtPOg" name="feedbackVolunteers" type="__4oPEMbOEeeMmZdJUdtPOg" association="_thFusMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_thFussbcEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_thFus8bcEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_thFutMbcEeeMmZdJUdtPOg" name="volunteers" type="_Gq2mQMbOEeeMmZdJUdtPOg" association="_thFusMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_thFutcbcEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_thFutsbcEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_y8rNoMbcEeeMmZdJUdtPOg" memberEnd="_y8rNocbcEeeMmZdJUdtPOg _y8rNpMbcEeeMmZdJUdtPOg" navigableOwnedEnd="_y8rNocbcEeeMmZdJUdtPOg _y8rNpMbcEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_y8rNocbcEeeMmZdJUdtPOg" name="organisers" type="_6S_cQMbOEeeMmZdJUdtPOg" association="_y8rNoMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_y8rNosbcEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_y8rNo8bcEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_y8rNpMbcEeeMmZdJUdtPOg" name="feedbackVolunteers" type="__4oPEMbOEeeMmZdJUdtPOg" association="_y8rNoMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_y8rNpcbcEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_y8rNpsbcEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_2W21gMbcEeeMmZdJUdtPOg" memberEnd="_2W21gcbcEeeMmZdJUdtPOg _2W3ckMbcEeeMmZdJUdtPOg" navigableOwnedEnd="_2W21gcbcEeeMmZdJUdtPOg _2W3ckMbcEeeMmZdJUdtPOg">
-      <ownedEnd xmi:id="_2W21gcbcEeeMmZdJUdtPOg" name="events" type="_Bl0JoMbPEeeMmZdJUdtPOg" association="_2W21gMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2W21gsbcEeeMmZdJUdtPOg" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_2W21g8bcEeeMmZdJUdtPOg" value="1"/>
-      </ownedEnd>
-      <ownedEnd xmi:id="_2W3ckMbcEeeMmZdJUdtPOg" name="feedbackVolunteers" type="__4oPEMbOEeeMmZdJUdtPOg" association="_2W21gMbcEeeMmZdJUdtPOg">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2W3ckcbcEeeMmZdJUdtPOg"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_2W3cksbcEeeMmZdJUdtPOg" value="*"/>
-      </ownedEnd>
     </packagedElement>
   </packagedElement>
 </uml:Model>
