@@ -59,8 +59,8 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implem
         mDatabase.child("events/" + currentEvent.getEventID() + "/users").orderByChild("status").equalTo("pending").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                mRegisteredUsers = new ArrayList<>();
                 if(dataSnapshot.exists()) {
-                    mRegisteredUsers = new ArrayList<>();
                     for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                         mRegisteredUsers.add(dataSnapshot1.child("id").getValue().toString());
                     }
@@ -68,6 +68,10 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implem
                 } else {
                     noVolunteersText.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.GONE);
+                    adapter = new EventVolunteersAdapter(mVolunteers, mRegisteredUsers, "reg", currentEvent, getContext(), OrganiserSingleEventRegisteredUsersFragment.this, getActivity(), OrganiserSingleEventRegisteredUsersFragment.this);
+                    mRegisteredUsersRecView.setAdapter(adapter);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    mRegisteredUsersRecView.setLayoutManager(linearLayoutManager);
                 }
             }
 

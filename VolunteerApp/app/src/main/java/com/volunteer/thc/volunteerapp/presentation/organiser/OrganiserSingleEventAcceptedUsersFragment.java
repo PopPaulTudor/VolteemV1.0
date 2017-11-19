@@ -125,6 +125,11 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implemen
         } else {
             progressBar.setVisibility(View.GONE);
             noVolunteersText.setVisibility(View.VISIBLE);
+            mVolunteers = new ArrayList<>();
+            adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", currentEvent, getContext(), getActivity(), OrganiserSingleEventAcceptedUsersFragment.this);
+            mAcceptedUsersList.setAdapter(adapter);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+            mAcceptedUsersList.setLayoutManager(linearLayoutManager);
         }
     }
 
