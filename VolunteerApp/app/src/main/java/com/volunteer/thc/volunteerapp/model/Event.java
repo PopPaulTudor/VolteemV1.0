@@ -39,22 +39,6 @@ public class Event implements Serializable {
         this.accepted_volunteers = new ArrayList<>();
     }
 
-    public long getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(long startDate) {
-        this.startDate = startDate;
-    }
-
-    public long getFinishDate() {
-        return finishDate;
-    }
-
-    public void setFinishDate(long finishDate) {
-        this.finishDate = finishDate;
-    }
-
     public Event(String created_by, String name, String location, long startDate, long finishDate, String type, String eventID,
                  String description, long deadline, int size, ArrayList<String> registered_volunteers, ArrayList<String> accepted_volunteers) {
         this.created_by = created_by;
@@ -69,6 +53,22 @@ public class Event implements Serializable {
         this.eventID = eventID;
         this.registered_volunteers = registered_volunteers;
         this.accepted_volunteers = accepted_volunteers;
+    }
+
+    public long getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(long startDate) {
+        this.startDate = startDate;
+    }
+
+    public long getFinishDate() {
+        return finishDate;
+    }
+
+    public void setFinishDate(long finishDate) {
+        this.finishDate = finishDate;
     }
 
     public String getCreated_by() {
@@ -94,7 +94,6 @@ public class Event implements Serializable {
     public void setLocation(String location) {
         this.location = location;
     }
-
 
     public String getType() {
         return type;
@@ -135,7 +134,6 @@ public class Event implements Serializable {
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }
-
 
     public ArrayList<String> getRegistered_volunteers() {
         return registered_volunteers;

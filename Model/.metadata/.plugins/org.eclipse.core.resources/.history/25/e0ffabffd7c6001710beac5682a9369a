@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_7VBy8MbMEeeMmZdJUdtPOg" name="Model">
+  <packagedElement xmi:type="uml:Package" xmi:id="_dFA7oMbNEeeMmZdJUdtPOg" name="Model" visibility="public">
+    <packagedElement xmi:type="uml:Class" xmi:id="_Gq2mQMbOEeeMmZdJUdtPOg" name="Volunteer" visibility="public">
+      <ownedAttribute xmi:id="_JvjtYMbOEeeMmZdJUdtPOg" name="id">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cgFNIMbOEeeMmZdJUdtPOg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cpVPwMbOEeeMmZdJUdtPOg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_KnHAcMbOEeeMmZdJUdtPOg" name="firstName">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_C_9hgMbREeeMmZdJUdtPOg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_C_-IkMbREeeMmZdJUdtPOg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_KwPuUMbOEeeMmZdJUdtPOg" name="lastName">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_EJ4-AMbREeeMmZdJUdtPOg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_EJ5lEMbREeeMmZdJUdtPOg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_h3MUYMbREeeMmZdJUdtPOg" name="email">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ij7ekMbREeeMmZdJUdtPOg" name="city">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ilb6cMbREeeMmZdJUdtPOg" name="phone">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_j__z8MbREeeMmZdJUdtPOg" name="gender">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_kJP2kMbREeeMmZdJUdtPOg" name="age">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_-4tQ4MbTEeeMmZdJUdtPOg" name="createdTimestamp">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_6S_cQMbOEeeMmZdJUdtPOg" name="Organiser" visibility="public">
+      <ownedAttribute xmi:id="_a6R3gMbPEeeMmZdJUdtPOg" name="id">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_a9LagMbPEeeMmZdJUdtPOg" name="firstName">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_a-sdcMbPEeeMmZdJUdtPOg" name="lastName">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_a7zhgMbPEeeMmZdJUdtPOg" name="email">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_bJFvkMbPEeeMmZdJUdtPOg" name="city">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_IqRjgMbSEeeMmZdJUdtPOg" name="phone">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_BYoP8MbUEeeMmZdJUdtPOg" name="createdTimestamp">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_9p_NQMbOEeeMmZdJUdtPOg" name="Organisation" visibility="public">
+      <ownedAttribute xmi:id="_btpOIMbPEeeMmZdJUdtPOg" name="id">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_bu8OoMbPEeeMmZdJUdtPOg" name="name">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WmEwAMbSEeeMmZdJUdtPOg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WmEwAcbSEeeMmZdJUdtPOg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_bwPPIMbPEeeMmZdJUdtPOg" name="email">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_bxnvMMbPEeeMmZdJUdtPOg" name="phone">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_V7ZJYMbUEeeMmZdJUdtPOg" name="createdTimestamp">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="__4oPEMbOEeeMmZdJUdtPOg" name="FeedbackVolunteer" visibility="public">
+      <ownedAttribute xmi:id="_cL5QYMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_cNLp0MbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_cO1PoMbPEeeMmZdJUdtPOg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_Bl0JoMbPEeeMmZdJUdtPOg" name="Event" visibility="public">
+      <ownedAttribute xmi:id="_c_6HQMbPEeeMmZdJUdtPOg" name="id">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_dBRZMMbPEeeMmZdJUdtPOg" name="organisationId">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_dD85wMbPEeeMmZdJUdtPOg" name="name">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_vf2loMbVEeeMmZdJUdtPOg" name="type" type="_b3InsMbXEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_vdM6QMbVEeeMmZdJUdtPOg" name="location">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_vec3cMbVEeeMmZdJUdtPOg" name="description">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_Vj2rwMbXEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_VlEMsMbXEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_VmTi0MbXEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_tVKk0MbXEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_tWmvQMbXEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_tX36kMbXEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_tZK7EMbXEeeMmZdJUdtPOg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_FWyg4MbPEeeMmZdJUdtPOg" name="FeedbackOrganisation" visibility="public">
+      <ownedAttribute xmi:id="_cljtkMbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_cm1f8MbPEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_coGEMMbPEeeMmZdJUdtPOg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_0jNHkMbREeeMmZdJUdtPOg" name="ExperienceVolunteer" visibility="public">
+      <ownedAttribute xmi:id="_QfbagMbVEeeMmZdJUdtPOg" name="id">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_QgwQMMbVEeeMmZdJUdtPOg" name="volunteerId">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_QjeNAMbVEeeMmZdJUdtPOg" name="eventId">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_Qk3UIMbVEeeMmZdJUdtPOg" name="experience">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#long"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_QwwbEMbVEeeMmZdJUdtPOg" name="createdTimestamp">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_sYR4EMbSEeeMmZdJUdtPOg" name="OrganiserAndOrganisation" visibility="public">
+      <ownedAttribute xmi:id="_uVP7EMbSEeeMmZdJUdtPOg" name="id">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_vjMU4MbSEeeMmZdJUdtPOg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_vjMU4cbSEeeMmZdJUdtPOg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_uWqQUMbSEeeMmZdJUdtPOg" name="organiserId">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_uYCJUMbSEeeMmZdJUdtPOg" name="organisationId">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ubshUMbSEeeMmZdJUdtPOg" name="registration" type="_cp6sUMbTEeeMmZdJUdtPOg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_LCMAoMbTEeeMmZdJUdtPOg" name="Role" visibility="public">
+      <ownedLiteral xmi:id="_RGAkQMbTEeeMmZdJUdtPOg" name="ADMINISTRATOR"/>
+      <ownedLiteral xmi:id="_RaEIsMbTEeeMmZdJUdtPOg" name="MEMBER"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_cp6sUMbTEeeMmZdJUdtPOg" name="Registration" visibility="public">
+      <ownedAttribute xmi:id="_gnDQQMbTEeeMmZdJUdtPOg" name="id">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_goc-cMbTEeeMmZdJUdtPOg" name="key">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_gpzpUMbTEeeMmZdJUdtPOg" name="organisationId"/>
+      <ownedAttribute xmi:id="_grHQ4MbTEeeMmZdJUdtPOg" name="role" type="_LCMAoMbTEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_gsZqUMbTEeeMmZdJUdtPOg" name="createdTimestamp">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_7xNCgMbVEeeMmZdJUdtPOg" name="EventAndVolunteer" visibility="public">
+      <ownedAttribute xmi:id="_E_IKoMbWEeeMmZdJUdtPOg" name="id">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_FAXgwMbWEeeMmZdJUdtPOg" name="eventId">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_FBwn4MbWEeeMmZdJUdtPOg" name="volunteerId">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_FDNZYMbWEeeMmZdJUdtPOg" name="status" type="_RbdvgMbWEeeMmZdJUdtPOg"/>
+      <ownedAttribute xmi:id="_FE8ewMbWEeeMmZdJUdtPOg" name="createdTimestamp">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_RbdvgMbWEeeMmZdJUdtPOg" name="VolunteerEventStatus" visibility="public">
+      <ownedLiteral xmi:id="_WHKpoMbWEeeMmZdJUdtPOg" name="ACCEPTED"/>
+      <ownedLiteral xmi:id="_WLgXEMbWEeeMmZdJUdtPOg" name="PENDING"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_b3InsMbXEeeMmZdJUdtPOg" name="EventType" visibility="public">
+      <ownedLiteral xmi:id="_eamqAMbXEeeMmZdJUdtPOg" name="SPORTS"/>
+      <ownedLiteral xmi:id="_ee8-gMbXEeeMmZdJUdtPOg" name="MUSIC"/>
+      <ownedLiteral xmi:id="_exhVMMbXEeeMmZdJUdtPOg" name="FESTIVAL"/>
+      <ownedLiteral xmi:id="_e_KIkMbXEeeMmZdJUdtPOg" name="CHARITY"/>
+      <ownedLiteral xmi:id="_fDcysMbXEeeMmZdJUdtPOg" name="TRAINING"/>
+      <ownedLiteral xmi:id="_o5PMEMbXEeeMmZdJUdtPOg" name="OTHER"/>
+    </packagedElement>
+  </packagedElement>
+</uml:Model>

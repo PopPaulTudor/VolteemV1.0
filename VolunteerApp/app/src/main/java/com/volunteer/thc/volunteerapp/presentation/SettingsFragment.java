@@ -49,7 +49,7 @@ import de.cketti.library.changelog.ChangeLog;
 public class SettingsFragment extends Fragment {
 
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private EditText mPassword, mOldPassword, mNewPassword ,mNewPasswordAgain;
+    private EditText mPassword, mOldPassword, mNewPassword, mNewPasswordAgain;
     private SwitchCompat notificationsSwitch;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private SharedPreferences prefs;
@@ -70,12 +70,12 @@ public class SettingsFragment extends Fragment {
         notificationsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(notificationsSwitch.isChecked()) {
-                    if(!notifications) {
+                if (notificationsSwitch.isChecked()) {
+                    if (!notifications) {
                         prefs.edit().putBoolean("notifications", true).apply();
                     }
                 } else {
-                    if(notifications) {
+                    if (notifications) {
                         AlertDialog muteNotificationsAlert = new AlertDialog.Builder(getActivity())
                                 .setTitle("Mute notifications")
                                 .setMessage("Are you sure you want to mute all notifications?")
@@ -95,6 +95,30 @@ public class SettingsFragment extends Fragment {
                         muteNotificationsAlert.show();
                     }
                 }
+            }
+        });
+
+        view.findViewById(R.id.about_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog aboutAlertDialog = new AlertDialog.Builder(getActivity())
+                        .setCancelable(true)
+                        .setTitle("About")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setMessage("All icons have been downloaded from www.flaticon.com. Authors:\n\nAdd image icon: Dreamstale\n" +
+                                "Profile age icon: Freepik\nProfile email icon: Freepik\nProfile location icon: Freepik\nProfile phone icon: Freepik" +
+                                "Side menu All Events icon: Webalys\nSide menu My Events icon: Freepik\n" +
+                                "Side menu Profile icon: Smashicons\nSide menu News icon: Bloomicon\n" +
+                                "Side menu Interview icon: Bloomicon\nSide menu Scoreboard icon: Freepik\nSide menu Settings icon: Maxim Basinski Premium\n" +
+                                "Any forgotten credits please report to contact.volteem@gmail.com\n\nApp developed by The Happy Coders team in the \"" +
+                                "Descopera-ti pasiunea in IT\" programme, 2017.")
+                        .create();
+                aboutAlertDialog.show();
             }
         });
 
@@ -140,7 +164,7 @@ public class SettingsFragment extends Fragment {
 
                 mOldPassword = (EditText) parentView.findViewById(R.id.oldPassword);
                 mNewPassword = (EditText) parentView.findViewById(R.id.newPassword);
-                mNewPasswordAgain = (EditText) parentView.findViewById(R.id.newPasswordAgain) ;
+                mNewPasswordAgain = (EditText) parentView.findViewById(R.id.newPasswordAgain);
 
                 parentView.findViewById(R.id.change_password).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -234,7 +258,7 @@ public class SettingsFragment extends Fragment {
             public void onClick(View view) {
                 Intent Email = new Intent(Intent.ACTION_SEND);
                 Email.setType("text/email");
-                Email.putExtra(Intent.EXTRA_EMAIL, new String[] { "contact.volteem@gmail.com" });
+                Email.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact.volteem@gmail.com"});
                 Email.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
                 Email.putExtra(Intent.EXTRA_TEXT, "");
                 startActivity(Intent.createChooser(Email, "Send Feedback:"));
