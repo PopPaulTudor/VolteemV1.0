@@ -145,7 +145,15 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
-                            Snackbar.make(getCurrentFocus(), "Contract downloaded", Snackbar.LENGTH_LONG).show();
+                            Snackbar snackbar = Snackbar.make(getCurrentFocus(),"Contract downloaded", Snackbar.LENGTH_LONG);
+                            snackbar.setAction("OPEN", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    openFile();
+                                }
+                            });
+                            snackbar.show();
+
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -259,9 +267,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    Picasso.with(getApplicationContext()).load(task.getResult()).fit().centerInside()
-
-                            .into(collapsingToolbarImage);
+                    Picasso.with(getApplicationContext()).load(task.getResult()).fit().centerInside().into(collapsingToolbarImage);
                 } else {
                     Picasso.with(getApplicationContext()).load(imageUris.get(typeList.indexOf(currentEvent.getType()))).fit().centerCrop().into(collapsingToolbarImage);
                 }
@@ -278,7 +284,6 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventDescription.setText(currentEvent.getDescription());
         String deadline = CalendarUtil.getStringDateFromMM(currentEvent.getDeadline());
         mEventSize.setText(currentEvent.getSize() + " volunteers");
-
 
         int index = deadline.lastIndexOf("/");
         deadline = deadline.substring(0, index) + deadline.substring(index + 1);
@@ -300,7 +305,6 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                                 mStatus.setText("Accepted");
                                 mStatus.setTextColor(Color.rgb(25, 156, 136));
                                 mDownloadContract.setVisibility(View.VISIBLE);
-
                             }
                         }
 
@@ -310,6 +314,13 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    private void openFile() {
+        Uri selectedUri = Uri.parse(Environment.getExternalStorageDirectory().getPath() + "/Volteem/");
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(selectedUri, "resources/folder");
+        startActivity(Intent.createChooser(intent, "Open folder"));
     }
 
     @Override
