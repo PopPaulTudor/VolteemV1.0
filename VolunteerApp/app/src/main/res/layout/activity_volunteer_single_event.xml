@@ -151,7 +151,7 @@
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/ic_date_range_black_24dp" />
+                    android:src="@drawable/ic_date_range_blue_24dp" />
 
 
                 <TextView

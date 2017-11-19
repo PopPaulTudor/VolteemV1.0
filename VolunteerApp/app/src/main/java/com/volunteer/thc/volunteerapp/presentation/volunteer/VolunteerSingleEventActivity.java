@@ -49,13 +49,12 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.RegisteredUser;
-import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
+import com.volunteer.thc.volunteerapp.widgets.SquareImageView;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class VolunteerSingleEventActivity extends AppCompatActivity {
@@ -73,6 +72,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private Button mLeaveEvent, mDownloadContract;
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private SquareImageView squareImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +104,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventSize = (TextView) findViewById(R.id.event_size);
         mStatus = (TextView) findViewById(R.id.event_status);
 
+
         mSignupForEventFloatingButton = (FloatingActionButton) findViewById(R.id.fab);
         mLeaveEvent = (Button) findViewById(R.id.event_leave);
         mDownloadContract = (Button) findViewById(R.id.event_pdf);
@@ -130,33 +131,45 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             });
         }
 
+
+
         mDownloadContract.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(PermissionUtil.isStorageWritePermissionGranted(VolunteerSingleEventActivity.this)) {
-                    File rootPath = new File(Environment.getExternalStorageDirectory(), "Volteem");
+                if (PermissionUtil.isStorageWritePermissionGranted(VolunteerSingleEventActivity.this)) {
+                    final File rootPath = new File(Environment.getExternalStorageDirectory(), "Volteem");
                     if (!rootPath.exists()) {
                         rootPath.mkdirs();
                     }
-                    final File localFile = new File(rootPath, currentEvent.getName()+".pdf");
+                    final File localFile = new File(rootPath, currentEvent.getName() + ".pdf");
 
                     storageRef.child("Contracts").child("Event").child(currentEvent.getEventID()).getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
-                            Snackbar.make(getCurrentFocus(), "Contract downloaded", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(getCurrentFocus(), "Contract downloaded", Snackbar.LENGTH_LONG).setAction("Open Folder", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                    // TODO: 29.10.2017 send user to path
+                                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                                    intent.setDataAndType(Uri.fromFile(localFile.getAbsoluteFile()), "*/*");
+                                    startActivity(Intent.createChooser(intent, "pdf"));
+
+                                }
+                            }).show();
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            if(e.toString().contains("does not exist at location")) {
+                            if (e.toString().contains("does not exist at location")) {
                                 Snackbar.make(getCurrentFocus(), "Contract is not uploaded yet. We will notify you when the contract will be available", Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
-                }else{
+                } else {
                     Snackbar.make(getCurrentFocus(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

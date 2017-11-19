@@ -31,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -48,6 +49,7 @@ import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * Created by Cristi on 7/27/2017.
@@ -296,8 +298,13 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 StorageReference filePath = mStorage.child("Contracts").child("Event").child(mCurrentEvent.getEventID());
                 filePath.putFile(uriPDF);
 
-                mDatabase.child("changes").setValue(new ChangeEvent(mCurrentEvent.getName(),"A new contract has been uploaded",mCurrentEvent,false));
 
+                for(String id: mCurrentEvent.getAccepted_volunteers()) {
+
+                    String newsID = mDatabase.child("news").push().getKey();
+                    mDatabase.child("news").child(newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, "soon", DatabaseUtils.getUserID(), id,
+                            "A new contract has been uploaded for" +mCurrentEvent.getName(), NewsMessage.FEEDBACK, false, false));
+                }
             }
 
             Toast.makeText(getActivity(), "Event updated!", Toast.LENGTH_LONG).show();

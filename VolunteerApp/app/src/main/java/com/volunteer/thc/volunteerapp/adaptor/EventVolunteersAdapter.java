@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -24,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,6 +34,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Chat;
@@ -48,6 +54,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.UUID;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by poppa on 28.07.2017.
  */
@@ -60,6 +68,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     private Event event;
     private int mExpandedPosition = -1;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private StorageReference mStorage= FirebaseStorage.getInstance().getReference();
     private ViewGroup parent;
     private Context context;
     private Calendar date = Calendar.getInstance();
@@ -68,6 +77,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     private Activity activity;
     private int counter = 0, mShortAnimTime;
     private ActionListener.VolunteersRemovedListener volunteersRemovedListener;
+
 
     public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context, OrganiserSingleEventRegisteredUsersFragment fragment, Activity activity, ActionListener.VolunteersRemovedListener volunteersRemovedListener) {
         listVolunteer = list;
@@ -107,6 +117,15 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         holder.cityVolunteer.setText("City: " + listVolunteer.get(position).getCity());
         holder.ageVolunteer.setText("Age: " + listVolunteer.get(position).getAge());
         holder.emailVolunteer.setText("Email: " + listVolunteer.get(position).getEmail());
+
+        mStorage.child("Photos").child("User").child(volunteerIDs.get(position)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.with(context).load(uri).fit().centerCrop().into(holder.volunteerImage);
+            }
+        });
+
+
         if (classParent.contains("accept")) {
             holder.phoneVolunteer.setText("Experience: " + listVolunteer.get(position).getExperience());
             holder.acceptUser.setVisibility(View.GONE);
@@ -114,6 +133,9 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             holder.viewFeedback.setVisibility(View.GONE);
             holder.kickVolunteer.setVisibility(View.VISIBLE);
             holder.expPhoneVolunteer.setText(listVolunteer.get(position).getPhone());
+            holder.detailedText.setText("Phone:");
+
+
         } else {
             holder.phoneVolunteer.setText("Phone: " + listVolunteer.get(position).getPhone());
             holder.acceptUser.setVisibility(View.VISIBLE);
@@ -121,6 +143,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             holder.viewFeedback.setVisibility(View.VISIBLE);
             holder.kickVolunteer.setVisibility(View.GONE);
             holder.expPhoneVolunteer.setText(listVolunteer.get(position).getExperience() + "");
+            holder.detailedText.setText("Experience:");
+
         }
 
         final boolean isExpanded = position == mExpandedPosition;
@@ -142,6 +166,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 notifyDataSetChanged();
             }
         });
+
+
 
         holder.viewFeedback.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,7 +240,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             @Override
             public void onClick(View view) {
 
-                holder.acceptUser.setTextColor(Color.rgb(0, 74, 101));
 
                 AlertDialog acceptUserDialog = new AlertDialog.Builder(context)
                         .setTitle("Accept volunteer")
@@ -249,7 +274,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                         .create();
                 acceptUserDialog.show();
 
-                holder.acceptUser.setTextColor(Color.rgb(25, 156, 136));
             }
         });
 
@@ -257,7 +281,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             @Override
             public void onClick(View v) {
 
-                holder.sendMessage.setTextColor(Color.rgb(0, 74, 101));
                 final Intent intent = new Intent(context, ConversationActivity.class);
 
                 mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -307,7 +330,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                     }
                 });
 
-                holder.sendMessage.setTextColor(Color.rgb(25, 156, 136));
             }
         });
 
@@ -394,10 +416,11 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
     class EventViewHolder extends RecyclerView.ViewHolder {
 
-        TextView nameVolunteer, expPhoneVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer, emailVolunteer;
+        TextView nameVolunteer, expPhoneVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer, emailVolunteer,detailedText;
         RelativeLayout item;
-        LinearLayout expandableItem;
-        Button acceptUser, sendMessage, viewFeedback, kickVolunteer;
+        RelativeLayout expandableItem;
+        ImageView acceptUser, sendMessage, viewFeedback, kickVolunteer;
+        CircleImageView volunteerImage;
 
         EventViewHolder(View itemView) {
             super(itemView);
@@ -405,16 +428,17 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             item = (RelativeLayout) itemView.findViewById(R.id.item_view);
             nameVolunteer = (TextView) itemView.findViewById(R.id.name_volunteer_element);
             expPhoneVolunteer = (TextView) itemView.findViewById(R.id.exp_phone_volunteer_element);
-
-            expandableItem = (LinearLayout) itemView.findViewById(R.id.expandable_item);
+            expandableItem = (RelativeLayout) itemView.findViewById(R.id.expandable_item);
             cityVolunteer = (TextView) itemView.findViewById(R.id.volunteer_city);
             ageVolunteer = (TextView) itemView.findViewById(R.id.volunteer_age);
             phoneVolunteer = (TextView) itemView.findViewById(R.id.volunteer_phone);
             emailVolunteer = (TextView) itemView.findViewById(R.id.volunteer_email);
-            acceptUser = (Button) itemView.findViewById(R.id.accept_volunteer);
-            sendMessage = (Button) itemView.findViewById(R.id.send_volunteer);
-            viewFeedback = (Button) itemView.findViewById(R.id.view_feedback);
-            kickVolunteer = (Button) itemView.findViewById(R.id.kick_volunteer);
+            acceptUser = (ImageView) itemView.findViewById(R.id.accept_volunteer);
+            sendMessage = (ImageView) itemView.findViewById(R.id.send_volunteer);
+            viewFeedback = (ImageView) itemView.findViewById(R.id.view_feedback);
+            kickVolunteer = (ImageView) itemView.findViewById(R.id.kick_volunteer);
+            detailedText=(TextView) itemView.findViewById(R.id.text_experience);
+            volunteerImage=(CircleImageView)itemView.findViewById(R.id.photo_volunteer_element);
         }
     }
 
