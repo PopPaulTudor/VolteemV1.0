@@ -49,13 +49,12 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.RegisteredUser;
-import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
+import com.volunteer.thc.volunteerapp.widgets.SquareImageView;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class VolunteerSingleEventActivity extends AppCompatActivity {
@@ -73,6 +72,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private Button mLeaveEvent, mDownloadContract;
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private SquareImageView squareImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +104,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventSize = (TextView) findViewById(R.id.event_size);
         mStatus = (TextView) findViewById(R.id.event_status);
 
+
         mSignupForEventFloatingButton = (FloatingActionButton) findViewById(R.id.fab);
         mLeaveEvent = (Button) findViewById(R.id.event_leave);
         mDownloadContract = (Button) findViewById(R.id.event_pdf);
@@ -130,41 +131,45 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             });
         }
 
+
+
         mDownloadContract.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(PermissionUtil.isStorageWritePermissionGranted(VolunteerSingleEventActivity.this)) {
-                    File rootPath = new File(Environment.getExternalStorageDirectory(), "Volteem");
+                if (PermissionUtil.isStorageWritePermissionGranted(VolunteerSingleEventActivity.this)) {
+                    final File rootPath = new File(Environment.getExternalStorageDirectory(), "Volteem");
                     if (!rootPath.exists()) {
                         rootPath.mkdirs();
                     }
-                    final File localFile = new File(rootPath, currentEvent.getName()+".pdf");
+                    final File localFile = new File(rootPath, currentEvent.getName() + ".pdf");
 
                     storageRef.child("Contracts").child("Event").child(currentEvent.getEventID()).getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
-                            Snackbar snackbar = Snackbar.make(getCurrentFocus(),"Contract downloaded", Snackbar.LENGTH_LONG);
-                            snackbar.setAction("OPEN", new View.OnClickListener() {
+                            Snackbar.make(getCurrentFocus(), "Contract downloaded", Snackbar.LENGTH_LONG).setAction("Open Folder", new View.OnClickListener() {
                                 @Override
-                                public void onClick(View view) {
-                                    openFile();
-                                }
-                            });
-                            snackbar.show();
+                                public void onClick(View v) {
 
+                                    // TODO: 29.10.2017 send user to path
+                                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                                    intent.setDataAndType(Uri.fromFile(localFile.getAbsoluteFile()), "*/*");
+                                    startActivity(Intent.createChooser(intent, "pdf"));
+
+                                }
+                            }).show();
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            if(e.toString().contains("does not exist at location")) {
+                            if (e.toString().contains("does not exist at location")) {
                                 Snackbar.make(getCurrentFocus(), "Contract is not uploaded yet. We will notify you when the contract will be available", Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
-                }else{
+                } else {
                     Snackbar.make(getCurrentFocus(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -267,7 +272,9 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    Picasso.with(getApplicationContext()).load(task.getResult()).fit().centerInside().into(collapsingToolbarImage);
+                    Picasso.with(getApplicationContext()).load(task.getResult()).fit().centerInside()
+
+                            .into(collapsingToolbarImage);
                 } else {
                     Picasso.with(getApplicationContext()).load(imageUris.get(typeList.indexOf(currentEvent.getType()))).fit().centerCrop().into(collapsingToolbarImage);
                 }
@@ -284,6 +291,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mEventDescription.setText(currentEvent.getDescription());
         String deadline = CalendarUtil.getStringDateFromMM(currentEvent.getDeadline());
         mEventSize.setText(currentEvent.getSize() + " volunteers");
+
 
         int index = deadline.lastIndexOf("/");
         deadline = deadline.substring(0, index) + deadline.substring(index + 1);
@@ -305,6 +313,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                                 mStatus.setText("Accepted");
                                 mStatus.setTextColor(Color.rgb(25, 156, 136));
                                 mDownloadContract.setVisibility(View.VISIBLE);
+
                             }
                         }
 
@@ -314,13 +323,6 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         }
                     });
         }
-    }
-
-    private void openFile() {
-        Uri selectedUri = Uri.parse(Environment.getExternalStorageDirectory().getPath() + "/Volteem/");
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(selectedUri, "resources/folder");
-        startActivity(Intent.createChooser(intent, "Open folder"));
     }
 
     @Override

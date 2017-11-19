@@ -13,6 +13,10 @@ public class ChangeEvent {
 
     private boolean notified;
 
+
+    public ChangeEvent() {
+    }
+
     public ChangeEvent(String title, String content, Event event, boolean notified) {
         this.title = title;
         this.content = content;

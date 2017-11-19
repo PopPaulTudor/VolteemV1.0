@@ -64,69 +64,31 @@ public class FirebaseNewsService extends Service {
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
 
-        mDatabase.child("changes").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (user != null) {
-                    final ChangeEvent changeEvent = dataSnapshot.getValue(ChangeEvent.class);
-                    if (!changeEvent.isNotified()) {
-                        mDatabase.child("events/" + changeEvent.getEvent().getEventID() + "/users").orderByChild("status").equalTo("pending").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                sendChangesEvent(changeEvent);
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-
-                        mDatabase.child("changes/" + dataSnapshot.getKey() + "/notified").setValue(true);
-
-                    }
-
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
         mDatabase.child("news").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if (user != null) {
                     NewsMessage newsMessage = dataSnapshot.getValue(NewsMessage.class);
-                    if (!newsMessage.isStarred() && (newsMessage.getExpireDate() + 604800000) < date.getTimeInMillis()) {
+
+                    if (newsMessage.getContent().contains("A new contract has been uploaded for")) {
+                        sendNews(newsMessage);
                         mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
+
                     } else {
-                        if (!newsMessage.isNotified()) {
-                            if (prefs.getBoolean("notifications", true)) {
-                                sendNews(newsMessage);
-                            }
-                            mDatabase.child("news/" + dataSnapshot.getKey() + "/notified").setValue(true);
-                            if (newsMessage.getType() == NewsMessage.EVENT_DELETED) {
-                                mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
+                        if (!newsMessage.isStarred() && (newsMessage.getExpireDate() + 604800000) < date.getTimeInMillis()) {
+                            mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
+                        } else {
+                            if (!newsMessage.isNotified()) {
+                                if (prefs.getBoolean("notifications", true)) {
+                                    sendNews(newsMessage);
+                                }
+                                mDatabase.child("news/" + dataSnapshot.getKey() + "/notified").setValue(true);
+                                if (newsMessage.getType() == NewsMessage.EVENT_DELETED) {
+                                    mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
+                                }
                             }
                         }
+
                     }
                 }
             }
