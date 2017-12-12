@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RadioGroup
+        android:id="@+id/kick_volunteer_radio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp">
+
+        <RadioButton
+            android:id="@+id/not_respect_duties"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This volunteer does not respect his duties." />
+
+        <RadioButton
+            android:id="@+id/inappropriate_behaviour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="This volunteer has inappropriate behaviour." />
+
+        <RadioButton
+            android:id="@+id/cant_come"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="This volunteer can no longer come to this event." />
+
+        <RadioButton
+            android:id="@+id/too_many_volunteer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="There are too many volunteers." />
+
+        <RadioButton
+            android:id="@+id/radio_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Other" />
+
+        <EditText
+            android:id="@+id/feedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:ems="10"
+            android:hint="If you choose Other, please detail."
+            android:inputType="textMultiLine"
+            android:visibility="gone"/>
+
+    </RadioGroup>
+</RelativeLayout>

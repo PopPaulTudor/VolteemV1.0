@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="3dp"
+    android:paddingEnd="3dp"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/CardElement"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:cardCornerRadius="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <ImageView
+                android:id="@+id/ImageCardElement"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/rectangle" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="130dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/card_text">
+
+
+                <TextView
+                    android:id="@+id/NameCardElement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15sp"
+                    android:textSize="30dp"
+                    android:layout_marginTop="45dp"
+                    android:hint="Electric Castle 2017"
+                    android:textColor="@color/black" />
+
+
+                <TextView
+                    android:id="@+id/DateCardElement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:layout_below="@+id/NameCardElement"
+                    android:layout_marginStart="15sp"
+                    android:hint="13/07/17"
+                    android:textColor="@color/black" />
+
+
+                <TextView
+                    android:id="@+id/LocationCardElement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="20dp"
+                    android:layout_alignTop="@+id/DateCardElement"
+                    android:layout_marginEnd="15sp"
+                    android:hint="Bontida"
+                    android:textColor="@color/black" />
+
+
+
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/CardCheck"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_watch"
+                android:layout_alignParentRight="true"
+                android:layout_margin="3dp"
+                android:layout_alignParentTop="true"/>
+
+
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+
+</LinearLayout>
