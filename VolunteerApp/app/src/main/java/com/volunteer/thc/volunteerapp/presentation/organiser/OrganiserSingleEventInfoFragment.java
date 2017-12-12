@@ -31,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -48,6 +49,7 @@ import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * Created by Cristi on 7/27/2017.
@@ -68,7 +70,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     private boolean hasSelectedPDF = false;
     private Uri uriPicture = null;
     private boolean hasUserSelectedPicture = false;
-    Button changeContract;
+    private Button changeContract, saveChanges, cancelChanges;
     private Uri uriPDF;
 
     @Nullable
@@ -80,6 +82,8 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mCurrentEvent = (Event) getArguments().getSerializable("currentEvent");
         populateSpinnerArray();
 
+        saveChanges = (Button) view.findViewById(R.id.save_changes);
+        cancelChanges = (Button) view.findViewById(R.id.cancel_changes);
         mName = (EditText) view.findViewById(R.id.event_deadline);
         mLocation = (EditText) view.findViewById(R.id.event_location);
         mStartDate = (EditText) view.findViewById(R.id.event_date_start);
@@ -122,6 +126,20 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+            }
+        });
+
+        saveChanges.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSaveItemPressed();
+            }
+        });
+
+        cancelChanges.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onCancelItemPressed();
             }
         });
 
@@ -199,8 +217,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         inflater.inflate(R.menu.menu_event_edit, menu);
 
         mEdit = menu.findItem(R.id.action_edit);
-        mSave = menu.findItem(R.id.action_save);
-        mCancel = menu.findItem(R.id.action_cancel);
         mDelete = menu.findItem(R.id.action_delete);
     }
 
@@ -209,12 +225,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_edit:
                 onEditItemPressed();
-                return true;
-            case R.id.action_save:
-                onSaveItemPressed();
-                return true;
-            case R.id.action_cancel:
-                onCancelItemPressed();
                 return true;
             case R.id.action_delete:
                 onDeleteItemPressed();
@@ -225,11 +235,9 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
     private void onEditItemPressed() {
         toggleEdit(true);
-        mEdit.setVisible(false);
-        mSave.setVisible(true);
-        mCancel.setVisible(true);
-        mDelete.setVisible(false);
 
+        saveChanges.setVisibility(View.VISIBLE);
+        cancelChanges.setVisibility(View.VISIBLE);
         mImage.setClickable(true);
         changeContract.setClickable(true);
     }
@@ -296,16 +304,19 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 StorageReference filePath = mStorage.child("Contracts").child("Event").child(mCurrentEvent.getEventID());
                 filePath.putFile(uriPDF);
 
-                mDatabase.child("changes").setValue(new ChangeEvent(mCurrentEvent.getName(),"A new contract has been uploaded",mCurrentEvent,false));
 
+                for(String id: mCurrentEvent.getAccepted_volunteers()) {
+
+                    String newsID = mDatabase.child("news").push().getKey();
+                    mDatabase.child("news").child(newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, "soon", DatabaseUtils.getUserID(), id,
+                            "A new contract has been uploaded for" +mCurrentEvent.getName(), NewsMessage.FEEDBACK, false, false));
+                }
             }
 
             Toast.makeText(getActivity(), "Event updated!", Toast.LENGTH_LONG).show();
 
-            mEdit.setVisible(true);
-            mSave.setVisible(false);
-            mCancel.setVisible(false);
-            mDelete.setVisible(true);
+            saveChanges.setVisibility(View.GONE);
+            cancelChanges.setVisibility(View.GONE);
             toggleEdit(false);
             hideKeyboardFrom(getActivity(), getView());
         }
@@ -331,10 +342,8 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mFinishDate.setError(null);
 
         toggleEdit(false);
-        mEdit.setVisible(true);
-        mCancel.setVisible(false);
-        mSave.setVisible(false);
-        mDelete.setVisible(true);
+        saveChanges.setVisibility(View.GONE);
+        cancelChanges.setVisibility(View.GONE);
         hideKeyboardFrom(getActivity(), getView());
 
         mImage.setClickable(false);

@@ -196,7 +196,6 @@ public class CreateEventActivity extends AppCompatActivity {
                     if(hasSelectedPDF){
                         filePath = mStorage.child("Contracts").child("Event").child(eventID);
                         filePath.putFile(uriPDF);
-
                     }
 
                     mDatabase.child("users/organisers/" + user.getUid())
@@ -255,11 +254,8 @@ public class CreateEventActivity extends AppCompatActivity {
                     uriPDF = data.getData();
                     hasSelectedPDF = true;
                     mLoadPdf.setText(ImageUtils.getFileName(uriPDF,CreateEventActivity.this));
-
-
                 }
             }
-
         }
     }
 
@@ -300,7 +296,7 @@ public class CreateEventActivity extends AppCompatActivity {
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mStartDate) &&
                 editTextIsValid(mFinishDate) && editTextIsValid(mDescription) &&
-                editTextIsValid(mDeadline) && editTextIsValid(mSize) && hasSelectedPDF);
+                editTextIsValid(mDeadline) && editTextIsValid(mSize));
         if (valid && TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
             Toast.makeText(this, "Please select a type.", Toast.LENGTH_SHORT).show();
             return false;

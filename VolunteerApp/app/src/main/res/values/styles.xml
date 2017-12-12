@@ -28,4 +28,9 @@
         <item name="rippleColor">@color/green</item>
     </style>
 
+
+    <style name="TabLayoutTextStyle">
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

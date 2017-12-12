@@ -18,5 +18,6 @@
 	<color name="tint_delete_account">#14000000</color>
     <color name="cardElementBackgroundTint">#a1ffffff</color>
     <color name="lightGrey">#DDDDDD</color>
+    <color name="transparent">#00ff0000</color>
     <color name="backgroundColor">#F2E3EB</color>
 </resources>
