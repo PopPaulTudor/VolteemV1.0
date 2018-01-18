@@ -1,6 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
 import android.Manifest;
+import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -15,9 +16,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -26,7 +31,9 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +47,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.adaptor.EventQuestionsAdapter;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.InterviewQuestion;
 import com.volunteer.thc.volunteerapp.notification.NotificationEventReceiver;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
@@ -60,18 +69,24 @@ public class CreateEventActivity extends AppCompatActivity {
     private EditText mName, mLocation, mDescription, mDeadline, mSize, mStartDate, mFinishDate;
     private ImageView mImage;
     private Spinner mType;
-    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private long startDate = -1, finishDate, deadline;
     private StorageReference mStorage;
     private Uri uriPicture = null, uriPDF = null;
     private ArrayList<String> typeList = new ArrayList<>();
+    private ArrayList<InterviewQuestion> questionsList = new ArrayList<>();
     private Resources resources;
     private ArrayList<Uri> imageUris = new ArrayList<>();
     private boolean hasUserSelectedPicture = false;
     private boolean hasSelectedPDF = false;
-    private Button mLoadPdf;
-
+    private Button mLoadPdf, mDoneButton;
+    private TextView questionText;
+    private int longAnimTime;
+    private EventQuestionsAdapter eventQuestionsAdapter;
+    private ScrollView createEventScrollView;
+    private NestedScrollView questionsScrollView;
+    private RecyclerView questionsRecyclerView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,6 +97,7 @@ public class CreateEventActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        mDoneButton = (Button) findViewById(R.id.questions_done);
         mName = (EditText) findViewById(R.id.event_deadline);
         mLocation = (EditText) findViewById(R.id.event_location);
         mStartDate = (EditText) findViewById(R.id.event_date_start_create);
@@ -92,9 +108,33 @@ public class CreateEventActivity extends AppCompatActivity {
         mImage = (ImageView) findViewById(R.id.event_image);
         mSize = (EditText) findViewById(R.id.event_size);
         mStorage = FirebaseStorage.getInstance().getReference();
+        questionText = (TextView) findViewById(R.id.question_text);
+        createEventScrollView = (ScrollView) findViewById(R.id.create_event);
+        questionsScrollView = (NestedScrollView) findViewById(R.id.questionsScrollView);
+        questionsRecyclerView = (RecyclerView) findViewById(R.id.questions_recyclerView);
+        questionsRecyclerView.setHasFixedSize(true);
         resources = getResources();
 
+        longAnimTime = resources.getInteger(android.R.integer.config_longAnimTime);
         populateUriList();
+
+        mDatabase.child("questions").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    questionsList.add(dataSnapshot1.getValue(InterviewQuestion.class));
+                }
+                eventQuestionsAdapter = new EventQuestionsAdapter(questionsList);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(CreateEventActivity.this);
+                questionsRecyclerView.setAdapter(eventQuestionsAdapter);
+                questionsRecyclerView.setLayoutManager(linearLayoutManager);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("CreateEventQuestions", databaseError.getMessage());
+            }
+        });
 
         Picasso.with(this).load(imageUris.get(3)).fit().centerCrop().into(mImage);
         Button mSaveEvent = (Button) findViewById(R.id.save_event);
@@ -170,50 +210,38 @@ public class CreateEventActivity extends AppCompatActivity {
                 if (validateForm()) {
 
                     hideKeyboardFrom(CreateEventActivity.this, view);
-                    String name = mName.getText().toString();
-                    String location = mLocation.getText().toString();
-                    String description = mDescription.getText().toString();
-                    int size = Integer.parseInt(mSize.getText().toString());
-                    final String eventID = mDatabase.child("events").push().getKey();
-                    String type = mType.getSelectedItem().toString();
-                    StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
+                    animateQuestions();
 
-                    if (hasUserSelectedPicture) {
-                        filePath.putBytes(ImageUtils.compressImage(uriPicture, CreateEventActivity.this, getResources()));
-                    }
-                    if(hasSelectedPDF){
-                        filePath = mStorage.child("Contracts").child("Event").child(eventID);
-                        filePath.putFile(uriPDF);
-                    }
-
-                    mDatabase.child("users/organisers/" + user.getUid())
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    int lastEvent = (int) dataSnapshot.child("events").getChildrenCount();
-                                    int eventsNr = dataSnapshot.child("eventsnumber").getValue(Integer.class);
-                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/events/" + lastEvent, eventID);
-                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/eventsnumber", eventsNr + 1);
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-
-                    Event new_event = new Event(user.getUid(), name, location, startDate, finishDate, type, eventID, description, deadline, size);
-                    DatabaseUtils.writeData("events/" + eventID, new_event);
-                    DatabaseUtils.writeData("events/" + eventID + "/validity", "valid");
-
-                    Intent alarm = new Intent(CreateEventActivity.this, NotificationEventReceiver.class);
-                    alarm.putExtra("nameEvent", name);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(CreateEventActivity.this, 100, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(0, finishDate, pendingIntent);
-
-                    returnToEvents();
-                    Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    mDoneButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View view) {
+                            final ArrayList<String> selectedQuestions = eventQuestionsAdapter.getSelectedQuestionsList();
+                            if (selectedQuestions.isEmpty()) {
+                                AlertDialog noQuestionsAlertDialog = new AlertDialog.Builder(CreateEventActivity.this)
+                                        .setTitle("Are you sure?")
+                                        .setMessage("Are you sure you want to save this event without creating a questions form?")
+                                        .setCancelable(true)
+                                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                ///do nothing
+                                            }
+                                        })
+                                        .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                createEvent(selectedQuestions);
+                                                Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                            }
+                                        })
+                                        .create();
+                                noQuestionsAlertDialog.show();
+                            } else {
+                                createEvent(selectedQuestions);
+                                Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -241,7 +269,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 if (requestCode == PICK_PDF) {
                     uriPDF = data.getData();
                     hasSelectedPDF = true;
-                    mLoadPdf.setText(ImageUtils.getFileName(uriPDF,CreateEventActivity.this));
+                    mLoadPdf.setText(ImageUtils.getFileName(uriPDF, CreateEventActivity.this));
                 }
             }
         }
@@ -369,5 +397,94 @@ public class CreateEventActivity extends AppCompatActivity {
         imageUris.add(parseUri(R.drawable.image_charity));
         imageUris.add(parseUri(R.drawable.image_training));
         imageUris.add(parseUri(R.drawable.image_other));
+    }
+
+    private void animateQuestions() {
+        createEventScrollView.animate()
+                .alpha(0f)
+                .setDuration(longAnimTime)
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        createEventScrollView.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                });
+
+        questionText.setAlpha(0f);
+        questionText.setVisibility(View.VISIBLE);
+        questionText.animate()
+                .alpha(1f)
+                .setDuration(longAnimTime)
+                .setListener(null);
+
+        questionsScrollView.setAlpha(0f);
+        questionsScrollView.setVisibility(View.VISIBLE);
+        questionsScrollView.animate()
+                .alpha(1f)
+                .setDuration(longAnimTime)
+                .setListener(null);
+    }
+
+    private void createEvent(ArrayList<String> requiredQuestions) {
+
+        String name = mName.getText().toString();
+        String location = mLocation.getText().toString();
+        String description = mDescription.getText().toString();
+        int size = Integer.parseInt(mSize.getText().toString());
+        String type = mType.getSelectedItem().toString();
+
+        final String eventID = mDatabase.child("events").push().getKey();
+        StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
+
+        if (hasUserSelectedPicture) {
+            filePath.putBytes(ImageUtils.compressImage(uriPicture, CreateEventActivity.this, getResources()));
+        }
+        if (hasSelectedPDF) {
+            filePath = mStorage.child("Contracts").child("Event").child(eventID);
+            filePath.putFile(uriPDF);
+        }
+
+        mDatabase.child("users/organisers/" + user.getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        int lastEvent = (int) dataSnapshot.child("events").getChildrenCount();
+                        int eventsNr = dataSnapshot.child("eventsnumber").getValue(Integer.class);
+                        DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/events/" + lastEvent, eventID);
+                        DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/eventsnumber", eventsNr + 1);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+        Event new_event = new Event(user.getUid(), name, location, startDate, finishDate, type, eventID, description, deadline, size, requiredQuestions);
+        DatabaseUtils.writeData("events/" + eventID, new_event);
+        DatabaseUtils.writeData("events/" + eventID + "/validity", "valid");
+
+        Intent alarm = new Intent(CreateEventActivity.this, NotificationEventReceiver.class);
+        alarm.putExtra("nameEvent", name);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(CreateEventActivity.this, 100, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(0, finishDate, pendingIntent);
+
+        returnToEvents();
     }
 }

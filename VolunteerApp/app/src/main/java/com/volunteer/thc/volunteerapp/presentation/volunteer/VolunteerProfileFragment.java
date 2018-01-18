@@ -44,10 +44,14 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.model.InterviewQuestion;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -90,7 +94,6 @@ public class VolunteerProfileFragment extends Fragment {
         circleImageView = (CircleImageView) view.findViewById(R.id.photo);
         circleImageViewMenu = (CircleImageView) navigationView.findViewById(R.id.photo);
 
-
         mEmail.setTag(mEmail.getKeyListener());
         mAge.setTag(mAge.getKeyListener());
         mCity.setTag(mCity.getKeyListener());
@@ -99,9 +102,14 @@ public class VolunteerProfileFragment extends Fragment {
 
         toggleEditOff();
 
+        view.findViewById(R.id.answer_questions).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), AnswerQuestionsActivity.class));
+            }
+        });
 
         circleImageView.setOnClickListener(new View.OnClickListener() {
-
 
             @Override
             public void onClick(View v) {
@@ -136,20 +144,17 @@ public class VolunteerProfileFragment extends Fragment {
                             DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
                             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             Bundle bundle = new Bundle();
-                            bundle.putString("type","user");
+                            bundle.putString("type", "user");
                             bundle.putString("userID", user.getUid());
                             displayPhotoFragment.setArguments(bundle);
                             fragmentTransaction.add(R.id.volunteer_profile_container, displayPhotoFragment).addToBackStack("showImage");
                             fragmentTransaction.commit();
-
                         }
-
                     }
                 });
                 builderSingle.show();
             }
         });
-
 
         ValueEventListener mVolunteerProfileListener = new ValueEventListener() {
             @Override
@@ -161,7 +166,6 @@ public class VolunteerProfileFragment extends Fragment {
                 mCity.setText(volunteer1.getCity());
                 mVolunteerName.setText(volunteer1.getFirstname() + " " + volunteer1.getLastname());
                 mAge.setText(volunteer1.getAge() + "");
-
 
                 storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
@@ -196,7 +200,7 @@ public class VolunteerProfileFragment extends Fragment {
             StorageReference filePath = storageRef.child("Photos").child("User").child(user.getUid());
             final ProgressDialog progressDialog = new ProgressDialog(getContext());
             progressDialog.show();
-            filePath.putBytes(ImageUtils.compressImage(uri, getActivity(),getResources())).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            filePath.putBytes(ImageUtils.compressImage(uri, getActivity(), getResources())).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     progressDialog.dismiss();
@@ -204,11 +208,8 @@ public class VolunteerProfileFragment extends Fragment {
                     Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageViewMenu);
                 }
             });
-
-
         }
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -254,29 +255,29 @@ public class VolunteerProfileFragment extends Fragment {
         String currentFirstName, currentLastName, currentCity = null, currentPhone = null, fullName = null;
         int currentAge = 0;
         boolean changedName = false;
-        if (mAge.getText().length()!=0 ) {
+        if (mAge.getText().length() != 0) {
             currentAge = Integer.parseInt(mAge.getText().toString());
         }
-        if (mCity.getText().length()!=0 ) {
+        if (mCity.getText().length() != 0) {
             currentCity = mCity.getText().toString();
         }
-        if (mPhone.getText().length()!=0) {
+        if (mPhone.getText().length() != 0) {
             currentPhone = mPhone.getText().toString();
         }
 
         if (validateForm()) {
 
-            if (currentAge != volunteer1.getAge()&&currentAge!=0) {
+            if (currentAge != volunteer1.getAge() && currentAge != 0) {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("age").setValue(currentAge);
                 volunteer1.setAge(currentAge);
             }
 
-            if (!currentCity.equals(volunteer1.getCity())&&!currentCity.isEmpty()) {
+            if (!currentCity.equals(volunteer1.getCity()) && !currentCity.isEmpty()) {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("city").setValue(currentCity);
                 volunteer1.setCity(currentCity);
             }
 
-            if (!currentPhone.equals(volunteer1.getPhone())&&currentPhone.isEmpty()) {
+            if (!currentPhone.equals(volunteer1.getPhone()) && currentPhone.isEmpty()) {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("phone").setValue(currentPhone);
                 volunteer1.setPhone(currentPhone);
             }
@@ -295,7 +296,6 @@ public class VolunteerProfileFragment extends Fragment {
             mUserName.setText(fullName);
             prefs.edit().putString("name", fullName).commit();
         }
-
     }
 
     private void onCancelItemPressed() {
@@ -318,7 +318,6 @@ public class VolunteerProfileFragment extends Fragment {
     }
 
     private void toggleEditOff() {
-
 
         mPhone.setKeyListener(null);
         mCity.setKeyListener(null);
@@ -373,5 +372,4 @@ public class VolunteerProfileFragment extends Fragment {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-
 }
