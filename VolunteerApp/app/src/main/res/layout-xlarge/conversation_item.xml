@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:id="@+id/layout_receive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/chat_element_secondary">
+
+
+        <TextView
+            android:id="@+id/conversation_text_receive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="250dp"
+            android:paddingBottom="5dp"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:text="ffsmfaopmapowawfmfpo"
+            android:textColor="@color/black"
+            android:textSize="18dp" />
+
+
+        <TextView
+            android:id="@+id/conversation_hour_receive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/conversation_text_receive"
+            android:layout_below="@+id/conversation_text_receive"
+            android:paddingBottom="5dp"
+            android:paddingStart="5dp"
+            android:text="21:04"
+            android:textSize="10dp"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/layout_sent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/chat_element"
+        android:gravity="right">
+
+        <TextView
+            android:id="@+id/conversation_text_sent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="250dp"
+            android:paddingBottom="5dp"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:text="ffsmfaopmapowawfmfpo"
+            android:textColor="@color/backgroundColor"
+            android:textSize="18dp" />
+
+
+        <TextView
+            android:id="@+id/conversation_hour_sent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/conversation_text_sent"
+            android:layout_below="@+id/conversation_text_sent"
+            android:paddingBottom="5dp"
+            android:paddingEnd="5dp"
+            android:text="21:04"
+            android:textSize="10dp"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

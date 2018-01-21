@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item android:title="General">
+            <menu>
+        <item
+            android:id="@+id/nav_events"
+            android:icon="@drawable/all_events"
+            android:checkable="true"
+            android:title="@string/all_events" />
+
+        <item
+            android:id="@+id/user_events"
+            android:icon="@drawable/my_events"
+            android:title="@string/my_events"
+            android:checkable="true"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/user"
+            android:checkable="true"
+            android:title="@string/profile" />
+            </menu>
+        </item>
+        <item android:title="Community">
+            <menu>
+        <item
+            android:id="@+id/nav_news"
+            android:icon="@drawable/ic_news"
+            android:checkable="true"
+            android:title="@string/news"/>
+
+        <item
+            android:id="@+id/nav_chat"
+            android:icon="@drawable/ic_chat"
+            android:checkable="true"
+            android:title="@string/chat"/>
+
+        <item
+            android:id="@+id/nav_scoreboard"
+            android:icon="@drawable/ic_scoreboard"
+            android:checkable="true"
+            android:title="@string/scoreboard" />
+            </menu>
+        </item>
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/settings"
+            android:checkable="true"
+            android:title="@string/settings" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_exit"
+            android:checkable="true"
+            android:title="Logout" />
+
+    </group>
+
+</menu>

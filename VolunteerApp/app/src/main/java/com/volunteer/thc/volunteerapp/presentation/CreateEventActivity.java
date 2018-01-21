@@ -10,6 +10,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -79,6 +81,16 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Configuration conf = getResources().getConfiguration();
+        if (conf.smallestScreenWidthDp >= 600) { // now it is at least a tablet with 7'in
+            if (conf.smallestScreenWidthDp >= 720) { // now it is a 10'in tablet
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR); // Or portrait
+            } else { // now it is a 7'in tablet
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            }
+        } else { // now it is a regular device below 7`in
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        }
         setContentView(R.layout.activity_create_event);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("New event");

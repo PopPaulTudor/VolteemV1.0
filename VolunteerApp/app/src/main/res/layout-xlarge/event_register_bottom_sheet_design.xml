@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/event_register_disclaimer"
+        android:textColor="@color/black" />
+
+    <Button
+        android:id="@+id/register_event"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView"
+        android:layout_below="@+id/textView"
+        android:layout_marginTop="5dp"
+        android:background="@color/colorPrimary"
+        android:text="Register"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/register_event"
+        android:layout_alignEnd="@+id/textView"
+        android:background="@color/colorPrimary"
+        android:text="CANCEL"
+        android:textColor="@color/white" />
+
+</RelativeLayout>
