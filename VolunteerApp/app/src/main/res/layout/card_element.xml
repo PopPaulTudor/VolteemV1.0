@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15sp"
                     android:layout_marginTop="45dp"
-                    android:hint="Electric Castle 2017"
+                    android:hint=""
                     android:textColor="@color/black" />
 
 
@@ -51,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/NameCardElement"
                     android:layout_marginStart="15sp"
-                    android:hint="13/07/17"
+                    android:hint=""
                     android:textColor="@color/black" />
 
 
@@ -62,7 +62,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignTop="@+id/DateCardElement"
                     android:layout_marginEnd="15sp"
-                    android:hint="Bontida"
+                    android:hint=""
                     android:textColor="@color/black" />
 
 

@@ -25,17 +25,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.ChangeEvent;
-import com.volunteer.thc.volunteerapp.model.Chat;
+import com.volunteer.thc.volunteerapp.model.ChatGroup;
+import com.volunteer.thc.volunteerapp.model.ChatSingle;
+import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.ConversationActivity;
+import com.volunteer.thc.volunteerapp.presentation.Chat.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
@@ -114,43 +117,151 @@ public class FirebaseNewsService extends Service {
             }
         });
 
-        mDatabase.child("conversation").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
+        /*
+
+        mDatabase.child("conversation").child("group").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                final Chat chat = dataSnapshot.getValue(Chat.class);
-                if (!chat.isReceived() && !chat.getContent().contains("You have been accepted to ")) {
-                    mDatabase.child("conversation/" + dataSnapshot.getKey() + "/received").setValue(true);
+                if (dataSnapshot.exists()) {
+                    final ChatGroup chatGroup = dataSnapshot.getValue(ChatGroup.class);
+                    if (!chatGroup.isReceived()) {
+                        mDatabase.child("conversation/group/" + dataSnapshot.getKey() + "/received").setValue(true);
 
-                    if (!ConversationActivity.idActive.equals(chat.getUuid())) {
-                        mDatabase.child("users").child("volunteers").child(chat.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        mDatabase.child("events").equalTo(chatGroup.getUuidEvent()).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    final Event event = dataSnapshot.getValue(Event.class);
+                                    ArrayList<String> members = event.getAccepted_volunteers();
+                                    members.add(event.getCreated_by());
+
+                                    for (String id : members) {
+                                        if (!id.equals(chatGroup.getSentBy()) && !ConversationActivity.idActive.equals(chatGroup.getUuid())) {
+
+                                            mDatabase.child("users").child("volunteers").child(chatGroup.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    if (dataSnapshot.exists()) {
+
+                                                        final Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
+                                                        final long ONE_MEGABYTE = 1024 * 1024;
+                                                        storageRef.child("Photos").child("User").child(chatGroup.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                                            @Override
+                                                            public void onSuccess(byte[] bytes) {
+                                                                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                                                sendConversation(chatGroup.getContent(), volunteer.getFirstname() + " " + volunteer.getLastname(), chatGroup, ImageUtils.getCroppedBitmap(bitmap, getResources()));
+
+                                                            }
+                                                        });
+
+                                                    } else {
+                                                        mDatabase.child("users").child("organisers").child(chatGroup.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                                final Organiser organiser = dataSnapshot.getValue(Organiser.class);
+
+                                                                final long ONE_MEGABYTE = 1024 * 1024;
+                                                                storageRef.child("Photos").child("User").child(chatGroup.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                                                    @Override
+                                                                    public void onSuccess(byte[] bytes) {
+                                                                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                                                        sendConversation(chatGroup.getContent(), organiser.getCompany(), chatGroup, ImageUtils.getCroppedBitmap(bitmap, getResources()));
+
+                                                                    }
+                                                                });
+
+
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(DatabaseError databaseError) {
+
+                                                            }
+                                                        });
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
+
+                                        }
+                                    }
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        */
+
+        mDatabase.child("conversation").child("single").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                final ChatSingle chatSingle = dataSnapshot.getValue(ChatSingle.class);
+                if (!chatSingle.isReceived() && !chatSingle.getContent().contains("You have been accepted to ")) {
+                    mDatabase.child("conversation/single/" + dataSnapshot.getKey() + "/received").setValue(true);
+
+                    if (!ConversationActivity.idActive.equals(chatSingle.getUuid())) {
+                        mDatabase.child("users").child("volunteers").child(chatSingle.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
 
                                     final Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
                                     final long ONE_MEGABYTE = 1024 * 1024;
-                                    storageRef.child("Photos").child("User").child(chat.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                    storageRef.child("Photos").child("User").child(chatSingle.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                         @Override
                                         public void onSuccess(byte[] bytes) {
                                             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                            sendConversation(chat.getContent(), volunteer.getFirstname() + " " + volunteer.getLastname(), chat, ImageUtils.getCroppedBitmap(bitmap, getResources()));
+                                            sendConversation(chatSingle.getContent(), volunteer.getFirstname() + " " + volunteer.getLastname(), chatSingle, ImageUtils.getCroppedBitmap(bitmap, getResources()));
 
                                         }
                                     });
 
                                 } else {
-                                    mDatabase.child("users").child("organisers").child(chat.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    mDatabase.child("users").child("organisers").child(chatSingle.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
 
                                             final Organiser organiser = dataSnapshot.getValue(Organiser.class);
 
                                             final long ONE_MEGABYTE = 1024 * 1024;
-                                            storageRef.child("Photos").child("User").child(chat.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                            storageRef.child("Photos").child("User").child(chatSingle.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                                 @Override
                                                 public void onSuccess(byte[] bytes) {
                                                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                                    sendConversation(chat.getContent(), organiser.getCompany(), chat, ImageUtils.getCroppedBitmap(bitmap, getResources()));
+                                                    sendConversation(chatSingle.getContent(), organiser.getCompany(), chatSingle, ImageUtils.getCroppedBitmap(bitmap, getResources()));
 
                                                 }
                                             });
@@ -195,6 +306,7 @@ public class FirebaseNewsService extends Service {
 
             }
         });
+
     }
 
     @Override
@@ -231,11 +343,11 @@ public class FirebaseNewsService extends Service {
         notificationManager.notify(new Random().nextInt(), notification);
     }
 
-    private void sendConversation(String content, String title, Chat chat, Bitmap largeIcon) {
+    private void sendConversation(String content, String title, Message chat, Bitmap largeIcon) {
         final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Intent intent = new Intent(this, ConversationActivity.class);
 
-        intent.putExtra("chat", chat);
+        intent.putExtra("chatSingle", chat);
         intent.putExtra("class", "firebase");
         ConversationActivity.nameChat = title;
 
@@ -254,22 +366,4 @@ public class FirebaseNewsService extends Service {
         notificationManager.notify(new Random().nextInt(), notification);
     }
 
-
-    private void sendChangesEvent(ChangeEvent changeEvent) {
-        final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Intent intent = new Intent(this, VolunteerSingleEventActivity.class);
-
-        intent.putExtra("eventID", changeEvent.getEvent().getEventID());
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
-        final Notification notification = new Notification.Builder(this)
-                .setContentTitle(changeEvent.getTitle())
-                .setContentText(changeEvent.getContent())
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
-                .setSmallIcon(R.mipmap.volunteer_logo)
-                .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
-                .build();
-
-        notificationManager.notify(new Random().nextInt(), notification);
-    }
 }

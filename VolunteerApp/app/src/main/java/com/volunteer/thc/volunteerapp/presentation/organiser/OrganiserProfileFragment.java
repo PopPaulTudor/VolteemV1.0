@@ -80,7 +80,7 @@ public class OrganiserProfileFragment extends Fragment {
         mEmail = (EditText) view.findViewById(R.id.edit_email);
         mCompany = (EditText) view.findViewById(R.id.edit_company);
         mCity = (EditText) view.findViewById(R.id.edit_city);
-        mPhone = (EditText) view.findViewById(R.id.edit_phone);
+        mPhone = (EditText) view.findViewById(R.id.ProfileVolunteerPhone);
         circleImageView = (CircleImageView) view.findViewById(R.id.photo);
         circleImageViewMenu = (CircleImageView) navigationView.findViewById(R.id.photo);
 

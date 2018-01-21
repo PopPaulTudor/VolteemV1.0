@@ -50,7 +50,7 @@
     <string name="your_rating">Rating: </string>
     <string name="search">Search</string>
     <string name="filter">Filter</string>
-    <string name="chat">Interview</string>
+    <string name="chatSingle">Interview</string>
     <string name="event_register_disclaimer">Joining an event is a commitment. If you leave this event later on, you will lose experience. Are you sure you want to register for this event?</string>
     <string name="no_feedback">This volunteer has no feedback.</string>
     <string name="remove_volunteer">Remove volunteer</string>
@@ -59,4 +59,7 @@
     <string name="view_feedback">View Feedback</string>
     <string name="no_acc_volunteers">No accepted volunteers.</string>
     <string name="no_reg_volunteers">No new volunteers.</string>
+    <string name="years">years</string>
+    <string name="icon_from_age">icon from age</string>
+    <string name="volteem_srl">Volteem SRL</string>
 </resources>

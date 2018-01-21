@@ -6,26 +6,29 @@ import java.io.Serializable;
  * Created by poppa on 27.08.2017.
  */
 
-public class Chat extends Message implements Serializable {
+public class ChatSingle extends Message implements Serializable {
 
     private String uuid;
     private long hour;
+    private String receivedBy;
     private boolean received;
 
-    public Chat() {
+    public ChatSingle() {
     }
 
-    public Chat(String sentBy, String receivedBy, String content, String uuid, long hour,boolean received) {
-        super(sentBy, receivedBy, content);
-        this.uuid = uuid;
+    public ChatSingle(String sentBy, String receivedBy, String content, String uuid, long hour, boolean received) {
+        super(sentBy, uuid, content);
         this.hour = hour;
+        this.receivedBy=receivedBy;
         this.received=received;
     }
 
+    @Override
     public String getUuid() {
         return uuid;
     }
 
+    @Override
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
@@ -36,6 +39,14 @@ public class Chat extends Message implements Serializable {
 
     public void setHour(long hour) {
         this.hour = hour;
+    }
+
+    public String getReceivedBy() {
+        return receivedBy;
+    }
+
+    public void setReceivedBy(String receivedBy) {
+        this.receivedBy = receivedBy;
     }
 
     public boolean isReceived() {

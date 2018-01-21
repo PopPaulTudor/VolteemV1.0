@@ -27,6 +27,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
+
         <activity
             android:name=".presentation.LoginActivity"
             android:launchMode="singleTop"
@@ -52,7 +53,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".presentation.ConversationActivity"
+            android:name=".presentation.Chat.ConversationActivity"
             android:label="Conversation"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"

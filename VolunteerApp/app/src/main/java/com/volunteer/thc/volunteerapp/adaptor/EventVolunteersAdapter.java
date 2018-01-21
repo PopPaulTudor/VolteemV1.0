@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AlertDialog;
@@ -15,10 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
@@ -39,12 +36,12 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
-import com.volunteer.thc.volunteerapp.model.Chat;
+import com.volunteer.thc.volunteerapp.model.ChatSingle;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.OrganiserRating;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.ConversationActivity;
+import com.volunteer.thc.volunteerapp.presentation.Chat.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
@@ -68,7 +65,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     private Event event;
     private int mExpandedPosition = -1;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private StorageReference mStorage= FirebaseStorage.getInstance().getReference();
+    private StorageReference mStorage = FirebaseStorage.getInstance().getReference();
     private ViewGroup parent;
     private Context context;
     private Calendar date = Calendar.getInstance();
@@ -132,6 +129,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             holder.sendMessage.setVisibility(View.GONE);
             holder.viewFeedback.setVisibility(View.GONE);
             holder.kickVolunteer.setVisibility(View.VISIBLE);
+            holder.sendMessageAccepted.setVisibility(View.VISIBLE);
             holder.expPhoneVolunteer.setText(listVolunteer.get(position).getPhone());
             holder.detailedText.setText("Phone:");
 
@@ -142,13 +140,14 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             holder.sendMessage.setVisibility(View.VISIBLE);
             holder.viewFeedback.setVisibility(View.VISIBLE);
             holder.kickVolunteer.setVisibility(View.GONE);
+            holder.sendMessageAccepted.setVisibility(View.GONE);
             holder.expPhoneVolunteer.setText(listVolunteer.get(position).getExperience() + "");
             holder.detailedText.setText("Experience:");
 
         }
 
         final boolean isExpanded = position == mExpandedPosition;
-        if(isExpanded) {
+        if (isExpanded) {
             holder.expandableItem.setAlpha(0f);
             holder.expandableItem.setVisibility(View.VISIBLE);
             holder.expandableItem.animate()
@@ -166,7 +165,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 notifyDataSetChanged();
             }
         });
-
 
 
         holder.viewFeedback.setOnClickListener(new View.OnClickListener() {
@@ -254,13 +252,14 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
                                 mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
                                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
-                                Chat chat = new Chat(event.getCreated_by(), volunteerIDs.get(position), "You have been accepted to " + event.getName(), UUID.randomUUID().toString(), Calendar.getInstance().getTimeInMillis(), false);
-                                mDatabase.child("conversation").push().setValue(chat);
+                                ChatSingle chatSingle = new ChatSingle(event.getCreated_by(), volunteerIDs.get(position), "You have been accepted to " + event.getName(), UUID.randomUUID().toString(), Calendar.getInstance().getTimeInMillis(), false);
+                                mDatabase.child("conversation").child("single").push().setValue(chatSingle);
+
 
                                 listVolunteer.remove(position);
                                 volunteerIDs.remove(position);
                                 notifyDataSetChanged();
-                                if(listVolunteer.isEmpty()) {
+                                if (listVolunteer.isEmpty()) {
                                     volunteersRemovedListener.onAllVolunteersRemoved();
                                 }
                             }
@@ -277,61 +276,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             }
         });
 
-        holder.sendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final Intent intent = new Intent(context, ConversationActivity.class);
-
-                mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        boolean ifHasConv = false;
-                        if (!dataSnapshot.hasChildren()) {
-                            Chat chat = new Chat(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
-                            intent.putExtra("chat", chat);
-                        } else {
-                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                Chat chat = dataSnapshot1.getValue(Chat.class);
-                                if (TextUtils.equals(chat.getSentBy(), user.getUid())) {
-                                    intent.putExtra("chat", chat);
-                                    ifHasConv = true;
-                                    break;
-                                }
-                            }
-
-                            if (!ifHasConv) {
-                                Chat chat = new Chat(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
-                                intent.putExtra("chat", chat);
-
-                            }
-                        }
-                        ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname();
-                        intent.putExtra("class", "adapter");
-
-                        intent.putExtra("id", volunteerIDs.get(position));
-                        ConversationActivity.fragment = fragment;
-                        context.startActivity(intent);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                        final Intent intent = new Intent(context, ConversationActivity.class);
-
-                        ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname();
-                        intent.putExtra("class", "adapter");
-                        Chat chat = new Chat(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
-                        intent.putExtra("chat", chat);
-                        intent.putExtra("id", volunteerIDs.get(position));
-                        ConversationActivity.fragment = fragment;
-                        context.startActivity(intent);
-                    }
-                });
-
-            }
-        });
+        holder.sendMessage.setOnClickListener(sendMessage(position));
+        holder.sendMessageAccepted.setOnClickListener(sendMessage(position));
 
         holder.kickVolunteer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -342,7 +288,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                        if(radioGroup.getCheckedRadioButtonId() == R.id.radio_other) {
+                        if (radioGroup.getCheckedRadioButtonId() == R.id.radio_other) {
                             otherText.setVisibility(View.VISIBLE);
                         } else {
                             otherText.setVisibility(View.GONE);
@@ -391,7 +337,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                                 break;
                             case R.id.radio_other:
                                 String reason = otherText.getText().toString();
-                                if(reason.isEmpty()) {
+                                if (reason.isEmpty()) {
                                     Toast.makeText(context, "You've selected Other, please write the reason.", Toast.LENGTH_SHORT).show();
                                 } else {
                                     mDatabase.child("users/volunteers/" + volunteerIDs.get(position) + "/feedback" + user.getUid()).setValue("This" +
@@ -416,10 +362,10 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
     class EventViewHolder extends RecyclerView.ViewHolder {
 
-        TextView nameVolunteer, expPhoneVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer, emailVolunteer,detailedText;
+        TextView nameVolunteer, expPhoneVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer, emailVolunteer, detailedText;
         RelativeLayout item;
         RelativeLayout expandableItem;
-        ImageView acceptUser, sendMessage, viewFeedback, kickVolunteer;
+        ImageView acceptUser, sendMessage, viewFeedback, kickVolunteer, sendMessageAccepted;
         CircleImageView volunteerImage;
 
         EventViewHolder(View itemView) {
@@ -437,8 +383,9 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             sendMessage = (ImageView) itemView.findViewById(R.id.send_volunteer);
             viewFeedback = (ImageView) itemView.findViewById(R.id.view_feedback);
             kickVolunteer = (ImageView) itemView.findViewById(R.id.kick_volunteer);
-            detailedText=(TextView) itemView.findViewById(R.id.text_experience);
-            volunteerImage=(CircleImageView)itemView.findViewById(R.id.photo_volunteer_element);
+            detailedText = (TextView) itemView.findViewById(R.id.text_experience);
+            volunteerImage = (CircleImageView) itemView.findViewById(R.id.photo_volunteer_element);
+            sendMessageAccepted = (ImageView) itemView.findViewById(R.id.send_accepted_volunteer);
         }
     }
 
@@ -451,16 +398,16 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         mDatabase.child("news").child(eventID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), eventID, event.getEventID(), event.getCreated_by(), id,
                 "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
 
-        mDatabase.child("conversation").orderByChild("receivedBy").equalTo(id).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("conversation").child("single").orderByChild("receivedBy").equalTo(id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String uuid = null;
                 boolean ifHasConv = false;
                 if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        Chat chatData = data.getValue(Chat.class);
-                        if (chatData.getSentBy().equals(user.getUid())) {
-                            uuid = chatData.getUuid();
+                        ChatSingle chatSingleData = data.getValue(ChatSingle.class);
+                        if (chatSingleData.getSentBy().equals(user.getUid())) {
+                            uuid = chatSingleData.getUuid();
                             ifHasConv = true;
                             break;
                         }
@@ -469,8 +416,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 if (!ifHasConv) {
                     uuid = UUID.randomUUID().toString();
                 }
-                Chat chat = new Chat(event.getCreated_by(), id, "You have been accepted to " + event.getName(), uuid, Calendar.getInstance().getTimeInMillis(), false);
-                mDatabase.child("conversation").push().setValue(chat);
+                ChatSingle chatSingle = new ChatSingle(event.getCreated_by(), id, "You have been accepted to " + event.getName(), uuid, Calendar.getInstance().getTimeInMillis(), false);
+                mDatabase.child("conversation").push().setValue(chatSingle);
 
             }
 
@@ -492,12 +439,71 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         String newsID = mDatabase.child("news").push().getKey();
         mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID,
                 event.getEventID(), user.getUid(), volunteerIDs.get(position), "You have been removed from the event " +
-                event.getName(), NewsMessage.VOLUNTEER_LEFT, false , false));
+                event.getName(), NewsMessage.VOLUNTEER_LEFT, false, false));
         volunteerIDs.remove(position);
         listVolunteer.remove(position);
-        if(volunteerIDs.isEmpty()) {
+        if (volunteerIDs.isEmpty()) {
             volunteersRemovedListener.onAllVolunteersRemoved();
         }
         notifyDataSetChanged();
+    }
+
+
+    private View.OnClickListener sendMessage(final int position) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final Intent intent = new Intent(context, ConversationActivity.class);
+
+                mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        boolean ifHasConv = false;
+                        if (!dataSnapshot.hasChildren()) {
+                            ChatSingle chatSingle = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
+                            intent.putExtra("chatSingle", chatSingle);
+                        } else {
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                ChatSingle chatSingle = dataSnapshot1.getValue(ChatSingle.class);
+                                if (TextUtils.equals(chatSingle.getSentBy(), user.getUid())) {
+                                    intent.putExtra("chatSingle", chatSingle);
+                                    ifHasConv = true;
+                                    break;
+                                }
+                            }
+
+                            if (!ifHasConv) {
+                                ChatSingle chatSingle = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
+                                intent.putExtra("chatSingle", chatSingle);
+
+                            }
+                        }
+                        ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname();
+                        intent.putExtra("class", "adapter");
+
+                        intent.putExtra("id", volunteerIDs.get(position));
+                        ConversationActivity.fragment = fragment;
+                        context.startActivity(intent);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                        final Intent intent = new Intent(context, ConversationActivity.class);
+
+                        ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname();
+                        intent.putExtra("class", "adapter");
+                        ChatSingle chatSingle = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
+                        intent.putExtra("chatSingle", chatSingle);
+                        intent.putExtra("id", volunteerIDs.get(position));
+                        ConversationActivity.fragment = fragment;
+                        context.startActivity(intent);
+                    }
+                });
+
+            }
+        };
     }
 }

@@ -39,6 +39,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.notification.FirebaseNewsService;
+import com.volunteer.thc.volunteerapp.presentation.Chat.ChatFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserProfileFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserScoreboardFragment;

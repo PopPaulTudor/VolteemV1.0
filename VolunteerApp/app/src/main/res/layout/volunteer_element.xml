@@ -91,6 +91,19 @@
             android:text="@string/accept_volunteer"
             android:textColor="@color/colorPrimary" />
 
+        <ImageView
+            android:id="@+id/send_accepted_volunteer"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignBottom="@id/view_feedback"
+            android:layout_marginLeft="320dp"
+            android:src="@drawable/ic_message_black_24dp"
+            android:text="@string/accept_volunteer"
+            android:textColor="@color/colorPrimary" />
+
+
+
+
 
         <RelativeLayout
             android:id="@+id/expandable_item"

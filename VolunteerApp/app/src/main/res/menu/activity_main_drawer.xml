@@ -37,7 +37,7 @@
             android:id="@+id/nav_chat"
             android:icon="@drawable/ic_chat"
             android:checkable="true"
-            android:title="@string/chat"/>
+            android:title="@string/chatSingle"/>
 
         <item
             android:id="@+id/nav_scoreboard"

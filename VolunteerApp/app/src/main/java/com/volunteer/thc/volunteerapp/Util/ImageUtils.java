@@ -1,19 +1,30 @@
 package com.volunteer.thc.volunteerapp.util;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+import android.transition.Fade;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.Window;
+import android.view.animation.PathInterpolator;
+
+import com.volunteer.thc.volunteerapp.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;

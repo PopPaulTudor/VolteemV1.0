@@ -18,10 +18,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.Chat;
+import com.volunteer.thc.volunteerapp.model.ChatGroup;
+import com.volunteer.thc.volunteerapp.model.ChatSingle;
+import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.ConversationActivity;
+import com.volunteer.thc.volunteerapp.presentation.Chat.ConversationActivity;
 
 import java.util.ArrayList;
 
@@ -31,14 +34,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by poppa on 25.08.2017.
  */
 
-public class ChatAdapter extends ArrayAdapter<Chat> {
+public class ChatAdapter extends ArrayAdapter<Message> {
 
     private Context context;
-    public ArrayList<Chat> data = new ArrayList<>();
+    public ArrayList<Message> data = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 
 
-    public ChatAdapter(Context context, ArrayList<Chat> objects) {
+    public ChatAdapter(Context context, ArrayList<Message> objects) {
         super(context, R.layout.chat_item, objects);
         this.context = context;
         this.data = objects;
@@ -48,7 +52,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        final Chat chat = getItem(position);
+        final Message message = getItem(position);
         final ViewHolder viewHolder;
         if (convertView == null) {
 
@@ -58,55 +62,73 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
             viewHolder.textElement = (TextView) convertView.findViewById(R.id.chat_text_element);
             viewHolder.imageElement = (CircleImageView) convertView.findViewById(R.id.chat_icon_element);
 
-
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
+        if (message instanceof ChatSingle) {
 
-        mDatabase.child("users").child("volunteers").child(chat.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
-                    ConversationActivity.nameChat=null;
-                    viewHolder.textElement.setText(volunteer.getFirstname() + " " + volunteer.getLastname());
-                    ConversationActivity.nameChat=volunteer.getFirstname() + " " + volunteer.getLastname();
+            mDatabase.child("users").child("volunteers").child(message.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
+                        ConversationActivity.nameChat = null;
+                        viewHolder.textElement.setText(volunteer.getFirstname() + " " + volunteer.getLastname());
+                        ConversationActivity.nameChat = volunteer.getFirstname() + " " + volunteer.getLastname();
 
-                } else {
-                    mDatabase.child("users").child("organisers").child(chat.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Organiser organiser = dataSnapshot.getValue(Organiser.class);
-                            viewHolder.textElement.setText(organiser.getCompany());
+                    } else {
+                        mDatabase.child("users").child("organisers").child(message.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Organiser organiser = dataSnapshot.getValue(Organiser.class);
+                                viewHolder.textElement.setText(organiser.getCompany());
 
 
+                            }
 
-                        }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+                            }
+                        });
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
 
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        storageRef.child("Photos").child("User").child(chat.getSentBy()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.with(context).load(uri).fit().centerCrop().into(viewHolder.imageElement);
-            }
-        });
+            storageRef.child("Photos").child("User").child(message.getSentBy()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.with(context).load(uri).fit().centerCrop().into(viewHolder.imageElement);
+                }
+            });
+        } else {
+            ChatGroup chatGroup = (ChatGroup) message;
+            mDatabase.child("events/" + chatGroup.getUuidEvent()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Event event = dataSnapshot.getValue(Event.class);
+                    viewHolder.textElement.setText(event.getName());
+                }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+            storageRef.child("Photos").child("Event").child(chatGroup.getUuidEvent()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.with(context).load(uri).fit().centerCrop().into(viewHolder.imageElement);
+
+                }
+            });
+        }
 
         return convertView;
     }

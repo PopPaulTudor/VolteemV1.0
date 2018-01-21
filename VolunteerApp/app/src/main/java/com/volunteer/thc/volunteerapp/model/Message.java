@@ -9,15 +9,15 @@ import java.io.Serializable;
 public class Message implements Serializable {
 
     private String sentBy;
-    private String receivedBy;
+    private String uuid;
     private String content;
 
     public Message() {
     }
 
-    public Message(String sentBy, String receivedBy, String content) {
+    public Message(String sentBy, String uuid, String content) {
         this.sentBy = sentBy;
-        this.receivedBy = receivedBy;
+        this.uuid = uuid;
         this.content = content;
     }
 
@@ -29,12 +29,12 @@ public class Message implements Serializable {
         this.sentBy = sentBy;
     }
 
-    public String getReceivedBy() {
-        return receivedBy;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setReceivedBy(String receivedBy) {
-        this.receivedBy = receivedBy;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getContent() {
@@ -44,6 +44,4 @@ public class Message implements Serializable {
     public void setContent(String content) {
         this.content = content;
     }
-
-
 }

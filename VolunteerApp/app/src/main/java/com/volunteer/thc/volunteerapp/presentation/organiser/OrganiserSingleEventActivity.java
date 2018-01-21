@@ -83,7 +83,6 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
             regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() + regText.getText());
 
 
-
         mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
 
             @Override

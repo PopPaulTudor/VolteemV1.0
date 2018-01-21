@@ -1,13 +1,26 @@
-package com.volunteer.thc.volunteerapp.presentation;
+package com.volunteer.thc.volunteerapp.presentation.Chat;
 
+import android.animation.Animator;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -22,7 +35,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adaptor.ChatAdapter;
-import com.volunteer.thc.volunteerapp.model.Chat;
+import com.volunteer.thc.volunteerapp.model.ChatGroup;
+import com.volunteer.thc.volunteerapp.model.ChatSingle;
+import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
@@ -40,9 +55,11 @@ public class ChatFragment extends Fragment {
     private ChatAdapter chatAdapter;
     private TextView noChatText;
     private ImageView noChatImage;
-    final ArrayList<Chat> array = new ArrayList<>();
-    final ArrayList<Chat> arrayCopy = new ArrayList<>();
+    final ArrayList<Message> array = new ArrayList<>();
+    final ArrayList<Message> arrayWork = new ArrayList<>();
+    private String type = "single";
 
+    View rootLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,9 +71,39 @@ public class ChatFragment extends Fragment {
         chatAdapter = new ChatAdapter(getContext(), array);
         listChat.setAdapter(chatAdapter);
         noChatImage = (ImageView) v.findViewById(R.id.no_chat_image);
+        rootLayout = v.findViewById(R.id.root_layout);
         noChatText = (TextView) v.findViewById(R.id.no_chat_text);
+        final FloatingActionButton floatingActionButton = (FloatingActionButton) v.findViewById(R.id.change_list_chat);
+        populateList(type);
 
-        mDatabase.child("conversation").orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ResourceAsColor")
+            @Override
+            public void onClick(View v) {
+                if (type.equals("single")) {
+                    type = "group";
+                    floatingActionButton.setImageResource(R.drawable.ic_person_black_24dp);
+                    floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(19, 122, 106)));
+
+                } else {
+                    type = "single";
+                    floatingActionButton.setImageResource(R.drawable.ic_group_black_24dp);
+                    floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(19, 122, 106)));
+                }
+                clearLists();
+                presentActivity(v);
+
+
+            }
+        });
+        return v;
+
+    }
+
+    private void populateList(final String type) {
+
+        mDatabase.child("conversation").child(type).orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -64,49 +111,52 @@ public class ChatFragment extends Fragment {
                 noChatText.setVisibility(View.GONE);
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    Chat chatData = data.getValue(Chat.class);
+                    Message chatData;
+                    if (type.equals("single")) chatData = data.getValue(ChatSingle.class);
+                    else chatData = data.getValue(ChatGroup.class);
                     boolean change = false;
-                    for (Chat chat : arrayCopy) {
-                        if (chat.getSentBy().equals(chatData.getSentBy())) {
+                    for (Message message : arrayWork) {
+                        if (message.getSentBy().equals(chatData.getSentBy())) {
                             change = true;
                             break;
                         }
                     }
                     if (!change) {
-                        arrayCopy.add(chatData);
+                        arrayWork.add(chatData);
                         chatAdapter.add(chatData);
                         chatAdapter.notifyDataSetChanged();
 
                     }
                 }
 
-
                 listChat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                        mDatabase.child("users").child("volunteers").child(arrayCopy.get(position).getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        mDatabase.child("users").child("volunteers").child(arrayWork.get(position).getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
                                     Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
                                     ConversationActivity.nameChat = volunteer.getFirstname() + " " + volunteer.getLastname();
                                     Intent intent = new Intent(getContext(), ConversationActivity.class);
-                                    intent.putExtra("chat", arrayCopy.get(position));
+                                    intent.putExtra("chat", arrayWork.get(position));
                                     intent.putExtra("class", "fragment");
+                                    intent.putExtra("type", type);
                                     startActivity(intent);
 
                                 } else {
-                                    mDatabase.child("users").child("organisers").child(arrayCopy.get(position).getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    mDatabase.child("users").child("organisers").child(arrayWork.get(position).getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             Organiser organiser = dataSnapshot.getValue(Organiser.class);
                                             ConversationActivity.nameChat = organiser.getCompany();
                                             Intent intent = new Intent(getContext(), ConversationActivity.class);
-                                            intent.putExtra("chat", arrayCopy.get(position));
+                                            intent.putExtra("chat", arrayWork.get(position));
                                             intent.putExtra("class", "fragment");
+                                            intent.putExtra("type", type);
                                             startActivity(intent);
 
-                                            mDatabase.child("conversation").orderByChild("uuid").equalTo(arrayCopy.get(position).getUuid()).addValueEventListener(new ValueEventListener() {
+                                            mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(arrayWork.get(position).getUuid()).addValueEventListener(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                                     long size = dataSnapshot.getChildrenCount();
@@ -125,13 +175,10 @@ public class ChatFragment extends Fragment {
 
                                                 }
                                             });
-
-
                                         }
 
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
-
                                         }
                                     });
                                 }
@@ -150,6 +197,7 @@ public class ChatFragment extends Fragment {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
 
+                        // TODO: 07.12.2017 don't allow anyone to delete
                         final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
                         alert.setTitle("Delete conversation?")
                                 .setCancelable(true)
@@ -163,8 +211,7 @@ public class ChatFragment extends Fragment {
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-
-                                        mDatabase.child("conversation").orderByChild("uuid").equalTo(arrayCopy.get(position).getUuid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(arrayWork.get(position).getUuid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
                                                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
@@ -173,14 +220,12 @@ public class ChatFragment extends Fragment {
 
                                             }
 
-
                                             @Override
                                             public void onCancelled(DatabaseError databaseError) {
-
                                             }
                                         });
-                                        chatAdapter.remove(arrayCopy.get(position));
-                                        arrayCopy.remove(arrayCopy.get(position));
+                                        chatAdapter.remove(arrayWork.get(position));
+                                        arrayWork.remove(arrayWork.get(position));
                                         chatAdapter.notifyDataSetChanged();
 
                                         if (chatAdapter.isEmpty()) {
@@ -199,7 +244,7 @@ public class ChatFragment extends Fragment {
                     }
                 });
 
-                if (arrayCopy.isEmpty()) {
+                if (arrayWork.isEmpty()) {
                     noChatImage.setVisibility(View.VISIBLE);
                     noChatText.setVisibility(View.VISIBLE);
                     listChat.setVisibility(View.GONE);
@@ -218,15 +263,66 @@ public class ChatFragment extends Fragment {
             }
         });
 
+    }
+
+    public void presentActivity(View view) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            rootLayout.setVisibility(View.INVISIBLE);
+            final int revealX = (int) (view.getX() + view.getWidth() / 2);
+            final int revealY = (int) (view.getY() + view.getHeight() / 2);
 
 
-        return v;
+            ViewTreeObserver viewTreeObserver = rootLayout.getViewTreeObserver();
+
+            if (viewTreeObserver.isAlive()) {
+                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                    @Override
+                    public void onGlobalLayout() {
+                        revealActivity(revealX, revealY);
+                        rootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                });
+            }
+        } else {
+            rootLayout.setVisibility(View.VISIBLE);
+        }
 
     }
 
 
+    void revealActivity(int x, int y) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+            int height = size.y;
+            float finalRadius = (float) (Math.max(width, height) * 1.1);
+
+            Animator circularReveal = ViewAnimationUtils.createCircularReveal(rootLayout, x, y, 0, finalRadius);
+            circularReveal.setDuration(400);
+            circularReveal.setInterpolator(new AccelerateInterpolator());
+
+            rootLayout.setVisibility(View.VISIBLE);
+            circularReveal.start();
+        }
+
+    }
 
 
+    void clearLists() {
+
+        chatAdapter.clear();
+        arrayWork.clear();
+        array.clear();
+        populateList(type);
+        chatAdapter.notifyDataSetChanged();
+    }
 
 
 }

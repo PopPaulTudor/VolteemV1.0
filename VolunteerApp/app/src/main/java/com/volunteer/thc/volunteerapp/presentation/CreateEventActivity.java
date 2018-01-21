@@ -1,6 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -40,6 +41,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.model.ChatGroup;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.notification.NotificationEventReceiver;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
@@ -48,6 +50,7 @@ import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * Created on 6/23/2017.
@@ -164,6 +167,7 @@ public class CreateEventActivity extends AppCompatActivity {
         mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
 
         mSaveEvent.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("WrongConstant")
             @Override
             public void onClick(View view) {
 
@@ -214,6 +218,9 @@ public class CreateEventActivity extends AppCompatActivity {
 
                     returnToEvents();
                     Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+
+                    ChatGroup chatGroup = new ChatGroup(user.getUid(),UUID.randomUUID().toString(),"you have been accepted to ", Calendar.getInstance().getTimeInMillis(),false,new_event.getEventID());
+                    mDatabase.child("conversation").child("group").push().setValue(chatGroup);
                 }
             }
         });

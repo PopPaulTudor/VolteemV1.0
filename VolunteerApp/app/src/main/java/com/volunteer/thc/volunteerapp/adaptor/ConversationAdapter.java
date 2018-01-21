@@ -5,19 +5,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.Chat;
+import com.volunteer.thc.volunteerapp.model.ChatGroup;
+import com.volunteer.thc.volunteerapp.model.ChatSingle;
+import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
-
 
 
 /**
@@ -26,15 +25,18 @@ import java.util.ArrayList;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.EventViewHolder> {
 
-    private ArrayList<Chat> data = new ArrayList<>();
+    private ArrayList<Message> data = new ArrayList<>();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int contClick = 1;
     private Context context;
+    ChatSingle chatSingle = null;
+    ChatGroup chatGroup = null;
+    long hour;
 
 
-    public ConversationAdapter(ArrayList<Chat> data, Context context) {
+    public ConversationAdapter(ArrayList<Message> data, Context context) {
         this.data = data;
-        this.context=context;
+        this.context = context;
     }
 
 
@@ -48,42 +50,49 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     @Override
     public void onBindViewHolder(final ConversationAdapter.EventViewHolder holder, int position) {
+
+        if (data.get(position) instanceof ChatSingle) {
+            chatSingle = (ChatSingle) data.get(position);
+            hour = chatSingle.getHour();
+        } else {
+            chatGroup = (ChatGroup) data.get(position);
+            hour = chatGroup.getHour();
+        }
         if (data.get(position).getSentBy().equals(user.getUid())) {
 
             holder.relativeSent.setVisibility(View.VISIBLE);
             holder.relativeReceive.setVisibility(View.INVISIBLE);
             holder.textSent.setText(data.get(position).getContent());
-            holder.hourSent.setText(CalendarUtil.getHourFromLong(data.get(position).getHour()));
+            holder.hourSent.setText(CalendarUtil.getHourFromLong(hour));
 
         } else {
             holder.relativeSent.setVisibility(View.INVISIBLE);
             holder.relativeReceive.setVisibility(View.VISIBLE);
             holder.textReceive.setText(data.get(position).getContent());
-            holder.hourReceive.setText(CalendarUtil.getHourFromLong(data.get(position).getHour()));
-
+            holder.hourReceive.setText(CalendarUtil.getHourFromLong(hour));
 
 
         }
 
-        final int start=holder.textReceive.getPaddingStart();
-        final int end=holder.textReceive.getPaddingEnd();
-        final int top= holder.textReceive.getCompoundPaddingTop();
-        final int bottom= holder.textReceive.getPaddingBottom();
+        final int start = holder.textReceive.getPaddingStart();
+        final int end = holder.textReceive.getPaddingEnd();
+        final int top = holder.textReceive.getCompoundPaddingTop();
+        final int bottom = holder.textReceive.getPaddingBottom();
 
 
         holder.relativeReceive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int start=holder.textReceive.getPaddingStart();
-                int end=holder.textReceive.getPaddingEnd();
-                int top= holder.textReceive.getCompoundPaddingTop();
-                int bottom= holder.textReceive.getPaddingBottom();
+                int start = holder.textReceive.getPaddingStart();
+                int end = holder.textReceive.getPaddingEnd();
+                int top = holder.textReceive.getCompoundPaddingTop();
+                int bottom = holder.textReceive.getPaddingBottom();
 
                 if (contClick % 2 == 1) {
                     contClick++;
                     holder.hourReceive.setVisibility(View.VISIBLE);
                     holder.hourReceive.setVisibility(View.VISIBLE);
-                    holder.textReceive.setPaddingRelative(start, top, end, bottom+7);
+                    holder.textReceive.setPaddingRelative(start, top, end, bottom + 7);
                 } else {
                     contClick++;
                     holder.hourReceive.setVisibility(View.GONE);
@@ -101,7 +110,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                     contClick++;
                     holder.hourSent.setVisibility(View.VISIBLE);
                     holder.hourSent.setVisibility(View.VISIBLE);
-                    holder.textSent.setPaddingRelative(start, top, end, bottom+7);
+                    holder.textSent.setPaddingRelative(start, top, end, bottom + 7);
                 } else {
                     contClick++;
                     holder.hourSent.setVisibility(View.GONE);
@@ -140,8 +149,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         }
     }
 
-    public void addElement(Chat chat) {
-        data.add(chat);
+    public void addElement(ChatSingle chatSingle) {
+        data.add(chatSingle);
         notifyDataSetChanged();
     }
 

@@ -12,19 +12,20 @@ public class NewsMessage extends Message {
     private boolean starred;
     private String newsID, eventID;
     private long expireDate;
+    private String receivedBy;
 
     public NewsMessage() {
 
     }
 
     public NewsMessage(long expireDate, String newsID, String eventID, String sentBy, String receivedBy, String content, final int type, boolean notified, boolean starred) {
-        super(sentBy, receivedBy, content);
+        super(sentBy, newsID, content);
         this.type = type;
         this.notified = notified;
         this.starred = starred;
-        this.newsID = newsID;
         this.expireDate = expireDate;
         this.eventID = eventID;
+        this.receivedBy=receivedBy;
     }
 
     public int getType() {
@@ -74,4 +75,6 @@ public class NewsMessage extends Message {
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }
+
+
 }

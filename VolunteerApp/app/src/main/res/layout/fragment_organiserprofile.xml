@@ -15,7 +15,7 @@
         android:layout_marginTop="200dp" />
 
     <View
-        android:id="@+id/volunteer_backimage"
+        android:id="@+id/volunteer_back_image"
         android:layout_width="match_parent"
         android:layout_height="120sp"
         android:background="@color/colorAccent" />
@@ -102,7 +102,7 @@
                 android:layout_alignTop="@+id/image_email" />
 
             <EditText
-                android:id="@+id/edit_phone"
+                android:id="@+id/ProfileVolunteerPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/edit_email"
@@ -123,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/image_city"
                 android:layout_alignBottom="@+id/image_city"
-                android:layout_below="@+id/edit_phone"
+                android:layout_below="@+id/ProfileVolunteerPhone"
                 android:layout_alignBaseline="@+id/image_city"
                 android:background="@android:color/transparent"
                 android:focusable="false"
