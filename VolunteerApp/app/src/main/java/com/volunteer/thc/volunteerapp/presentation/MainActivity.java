@@ -46,6 +46,7 @@ import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserScoreboard
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerMyEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerProfileFragment;
+import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerRewardsFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerScoreboardFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -242,7 +243,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 case R.id.nav_scoreboard: {
                     if (TextUtils.equals(userStatus, volunteer)) {
-                        replaceFragmentByClass(new VolunteerScoreboardFragment());
+                        replaceFragmentByClass(new VolunteerRewardsFragment());
                     } else {
                         replaceFragmentByClass(new OrganiserScoreboardFragment());
                     }
