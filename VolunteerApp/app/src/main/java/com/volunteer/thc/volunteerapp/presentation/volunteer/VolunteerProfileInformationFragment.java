@@ -27,7 +27,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -92,6 +91,9 @@ public class VolunteerProfileInformationFragment extends Fragment {
         mCity = (EditText) view.findViewById(R.id.ProfileVolunteerCity);
         mPhone = (EditText) view.findViewById(R.id.ProfileVolunteerPhone);
         circleImageView = (CircleImageView) view.findViewById(R.id.ProfileVolunteerImage);
+
+        circleImageViewMenu = navigationView.findViewById(R.id.photo);
+
         mEditFloating = (FloatingActionButton) view.findViewById(R.id.volunteer_profile_edit);
         mCancelFloating = (FloatingActionButton) view.findViewById(R.id.volunteer_profile_cancel);
 
@@ -235,6 +237,7 @@ public class VolunteerProfileInformationFragment extends Fragment {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
                     Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageViewMenu);
+                    progressDialog.dismiss();
                 }
             });
 
