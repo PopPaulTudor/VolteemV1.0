@@ -18,7 +18,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,6 +51,7 @@ import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerEventsFrag
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerMyEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerProfileFragment;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerRewardsFragment;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private TextView mUserStatus, mUserName;
+    private TextView mUserTypeView, mUserName;
     private SharedPreferences mPrefs;
     private CircleImageView mImage;
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity
         View header = navigationView.getHeaderView(0);
         mImage = header.findViewById(R.id.photo);
         mUserName = header.findViewById(R.id.nav_header_name);
-        mUserStatus = header.findViewById(R.id.nav_header_status);
+        mUserTypeView = header.findViewById(R.id.nav_header_status);
 
         storageRef.child("Photos").child("User").child(mUser.getUid()).getDownloadUrl()
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -122,33 +122,27 @@ public class MainActivity extends AppCompatActivity
                         String firstName = volunteer.getFirstname();
                         String lastName = volunteer.getLastname();
                         editor.putString("name", firstName + " " + lastName);
+                        editor.putString("gender", gender);
                         mUserName.setText(firstName + " " + lastName);
-
-                        if (TextUtils.equals(gender, "Male")) {
-                            editor.putString("gender", "Male");
-                        } else {
-                            editor.putString("gender", "Female");
-                        }
                     } else {
-                        // an error occurred: data is missing from volunteer
-                        // TODO throw an exception or handle it
-                        final String errorMsg = "Volunteer logged in, but the data was missing " +
-                                "for user with id " + mUser.getUid();
+                        // TODO throw an exception or handle the error
+                        final String errorMsg = "Volunteer logged in, but the  firestore data was" +
+                                " missing for user with id " + mUser.getUid();
                         Log.e(TAG, errorMsg);
                         Crashlytics.logException(new Exception(errorMsg));
                         return;
                     }
                 } else {
+                    mUserName.setText(mUser.getEmail());
                     mUserType = UserType.ORGANISER;
                     editor.putString("gender", mUserType.getPrefsValue());
-                    mUserName.setText(mUser.getEmail());
                 }
 
                 editor.putString("user_status", mUserType.getPrefsValue());
                 editor.putString("user_id", mUser.getUid());
                 editor.apply();
 
-                mUserStatus.setText(mUserType == UserType.VOLUNTEER ? getResources().getString(R
+                mUserTypeView.setText(mUserType == UserType.VOLUNTEER ? getResources().getString(R
                         .string.volunteer) : getResources().getString(R.string.organiser));
                 showEvents();
             }
@@ -157,8 +151,8 @@ public class MainActivity extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {
                 Log.e(TAG, databaseError.getDetails());
                 Answers.getInstance().logCustom(
-                        new CustomEvent("Error")
-                                .putCustomAttribute("Error passing data for User", mUser.getUid()));
+                        new CustomEvent(VolteemConstants.USER_CUSTOM_ERROR_CRASHLYTICS)
+                                .putCustomAttribute("Error passing data for user", mUser.getUid()));
             }
         };
 
@@ -169,19 +163,15 @@ public class MainActivity extends AppCompatActivity
             mDatabase.child("users").child("volunteers").child(mUser.getUid())
                     .addListenerForSingleValueEvent(statusListener);
         } else {
-            if (mUserType == UserType.VOLUNTEER) {
-                mUserName.setText(mPrefs.getString("name", null));
-            } else {
-                mUserName.setText(mUser.getEmail());
-            }
-
-            mUserStatus.setText(mUserType == UserType.VOLUNTEER ? getResources().getString(R
+            mUserName.setText(mUserType == UserType.VOLUNTEER ? mPrefs.getString("name", null) :
+                    mUser.getEmail());
+            mUserTypeView.setText(mUserType == UserType.VOLUNTEER ? getResources().getString(R
                     .string.volunteer) : getResources().getString(R.string.organiser));
             showEvents();
         }
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Events");
+            getSupportActionBar().setTitle(getResources().getString(R.string.events));
         }
 
         drawer.closeDrawers();
@@ -198,8 +188,7 @@ public class MainActivity extends AppCompatActivity
                     VolunteerEventsFragment) {
                 super.onBackPressed();
             } else {
-                final String userStatus = mPrefs.getString("user_status", null);
-                if (TextUtils.equals(userStatus, "Volunteer")) {
+                if (mUserType == UserType.VOLUNTEER) {
                     replaceFragmentByClass(new VolunteerEventsFragment());
                 } else {
                     replaceFragmentByClass(new OrganiserEventsFragment());
@@ -210,7 +199,8 @@ public class MainActivity extends AppCompatActivity
                 }
                 eventsItem.setChecked(true);
                 if (getSupportActionBar() != null) {
-                    getSupportActionBar().setTitle("Events");
+                    getSupportActionBar().setTitle(getResources().getString(R
+                            .string.events));
                 }
             }
         }
@@ -220,72 +210,70 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         selectedItem = item;
+
         if (isNetworkAvailable()) {
+            Fragment fragment = null;
             String actionBarTitle = getActionBar() == null ? "" : String.valueOf(getActionBar()
                     .getTitle());
-            final String userStatus = mPrefs.getString("user_status", null);
-            final String volunteer = "Volunteer";
             switch (id) {
                 case R.id.nav_events: {
-                    if (mUserType == UserType.VOLUNTEER) {
-                        replaceFragmentByClass(new VolunteerEventsFragment());
-                    } else {
-                        replaceFragmentByClass(new OrganiserEventsFragment());
-                    }
-                    actionBarTitle = "Events";
+                    fragment = mUserType == UserType.VOLUNTEER ? new VolunteerEventsFragment() :
+                            new OrganiserEventsFragment();
+                    actionBarTitle = getResources().getString(R
+                            .string.events);
                     break;
                 }
                 case R.id.user_events: {
-                    replaceFragmentByClass(new VolunteerMyEventsFragment());
-                    actionBarTitle = "My Events";
+                    fragment = new VolunteerMyEventsFragment();
+                    actionBarTitle = getResources().getString(R
+                            .string.my_events);
                     break;
                 }
                 case R.id.nav_profile: {
-                    if (TextUtils.equals(userStatus, volunteer)) {
-                        replaceFragmentByClass(new VolunteerProfileFragment());
-                    } else {
-                        replaceFragmentByClass(new OrganiserProfileFragment());
-                    }
-                    actionBarTitle = "Profile";
+                    fragment = mUserType == UserType.VOLUNTEER ? new VolunteerProfileFragment() :
+                            new OrganiserProfileFragment();
+                    actionBarTitle = getResources().getString(R
+                            .string.profile);
                     break;
                 }
                 case R.id.nav_settings: {
-                    replaceFragmentByClass(new SettingsFragment());
-                    actionBarTitle = "Settings";
+                    fragment = new SettingsFragment();
+                    actionBarTitle = getResources().getString(R
+                            .string.settings);
                     break;
                 }
                 case R.id.nav_news: {
-                    replaceFragmentByClass(new NewsFragment());
-                    actionBarTitle = "News";
+                    fragment = new NewsFragment();
+                    actionBarTitle = getResources().getString(R
+                            .string.news);
                     break;
                 }
                 case R.id.nav_chat: {
-                    replaceFragmentByClass(new ChatFragment());
-                    actionBarTitle = "Interview";
+                    fragment = new ChatFragment();
+                    actionBarTitle = getResources().getString(R
+                            .string.interview);
                     break;
                 }
                 case R.id.nav_scoreboard: {
-                    if (TextUtils.equals(userStatus, volunteer)) {
-                        replaceFragmentByClass(new VolunteerRewardsFragment());
-                    } else {
-                        replaceFragmentByClass(new OrganiserScoreboardFragment());
-                    }
-                    actionBarTitle = "Scoreboard";
+                    fragment = mUserType == UserType.VOLUNTEER ? new VolunteerRewardsFragment() :
+                            new OrganiserScoreboardFragment();
+                    actionBarTitle = getResources().getString(R.string.scoreboard);
                     break;
                 }
                 case R.id.nav_logout: {
                     AlertDialog logoutAlertDialog = new AlertDialog.Builder(this)
-                            .setTitle("Are you sure?")
-                            .setMessage("Are you sure you want to log out?")
+                            .setTitle(getResources().getString(R
+                                    .string.logout_message_title))
+                            .setMessage(getResources().getString(R
+                                    .string.logout_message))
                             .setCancelable(true)
-                            .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            .setPositiveButton(getResources().getString(R
+                                    .string.logout_yes), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     mAuth.signOut();
                                     SharedPreferences.Editor editor = mPrefs.edit();
-                                    editor.putString("user_status", null);
-                                    editor.putString("name", null);
-                                    editor.putString("gender", null);
+                                    editor.clear();
                                     editor.apply();
                                     stopService(serviceIntent);
                                     startActivity(new Intent(MainActivity.this, LoginActivity
@@ -293,7 +281,8 @@ public class MainActivity extends AppCompatActivity
                                     finish();
                                 }
                             })
-                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(getResources().getString(R
+                                    .string.logout_no), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -303,19 +292,26 @@ public class MainActivity extends AppCompatActivity
                     logoutAlertDialog.show();
                     break;
                 }
+                default:
+                    Log.wtf(TAG, "Menu item not found.");
+                    break;
             }
 
             if (eventsItem.isChecked()) {
                 eventsItem.setChecked(false);
             }
-
             item.setChecked(true);
 
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(actionBarTitle);
             }
+
+            if (fragment != null) {
+                replaceFragmentByClass(fragment);
+            }
         } else {
-            Toast.makeText(MainActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, getResources().getString(R.string.no_internet),
+                    Toast.LENGTH_LONG).show();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -335,7 +331,11 @@ public class MainActivity extends AppCompatActivity
                 replaceFragmentByClass(new OrganiserEventsFragment());
                 break;
             default:
-                Toast.makeText(MainActivity.this, "An error occurred", Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Error showing events for user " + mUser.getUid());
+                Answers.getInstance().logCustom(
+                        new CustomEvent(VolteemConstants.USER_CUSTOM_ERROR_CRASHLYTICS)
+                                .putCustomAttribute("Error showing events for user", mUser.getUid
+                                        ()));
                 break;
         }
     }
@@ -349,13 +349,8 @@ public class MainActivity extends AppCompatActivity
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        NetworkInfo activeNetworkInfo = connectivityManager == null ? null : connectivityManager
+                .getActiveNetworkInfo();
         return activeNetworkInfo != null;
-    }
-
-    private void setCheckedFalse(MenuItem item) {
-        if (item.isChecked()) {
-            item.setChecked(false);
-        }
     }
 }

@@ -63,4 +63,11 @@
     <string name="volteem_srl">Volteem SRL</string>
     <string name="volunteer">Volunteer</string>
     <string name="organiser">Organiser</string>
+    <string name="events">Events</string>
+    <string name="interview">Interview</string>
+    <string name="logout_message">Are you sure you want to logout?</string>
+    <string name="logout_message_title">Are you sure?</string>
+    <string name="logout_yes">Yes</string>
+    <string name="logout_no">No</string>
+    <string name="no_internet">No internet connection</string>
 </resources>
