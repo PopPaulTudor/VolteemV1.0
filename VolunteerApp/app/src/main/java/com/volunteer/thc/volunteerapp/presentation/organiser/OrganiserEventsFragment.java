@@ -26,12 +26,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -61,6 +58,7 @@ import java.util.List;
 
 public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, ActionListener.EventPicturesLoadingListener {
 
+    public static boolean hasActionHappened = false;
     private final String pending = "pending";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -72,7 +70,6 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     private Spinner actionFilter;
     private ArrayList<String> typeList = new ArrayList<>();
     private FloatingActionButton fab;
-    public static boolean hasActionHappened = false;
     private MenuItem filter;
     private String filterType = "All";
     private int mLongAnimTime;
@@ -311,7 +308,9 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                     snackbar.show();
                                 }
 
-                                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS, OrganiserEventsFragment.this);
+                                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList,
+                                        getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS,
+                                        OrganiserEventsFragment.this, 1);
                                 recyclerView.setAdapter(adapter);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                                 recyclerView.setLayoutManager(linearLayoutManager);
@@ -363,7 +362,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                         noEvents.setVisibility(View.VISIBLE);
                     }
 
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS, OrganiserEventsFragment.this);
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS, OrganiserEventsFragment.this, 1);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);

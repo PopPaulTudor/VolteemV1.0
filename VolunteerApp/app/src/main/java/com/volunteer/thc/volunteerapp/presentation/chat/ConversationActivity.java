@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.presentation.Chat;
+package com.volunteer.thc.volunteerapp.presentation.chat;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -36,9 +36,10 @@ import java.util.Calendar;
 public class ConversationActivity extends AppCompatActivity {
 
 
-    final ArrayList<Message> arrayList = new ArrayList<>();
     public static String nameChat = null;
     public static String idActive = "";
+    public static OrganiserSingleEventRegisteredUsersFragment fragment;
+    final ArrayList<Message> arrayList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ConversationAdapter conversationAdapter;
     private EditText reply;
@@ -46,7 +47,6 @@ public class ConversationActivity extends AppCompatActivity {
     private String idSent, idReceive;
     private ChatSingle chatSingle=null;
     private  ChatGroup chatGroup=null;
-    public static OrganiserSingleEventRegisteredUsersFragment fragment;
     private String type = "single";
 
     @Override

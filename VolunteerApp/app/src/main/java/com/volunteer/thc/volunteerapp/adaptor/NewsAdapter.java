@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,7 @@ import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 
@@ -98,9 +98,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 Intent intent;
                 switch (newsList.get(position).getType()) {
                     case NewsMessage.ACCEPT:
-                        prefs.edit().putInt("cameFrom", 2).apply();
                         intent = new Intent(context, VolunteerSingleEventActivity.class);
                         intent.putExtra("newsEventID", newsList.get(position).getEventID());
+                        intent.putExtra(VolteemConstants.VOLUNTEER_SINGLE_ACTIVITY_CAME_FROM_KEY,
+                                2);
                         break;
                     case NewsMessage.REGISTERED:
                         intent = new Intent(context, OrganiserSingleEventActivity.class);

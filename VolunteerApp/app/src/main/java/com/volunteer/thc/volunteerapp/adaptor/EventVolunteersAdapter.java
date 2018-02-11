@@ -41,7 +41,7 @@ import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.OrganiserRating;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.Chat.ConversationActivity;
+import com.volunteer.thc.volunteerapp.presentation.chat.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
@@ -360,35 +360,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         return listVolunteer.size();
     }
 
-    class EventViewHolder extends RecyclerView.ViewHolder {
-
-        TextView nameVolunteer, expPhoneVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer, emailVolunteer, detailedText;
-        RelativeLayout item;
-        RelativeLayout expandableItem;
-        ImageView acceptUser, sendMessage, viewFeedback, kickVolunteer, sendMessageAccepted;
-        CircleImageView volunteerImage;
-
-        EventViewHolder(View itemView) {
-            super(itemView);
-
-            item = (RelativeLayout) itemView.findViewById(R.id.item_view);
-            nameVolunteer = (TextView) itemView.findViewById(R.id.name_volunteer_element);
-            expPhoneVolunteer = (TextView) itemView.findViewById(R.id.exp_phone_volunteer_element);
-            expandableItem = (RelativeLayout) itemView.findViewById(R.id.expandable_item);
-            cityVolunteer = (TextView) itemView.findViewById(R.id.volunteer_city);
-            ageVolunteer = (TextView) itemView.findViewById(R.id.volunteer_age);
-            phoneVolunteer = (TextView) itemView.findViewById(R.id.volunteer_phone);
-            emailVolunteer = (TextView) itemView.findViewById(R.id.volunteer_email);
-            acceptUser = (ImageView) itemView.findViewById(R.id.accept_volunteer);
-            sendMessage = (ImageView) itemView.findViewById(R.id.send_volunteer);
-            viewFeedback = (ImageView) itemView.findViewById(R.id.view_feedback);
-            kickVolunteer = (ImageView) itemView.findViewById(R.id.kick_volunteer);
-            detailedText = (TextView) itemView.findViewById(R.id.text_experience);
-            volunteerImage = (CircleImageView) itemView.findViewById(R.id.photo_volunteer_element);
-            sendMessageAccepted = (ImageView) itemView.findViewById(R.id.send_accepted_volunteer);
-        }
-    }
-
     public void acceptVolunteer(final String id, Activity activity) {
 
         mDatabase.child("events").child(event.getEventID()).child("users").child(id).child("status").setValue("accepted");
@@ -448,7 +419,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         notifyDataSetChanged();
     }
 
-
     private View.OnClickListener sendMessage(final int position) {
         return new View.OnClickListener() {
             @Override
@@ -505,5 +475,35 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
             }
         };
+    }
+
+    class EventViewHolder extends RecyclerView.ViewHolder {
+
+        TextView nameVolunteer, expPhoneVolunteer, cityVolunteer, ageVolunteer, phoneVolunteer,
+                emailVolunteer, detailedText;
+        RelativeLayout item;
+        RelativeLayout expandableItem;
+        ImageView acceptUser, sendMessage, viewFeedback, kickVolunteer, sendMessageAccepted;
+        CircleImageView volunteerImage;
+
+        EventViewHolder(View itemView) {
+            super(itemView);
+
+            item = (RelativeLayout) itemView.findViewById(R.id.item_view);
+            nameVolunteer = (TextView) itemView.findViewById(R.id.name_volunteer_element);
+            expPhoneVolunteer = (TextView) itemView.findViewById(R.id.exp_phone_volunteer_element);
+            expandableItem = (RelativeLayout) itemView.findViewById(R.id.expandable_item);
+            cityVolunteer = (TextView) itemView.findViewById(R.id.volunteer_city);
+            ageVolunteer = (TextView) itemView.findViewById(R.id.volunteer_age);
+            phoneVolunteer = (TextView) itemView.findViewById(R.id.volunteer_phone);
+            emailVolunteer = (TextView) itemView.findViewById(R.id.volunteer_email);
+            acceptUser = (ImageView) itemView.findViewById(R.id.accept_volunteer);
+            sendMessage = (ImageView) itemView.findViewById(R.id.send_volunteer);
+            viewFeedback = (ImageView) itemView.findViewById(R.id.view_feedback);
+            kickVolunteer = (ImageView) itemView.findViewById(R.id.kick_volunteer);
+            detailedText = (TextView) itemView.findViewById(R.id.text_experience);
+            volunteerImage = (CircleImageView) itemView.findViewById(R.id.photo_volunteer_element);
+            sendMessageAccepted = (ImageView) itemView.findViewById(R.id.send_accepted_volunteer);
+        }
     }
 }

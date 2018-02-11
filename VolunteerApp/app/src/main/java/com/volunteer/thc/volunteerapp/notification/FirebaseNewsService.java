@@ -25,20 +25,18 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.ChatGroup;
 import com.volunteer.thc.volunteerapp.model.ChatSingle;
-import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.Chat.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
+import com.volunteer.thc.volunteerapp.presentation.chat.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
@@ -320,8 +318,8 @@ public class FirebaseNewsService extends Service {
         Intent intent;
         switch (message.getType()) {
             case NewsMessage.ACCEPT:
-                prefs.edit().putInt("cameFrom", 2).apply();
                 intent = new Intent(this, VolunteerSingleEventActivity.class);
+                intent.putExtra(VolteemConstants.VOLUNTEER_SINGLE_ACTIVITY_CAME_FROM_KEY, 2);
                 break;
             case NewsMessage.REGISTERED:
                 intent = new Intent(this, OrganiserSingleEventActivity.class);

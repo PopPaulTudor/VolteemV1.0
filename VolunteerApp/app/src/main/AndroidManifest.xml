@@ -53,7 +53,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".presentation.Chat.ConversationActivity"
+            android:name=".presentation.chat.ConversationActivity"
             android:label="Conversation"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"

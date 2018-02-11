@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.presentation.Chat;
+package com.volunteer.thc.volunteerapp.presentation.chat;
 
 import android.app.Activity;
 

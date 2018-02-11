@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 public class VolunteerSearchableActivity extends AppCompatActivity implements ActionListener.EventPicturesLoadingListener{
 
+    public static boolean hasActionHappened = false;
     private String query;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -38,7 +39,6 @@ public class VolunteerSearchableActivity extends AppCompatActivity implements Ac
     private ProgressBar mProgressBar;
     private TextView mNoResultText;
     private int mLongAnimTime;
-    public static boolean hasActionHappened = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +102,10 @@ public class VolunteerSearchableActivity extends AppCompatActivity implements Ac
                 }  else {
                     Log.w("VolunteerSearchQuery", " event(s) found");
                 }
-                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this, getResources(), OrgEventsAdaptor.ALL_EVENTS, VolunteerSearchableActivity.this);
+
+                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents,
+                        VolunteerSearchableActivity.this, getResources(), OrgEventsAdaptor
+                        .ALL_EVENTS, VolunteerSearchableActivity.this, 1);
                 recyclerView.setAdapter(adapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(VolunteerSearchableActivity.this);
                 recyclerView.setLayoutManager(linearLayoutManager);

@@ -24,7 +24,7 @@ import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.Chat.ConversationActivity;
+import com.volunteer.thc.volunteerapp.presentation.chat.ConversationActivity;
 
 import java.util.ArrayList;
 
@@ -36,8 +36,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatAdapter extends ArrayAdapter<Message> {
 
-    private Context context;
     public ArrayList<Message> data = new ArrayList<>();
+    private Context context;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 

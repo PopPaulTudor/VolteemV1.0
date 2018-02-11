@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.presentation.Chat;
+package com.volunteer.thc.volunteerapp.presentation.chat;
 
 import android.animation.Animator;
 import android.annotation.SuppressLint;
@@ -46,20 +46,18 @@ import java.util.ArrayList;
 /**
  * Created by poppa on 25.08.2017.
  */
-
 public class ChatFragment extends Fragment {
 
+    final ArrayList<Message> array = new ArrayList<>();
+    final ArrayList<Message> arrayWork = new ArrayList<>();
+    View rootLayout;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ListView listChat;
     private ChatAdapter chatAdapter;
     private TextView noChatText;
     private ImageView noChatImage;
-    final ArrayList<Message> array = new ArrayList<>();
-    final ArrayList<Message> arrayWork = new ArrayList<>();
     private String type = "single";
-
-    View rootLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

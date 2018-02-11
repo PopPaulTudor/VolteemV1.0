@@ -36,6 +36,7 @@ import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ import java.util.List;
 
 public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.EventViewHolder> {
 
+    public static final int ALL_EVENTS = 1, MY_EVENTS = 2;
     private List<Event> eventsList;
     private Context context;
     private Resources resources;
@@ -56,14 +58,17 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ActionListener.EventPicturesLoadingListener eventPicturesLoadingListener;
     private boolean wasUIActivated = false;
-    public static final int ALL_EVENTS = 1, MY_EVENTS = 2;
+    private int cameFrom;
 
-    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources, final int FLAG, ActionListener.EventPicturesLoadingListener eventPicturesLoadingListener) {
+    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources, final int
+            FLAG, ActionListener.EventPicturesLoadingListener eventPicturesLoadingListener, int
+            cameFrom) {
         eventsList = list;
         this.context = context;
         this.resources = resources;
         this.flag = FLAG;
         this.eventPicturesLoadingListener = eventPicturesLoadingListener;
+        this.cameFrom = cameFrom;
     }
 
     @Override
@@ -166,6 +171,7 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
                 } else {
                     Intent intent = new Intent(context.getApplicationContext(), VolunteerSingleEventActivity.class);
                     intent.putExtra("SingleEvent", eventsList.get(position));
+                    intent.putExtra(VolteemConstants.VOLUNTEER_SINGLE_ACTIVITY_CAME_FROM_KEY, cameFrom);
                     context.startActivity(intent);
                 }
             }
@@ -175,27 +181,6 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     @Override
     public int getItemCount() {
         return eventsList.size();
-    }
-
-    class EventViewHolder extends RecyclerView.ViewHolder {
-
-        TextView cardName;
-        TextView cardDate;
-        TextView cardLocation;
-        ImageView cardImage;
-        ImageView cardChecked;
-        CardView cardView;
-
-        EventViewHolder(View v) {
-            super(v);
-
-            cardName = (TextView) v.findViewById(R.id.NameCardElement);
-            cardDate = (TextView) v.findViewById(R.id.DateCardElement);
-            cardLocation = (TextView) v.findViewById(R.id.LocationCardElement);
-            cardView = (CardView) v.findViewById(R.id.CardElement);
-            cardImage = (ImageView) v.findViewById(R.id.ImageCardElement);
-            cardChecked = (ImageView) v.findViewById(R.id.CardCheck);
-        }
     }
 
     private Uri parseUri(int ID) {
@@ -221,5 +206,26 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         typeList.add("Charity");
         typeList.add("Training");
         typeList.add("Other");
+    }
+
+    class EventViewHolder extends RecyclerView.ViewHolder {
+
+        TextView cardName;
+        TextView cardDate;
+        TextView cardLocation;
+        ImageView cardImage;
+        ImageView cardChecked;
+        CardView cardView;
+
+        EventViewHolder(View v) {
+            super(v);
+
+            cardName = (TextView) v.findViewById(R.id.NameCardElement);
+            cardDate = (TextView) v.findViewById(R.id.DateCardElement);
+            cardLocation = (TextView) v.findViewById(R.id.LocationCardElement);
+            cardView = (CardView) v.findViewById(R.id.CardElement);
+            cardImage = (ImageView) v.findViewById(R.id.ImageCardElement);
+            cardChecked = (ImageView) v.findViewById(R.id.CardCheck);
+        }
     }
 }

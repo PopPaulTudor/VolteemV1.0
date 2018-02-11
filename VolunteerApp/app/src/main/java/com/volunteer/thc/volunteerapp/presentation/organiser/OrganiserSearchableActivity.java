@@ -92,8 +92,9 @@ public class OrganiserSearchableActivity extends AppCompatActivity implements Ac
                         mNoResultText.setVisibility(View.VISIBLE);
                         mProgressBar.setVisibility(View.GONE);
                     } else {
-
-                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, OrganiserSearchableActivity.this, getResources(), OrgEventsAdaptor.MY_EVENTS, OrganiserSearchableActivity.this);
+                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents,
+                                OrganiserSearchableActivity.this, getResources(),
+                                OrgEventsAdaptor.MY_EVENTS, OrganiserSearchableActivity.this, 1);
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrganiserSearchableActivity.this);
                         recyclerView.setLayoutManager(linearLayoutManager);

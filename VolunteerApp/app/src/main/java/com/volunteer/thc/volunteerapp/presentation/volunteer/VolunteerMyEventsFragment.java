@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 public class VolunteerMyEventsFragment extends Fragment implements ActionListener.EventPicturesLoadingListener{
 
+    protected static boolean hasActionHappened = false;
     private List<Event> mEventsList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -52,7 +53,6 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
     private TextView noEvents;
     private Calendar date = Calendar.getInstance();
     private int mLongAnimTime;
-    protected static boolean hasActionHappened = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -174,7 +174,9 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
                             return 0;
                         }
                     });
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS, VolunteerMyEventsFragment.this);
+                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(),
+                            getResources(), OrgEventsAdaptor.MY_EVENTS, VolunteerMyEventsFragment
+                            .this, 2);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);
