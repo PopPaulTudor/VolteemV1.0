@@ -15,7 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.EventFeedbackVolunteersAdapter;
+import com.volunteer.thc.volunteerapp.adapter.EventFeedbackVolunteersAdapter;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 

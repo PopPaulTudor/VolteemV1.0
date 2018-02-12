@@ -28,7 +28,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.OrganiserSingleEventViewAdapter;
+import com.volunteer.thc.volunteerapp.adapter.OrganiserSingleEventViewAdapter;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 

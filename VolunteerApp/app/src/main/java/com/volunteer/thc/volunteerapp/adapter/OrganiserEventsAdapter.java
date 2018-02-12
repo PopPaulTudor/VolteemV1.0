@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.adaptor;
+package com.volunteer.thc.volunteerapp.adapter;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -43,7 +43,7 @@ import java.util.List;
  * Created by poppa on 12.07.2017.
  */
 
-public class OrganiserEventsAdaptor extends RecyclerView.Adapter<OrganiserEventsAdaptor
+public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEventsAdapter
         .EventViewHolder> {
 
     public static final int ALL_EVENTS = 1, MY_EVENTS = 2;
@@ -58,7 +58,7 @@ public class OrganiserEventsAdaptor extends RecyclerView.Adapter<OrganiserEvents
     private ActionListener.EventPicturesLoadingListener eventPicturesLoadingListener;
     private boolean wasUIActivated = false;
 
-    public OrganiserEventsAdaptor(List<Event> list, Context context, Resources resources, final int
+    public OrganiserEventsAdapter(List<Event> list, Context context, Resources resources, final int
             FLAG, ActionListener.EventPicturesLoadingListener eventPicturesLoadingListener) {
         eventsList = list;
         this.context = context;
@@ -68,7 +68,7 @@ public class OrganiserEventsAdaptor extends RecyclerView.Adapter<OrganiserEvents
     }
 
     @Override
-    public OrganiserEventsAdaptor.EventViewHolder onCreateViewHolder(ViewGroup parent, int
+    public OrganiserEventsAdapter.EventViewHolder onCreateViewHolder(ViewGroup parent, int
             viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_element, parent,
                 false);
@@ -77,7 +77,7 @@ public class OrganiserEventsAdaptor extends RecyclerView.Adapter<OrganiserEvents
     }
 
     @Override
-    public void onBindViewHolder(final OrganiserEventsAdaptor.EventViewHolder holder, int
+    public void onBindViewHolder(final OrganiserEventsAdapter.EventViewHolder holder, int
             position) {
 
         holder.cardName.setText(eventsList.get(position).getName());

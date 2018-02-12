@@ -38,8 +38,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.OrganiserEventsAdaptor;
-import com.volunteer.thc.volunteerapp.adaptor.VolunteerEventsAdapter;
+import com.volunteer.thc.volunteerapp.adapter.OrganiserEventsAdapter;
+import com.volunteer.thc.volunteerapp.adapter.VolunteerEventsAdapter;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 
@@ -146,7 +146,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
                         VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
                                 getContext()
-                                , getResources(), OrganiserEventsAdaptor.ALL_EVENTS,
+                                , getResources(), OrganiserEventsAdapter.ALL_EVENTS,
                                 VolunteerEventsFragment.this, 1);
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager
@@ -202,7 +202,8 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
                     VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
                             getContext(),
-                            getResources(), OrganiserEventsAdaptor.ALL_EVENTS, VolunteerEventsFragment
+                            getResources(), OrganiserEventsAdapter.ALL_EVENTS,
+                            VolunteerEventsFragment
                             .this, 1);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity

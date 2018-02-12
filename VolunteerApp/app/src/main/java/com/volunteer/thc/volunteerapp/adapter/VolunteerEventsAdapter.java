@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.adaptor;
+package com.volunteer.thc.volunteerapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by Vlad on 12.02.2018.
  */
-public class VolunteerEventsAdapter extends OrganiserEventsAdaptor {
+public class VolunteerEventsAdapter extends OrganiserEventsAdapter {
 
     private int mCameFrom;
 

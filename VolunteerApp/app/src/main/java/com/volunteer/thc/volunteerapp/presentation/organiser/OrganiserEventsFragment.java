@@ -42,7 +42,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.OrganiserEventsAdaptor;
+import com.volunteer.thc.volunteerapp.adapter.OrganiserEventsAdapter;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.CreateEventActivity;
@@ -308,9 +308,9 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                     snackbar.show();
                                 }
 
-                                OrganiserEventsAdaptor adapter = new OrganiserEventsAdaptor
+                                OrganiserEventsAdapter adapter = new OrganiserEventsAdapter
                                         (mEventsList,
-                                        getContext(), getResources(), OrganiserEventsAdaptor
+                                                getContext(), getResources(), OrganiserEventsAdapter
                                                 .MY_EVENTS,
                                         OrganiserEventsFragment.this);
                                 recyclerView.setAdapter(adapter);
@@ -364,7 +364,9 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                         noEvents.setVisibility(View.VISIBLE);
                     }
 
-                    OrganiserEventsAdaptor adapter = new OrganiserEventsAdaptor(mEventsList, getContext(), getResources(), OrganiserEventsAdaptor.MY_EVENTS, OrganiserEventsFragment.this);
+                    OrganiserEventsAdapter adapter = new OrganiserEventsAdapter(mEventsList,
+                            getContext(), getResources(), OrganiserEventsAdapter.MY_EVENTS,
+                            OrganiserEventsFragment.this);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);

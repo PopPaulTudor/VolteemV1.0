@@ -20,7 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.ConversationAdapter;
+import com.volunteer.thc.volunteerapp.adapter.ConversationAdapter;
 import com.volunteer.thc.volunteerapp.model.ChatGroup;
 import com.volunteer.thc.volunteerapp.model.ChatSingle;
 import com.volunteer.thc.volunteerapp.model.Message;

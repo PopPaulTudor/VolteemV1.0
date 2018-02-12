@@ -22,7 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.LeaderboardAdapter;
+import com.volunteer.thc.volunteerapp.adapter.LeaderboardAdapter;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.OrganiserRating;
 

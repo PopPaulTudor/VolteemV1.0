@@ -19,7 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.OrganiserEventsAdaptor;
+import com.volunteer.thc.volunteerapp.adapter.OrganiserEventsAdapter;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
@@ -92,9 +92,9 @@ public class OrganiserSearchableActivity extends AppCompatActivity implements Ac
                         mNoResultText.setVisibility(View.VISIBLE);
                         mProgressBar.setVisibility(View.GONE);
                     } else {
-                        OrganiserEventsAdaptor adapter = new OrganiserEventsAdaptor(mResultEvents,
+                        OrganiserEventsAdapter adapter = new OrganiserEventsAdapter(mResultEvents,
                                 OrganiserSearchableActivity.this, getResources(),
-                                OrganiserEventsAdaptor.MY_EVENTS, OrganiserSearchableActivity.this);
+                                OrganiserEventsAdapter.MY_EVENTS, OrganiserSearchableActivity.this);
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrganiserSearchableActivity.this);
                         recyclerView.setLayoutManager(linearLayoutManager);

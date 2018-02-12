@@ -11,7 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.ViewPagerAdapter;
+import com.volunteer.thc.volunteerapp.adapter.ViewPagerAdapter;
 
 public class RegisterActivity extends AppCompatActivity {
 

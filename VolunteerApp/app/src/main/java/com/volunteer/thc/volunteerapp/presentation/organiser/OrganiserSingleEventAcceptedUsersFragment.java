@@ -19,13 +19,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
+import com.volunteer.thc.volunteerapp.adapter.EventVolunteersAdapter;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.RegisteredUser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -35,12 +33,12 @@ import java.util.ArrayList;
 
 public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implements ActionListener.VolunteersRemovedListener{
 
+    public static EventVolunteersAdapter adapter;
     private ArrayList<String> mAcceptedUsers = new ArrayList<>();
     private ArrayList<Volunteer> mVolunteers = new ArrayList<>();
     private Event currentEvent;
     private RecyclerView mAcceptedUsersList;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    public static EventVolunteersAdapter adapter;
     private ProgressBar progressBar;
     private TextView noVolunteersText;
 

@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.adaptor;
+package com.volunteer.thc.volunteerapp.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,9 +19,9 @@ import java.util.ArrayList;
 
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.EventViewHolder> {
 
+    public static final int ORGANISER = 2;
     private ArrayList<Volunteer> listVolunteer;
     private ArrayList<Organiser> listOrganiser;
-    public static final int ORGANISER = 2;
     private int flag = 1;
 
     public LeaderboardAdapter(ArrayList<Volunteer> listVolunteer) {

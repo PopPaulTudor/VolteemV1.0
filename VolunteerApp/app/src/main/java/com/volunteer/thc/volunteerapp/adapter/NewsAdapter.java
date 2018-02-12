@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.adaptor;
+package com.volunteer.thc.volunteerapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;

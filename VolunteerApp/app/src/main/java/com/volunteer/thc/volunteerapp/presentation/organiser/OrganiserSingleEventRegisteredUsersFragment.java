@@ -19,7 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
+import com.volunteer.thc.volunteerapp.adapter.EventVolunteersAdapter;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implements ActionListener.VolunteersRemovedListener{
 
+    public static EventVolunteersAdapter adapter;
     private ArrayList<String> mRegisteredUsers;
     private ArrayList<Volunteer> mVolunteers = new ArrayList<>();
     private RecyclerView mRegisteredUsersRecView;
@@ -39,8 +40,6 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implem
     private Event currentEvent;
     private ProgressBar progressBar;
     private TextView noVolunteersText;
-    public static EventVolunteersAdapter adapter;
-
 
     @Nullable
     @Override

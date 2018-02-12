@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.adaptor;
+package com.volunteer.thc.volunteerapp.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -25,13 +25,13 @@ import java.util.ArrayList;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.EventViewHolder> {
 
+    ChatSingle chatSingle = null;
+    ChatGroup chatGroup = null;
+    long hour;
     private ArrayList<Message> data = new ArrayList<>();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int contClick = 1;
     private Context context;
-    ChatSingle chatSingle = null;
-    ChatGroup chatGroup = null;
-    long hour;
 
 
     public ConversationAdapter(ArrayList<Message> data, Context context) {
@@ -127,6 +127,10 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         return data.size();
     }
 
+    public void addElement(ChatSingle chatSingle) {
+        data.add(chatSingle);
+        notifyDataSetChanged();
+    }
 
     class EventViewHolder extends RecyclerView.ViewHolder {
         TextView textSent;
@@ -147,11 +151,6 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
 
         }
-    }
-
-    public void addElement(ChatSingle chatSingle) {
-        data.add(chatSingle);
-        notifyDataSetChanged();
     }
 
 

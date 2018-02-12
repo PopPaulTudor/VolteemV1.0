@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.adaptor;
+package com.volunteer.thc.volunteerapp.adapter;
 
 import android.content.Context;
 import android.net.Uri;
@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,10 +23,8 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Event;
-import com.volunteer.thc.volunteerapp.model.OrganiserRating;
 import com.volunteer.thc.volunteerapp.util.CalculateUtils;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -37,10 +34,10 @@ import java.util.concurrent.TimeUnit;
 
 public class VolunteerEventsProfileAdapter extends RecyclerView.Adapter<VolunteerEventsProfileAdapter.EventViewHolder> {
 
-    private ArrayList<Event> events;
-    private Context context;
     StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+    private ArrayList<Event> events;
+    private Context context;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     public VolunteerEventsProfileAdapter(ArrayList<Event> events, Context context) {
