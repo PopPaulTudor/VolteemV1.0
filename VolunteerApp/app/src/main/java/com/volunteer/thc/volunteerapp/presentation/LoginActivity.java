@@ -33,70 +33,49 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.volunteer.thc.volunteerapp.R;
 
-import io.fabric.sdk.android.Fabric;
-
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String TAG = "EmailPassword";
-    private static final int REQUEST_CODE = 1;
-    private EditText mEmail, mPassword;
+    private static final String TAG = "LoginActivity";
+    private EditText mEmail, mPassword, mResetPasswordEmail;
     private FirebaseAuth mAuth;
     private ProgressDialog mProgressDialog;
     private Button mSendResetPasswordEmail;
-    private EditText mResetPasswordEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO on app release, remove debug from Fabric
-        final Fabric fabric = new Fabric.Builder(this)
-                .kits(new Crashlytics())
-                .debuggable(true)
-                .build();
-        Fabric.with(fabric);
-
         setContentView(R.layout.activity_login);
 
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccentDark));
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-
-        InputFilter filter = new InputFilter() {
-            public CharSequence filter(CharSequence source, int start, int end,
-                                       Spanned dest, int dstart, int dend) {
-                for (int i = start; i < end; i++) {
-                    if (Character.isWhitespace(source.charAt(i))) {
-                        return "";
-                    }
-                }
-                return null;
-            }
-        };
 
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
             startActivityByClass(MainActivity.class);
         }
 
-        mEmail = (EditText) findViewById(R.id.email);
-        mPassword = (EditText) findViewById(R.id.password);
-
-        mEmail.setFilters(new InputFilter[]{filter});
+        mEmail = findViewById(R.id.email);
+        mPassword = findViewById(R.id.password);
+        mEmail.setFilters(createEmailAddressFilter());
 
         findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (validateForm()) {
-                    mProgressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "", true);
+                    mProgressDialog = ProgressDialog.show(LoginActivity.this, getString(R.string
+                            .logging_in), "", true);
                     if (isNetworkAvailable()) {
                         logIn(mEmail.getText().toString(), mPassword.getText().toString());
                     } else {
                         mProgressDialog.dismiss();
-                        Toast.makeText(LoginActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, getString(R.string.no_internet), Toast
+                                .LENGTH_LONG).show();
                     }
                 }
             }
@@ -108,7 +87,8 @@ public class LoginActivity extends AppCompatActivity {
                 if (isNetworkAvailable()) {
                     startActivityByClass(RegisterActivity.class);
                 } else {
-                    Toast.makeText(LoginActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, getString(R.string.logging_in), Toast
+                            .LENGTH_LONG).show();
                 }
             }
         });
@@ -116,16 +96,19 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.forgot_password).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(LoginActivity.this);
-                View parentView = getLayoutInflater().inflate(R.layout.reset_password_bottom_sheet_design, null);
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(LoginActivity
+                        .this);
+                View parentView = getLayoutInflater().inflate(R.layout
+                        .reset_password_bottom_sheet_design, null);
                 mBottomSheetDialog.setContentView(parentView);
-                BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
+                BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View)
+                        parentView.getParent());
                 mBottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension
                         (TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics()));
                 mBottomSheetDialog.show();
 
-                mResetPasswordEmail = (EditText) parentView.findViewById(R.id.email_reset);
-                mSendResetPasswordEmail = (Button) parentView.findViewById(R.id.send_email);
+                mResetPasswordEmail = parentView.findViewById(R.id.email_reset);
+                mSendResetPasswordEmail = parentView.findViewById(R.id.send_email);
 
                 mSendResetPasswordEmail.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -139,11 +122,11 @@ public class LoginActivity extends AppCompatActivity {
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Toast.makeText(LoginActivity.this, "Password email sent. Please check your inbox.", Toast.LENGTH_LONG).show();
-                                            } else {
-                                                Toast.makeText(LoginActivity.this, "Reset failed. Verify if the email is written correctly and try again.", Toast.LENGTH_LONG).show();
-                                            }
+                                            String message = task.isSuccessful() ? getString(R
+                                                    .string.reset_pass_email_confirmation) :
+                                                    getString(R.string.reset_pass_email_failed);
+                                            Toast.makeText(LoginActivity.this, message,
+                                                    Toast.LENGTH_LONG).show();
                                         }
                                     });
                         }
@@ -234,10 +217,26 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private InputFilter[] createEmailAddressFilter() {
+        InputFilter filter = new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    if (Character.isWhitespace(source.charAt(i))) {
+                        return "";
+                    }
+                }
+                return null;
+            }
+        };
+        return new InputFilter[]{filter};
+    }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        NetworkInfo activeNetworkInfo = connectivityManager == null ? null : connectivityManager
+                .getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
 }

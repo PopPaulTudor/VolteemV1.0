@@ -63,10 +63,10 @@ public class MainActivity extends AppCompatActivity
     private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     private TextView mUserTypeView, mUserName;
     private SharedPreferences mPrefs;
     private CircleImageView mImage;
-    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     private Intent serviceIntent;
     private MenuItem eventsItem, selectedItem;
     private UserType mUserType;
@@ -109,69 +109,22 @@ public class MainActivity extends AppCompatActivity
 
         mPrefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
-        ValueEventListener statusListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                SharedPreferences.Editor editor = mPrefs.edit();
-                if (dataSnapshot.hasChildren()) {
-                    mUserType = UserType.VOLUNTEER;
-
-                    Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
-                    if (volunteer != null) {
-                        String gender = volunteer.getGender();
-                        String firstName = volunteer.getFirstname();
-                        String lastName = volunteer.getLastname();
-                        editor.putString("name", firstName + " " + lastName);
-                        editor.putString("gender", gender);
-                        mUserName.setText(firstName + " " + lastName);
-                    } else {
-                        // TODO throw an exception or handle the error
-                        final String errorMsg = "Volunteer logged in, but the  firestore data was" +
-                                " missing for user with id " + mUser.getUid();
-                        Log.e(TAG, errorMsg);
-                        Crashlytics.logException(new Exception(errorMsg));
-                        return;
-                    }
-                } else {
-                    mUserName.setText(mUser.getEmail());
-                    mUserType = UserType.ORGANISER;
-                    editor.putString("gender", mUserType.getPrefsValue());
-                }
-
-                editor.putString("user_status", mUserType.getPrefsValue());
-                editor.putString("user_id", mUser.getUid());
-                editor.apply();
-
-                mUserTypeView.setText(mUserType == UserType.VOLUNTEER ? getResources().getString(R
-                        .string.volunteer) : getResources().getString(R.string.organiser));
-                showEvents();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getDetails());
-                Answers.getInstance().logCustom(
-                        new CustomEvent(VolteemConstants.USER_CUSTOM_ERROR_CRASHLYTICS)
-                                .putCustomAttribute("Error passing data for user", mUser.getUid()));
-            }
-        };
-
         String userType = mPrefs.getString("user_status", null);
         mUserType = UserType.lookupFromPrefsValue(userType);
 
         if (mUserType == null) {
             mDatabase.child("users").child("volunteers").child(mUser.getUid())
-                    .addListenerForSingleValueEvent(statusListener);
+                    .addListenerForSingleValueEvent(createVolunteerEventListener());
         } else {
             mUserName.setText(mUserType == UserType.VOLUNTEER ? mPrefs.getString("name", null) :
                     mUser.getEmail());
-            mUserTypeView.setText(mUserType == UserType.VOLUNTEER ? getResources().getString(R
-                    .string.volunteer) : getResources().getString(R.string.organiser));
+            mUserTypeView.setText(mUserType == UserType.VOLUNTEER ? getString(R
+                    .string.volunteer) : getString(R.string.organiser));
             showEvents();
         }
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getResources().getString(R.string.events));
+            getSupportActionBar().setTitle(getString(R.string.events));
         }
 
         drawer.closeDrawers();
@@ -199,7 +152,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 eventsItem.setChecked(true);
                 if (getSupportActionBar() != null) {
-                    getSupportActionBar().setTitle(getResources().getString(R
+                    getSupportActionBar().setTitle(getString(R
                             .string.events));
                 }
             }
@@ -219,55 +172,55 @@ public class MainActivity extends AppCompatActivity
                 case R.id.nav_events: {
                     fragment = mUserType == UserType.VOLUNTEER ? new VolunteerEventsFragment() :
                             new OrganiserEventsFragment();
-                    actionBarTitle = getResources().getString(R
+                    actionBarTitle = getString(R
                             .string.events);
                     break;
                 }
                 case R.id.user_events: {
                     fragment = new VolunteerMyEventsFragment();
-                    actionBarTitle = getResources().getString(R
+                    actionBarTitle = getString(R
                             .string.my_events);
                     break;
                 }
                 case R.id.nav_profile: {
                     fragment = mUserType == UserType.VOLUNTEER ? new VolunteerProfileFragment() :
                             new OrganiserProfileFragment();
-                    actionBarTitle = getResources().getString(R
+                    actionBarTitle = getString(R
                             .string.profile);
                     break;
                 }
                 case R.id.nav_settings: {
                     fragment = new SettingsFragment();
-                    actionBarTitle = getResources().getString(R
+                    actionBarTitle = getString(R
                             .string.settings);
                     break;
                 }
                 case R.id.nav_news: {
                     fragment = new NewsFragment();
-                    actionBarTitle = getResources().getString(R
+                    actionBarTitle = getString(R
                             .string.news);
                     break;
                 }
                 case R.id.nav_chat: {
                     fragment = new ChatFragment();
-                    actionBarTitle = getResources().getString(R
+                    actionBarTitle = getString(R
                             .string.interview);
                     break;
                 }
                 case R.id.nav_scoreboard: {
                     fragment = mUserType == UserType.VOLUNTEER ? new VolunteerRewardsFragment() :
                             new OrganiserScoreboardFragment();
-                    actionBarTitle = getResources().getString(R.string.scoreboard);
+                    actionBarTitle = getString(R.string.scoreboard);
                     break;
                 }
                 case R.id.nav_logout: {
                     AlertDialog logoutAlertDialog = new AlertDialog.Builder(this)
-                            .setTitle(getResources().getString(R
+                            .setTitle(getString(R
                                     .string.logout_message_title))
-                            .setMessage(getResources().getString(R
+                            .setMessage(getString(R
                                     .string.logout_message))
                             .setCancelable(true)
-                            .setPositiveButton(getResources().getString(R
+                            .setPositiveButton(getString(R
                                     .string.logout_yes), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -281,7 +234,7 @@ public class MainActivity extends AppCompatActivity
                                     finish();
                                 }
                             })
-                            .setNegativeButton(getResources().getString(R
+                            .setNegativeButton(getString(R
                                     .string.logout_no), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -310,7 +263,7 @@ public class MainActivity extends AppCompatActivity
                 replaceFragmentByClass(fragment);
             }
         } else {
-            Toast.makeText(MainActivity.this, getResources().getString(R.string.no_internet),
+            Toast.makeText(MainActivity.this, getString(R.string.no_internet),
                     Toast.LENGTH_LONG).show();
         }
 
@@ -352,5 +305,54 @@ public class MainActivity extends AppCompatActivity
         NetworkInfo activeNetworkInfo = connectivityManager == null ? null : connectivityManager
                 .getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    private ValueEventListener createVolunteerEventListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                SharedPreferences.Editor editor = mPrefs.edit();
+                if (dataSnapshot.hasChildren()) {
+                    mUserType = UserType.VOLUNTEER;
+
+                    Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
+                    if (volunteer != null) {
+                        String gender = volunteer.getGender();
+                        String firstName = volunteer.getFirstname();
+                        String lastName = volunteer.getLastname();
+                        editor.putString("name", firstName + " " + lastName);
+                        editor.putString("gender", gender);
+                        mUserName.setText(firstName + " " + lastName);
+                    } else {
+                        // TODO throw an exception or handle the error
+                        final String errorMsg = "Volunteer logged in, but the  firestore data was" +
+                                " missing for user with id " + mUser.getUid();
+                        Log.e(TAG, errorMsg);
+                        Crashlytics.logException(new Exception(errorMsg));
+                        return;
+                    }
+                } else {
+                    mUserName.setText(mUser.getEmail());
+                    mUserType = UserType.ORGANISER;
+                    editor.putString("gender", mUserType.getPrefsValue());
+                }
+
+                editor.putString("user_status", mUserType.getPrefsValue());
+                editor.putString("user_id", mUser.getUid());
+                editor.apply();
+
+                mUserTypeView.setText(mUserType == UserType.VOLUNTEER ? getString(R
+                        .string.volunteer) : getString(R.string.organiser));
+                showEvents();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails());
+                Answers.getInstance().logCustom(
+                        new CustomEvent(VolteemConstants.USER_CUSTOM_ERROR_CRASHLYTICS)
+                                .putCustomAttribute("Error passing data for user", mUser.getUid()));
+            }
+        };
     }
 }

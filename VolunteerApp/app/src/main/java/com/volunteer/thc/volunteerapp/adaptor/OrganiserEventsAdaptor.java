@@ -34,9 +34,7 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
-import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
-import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +43,12 @@ import java.util.List;
  * Created by poppa on 12.07.2017.
  */
 
-public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.EventViewHolder> {
+public class OrganiserEventsAdaptor extends RecyclerView.Adapter<OrganiserEventsAdaptor
+        .EventViewHolder> {
 
     public static final int ALL_EVENTS = 1, MY_EVENTS = 2;
-    private List<Event> eventsList;
-    private Context context;
+    protected Context context;
+    List<Event> eventsList;
     private Resources resources;
     private ArrayList<Uri> imageUris = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -58,36 +57,38 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ActionListener.EventPicturesLoadingListener eventPicturesLoadingListener;
     private boolean wasUIActivated = false;
-    private int cameFrom;
 
-    public OrgEventsAdaptor(List<Event> list, Context context, Resources resources, final int
-            FLAG, ActionListener.EventPicturesLoadingListener eventPicturesLoadingListener, int
-            cameFrom) {
+    public OrganiserEventsAdaptor(List<Event> list, Context context, Resources resources, final int
+            FLAG, ActionListener.EventPicturesLoadingListener eventPicturesLoadingListener) {
         eventsList = list;
         this.context = context;
         this.resources = resources;
         this.flag = FLAG;
         this.eventPicturesLoadingListener = eventPicturesLoadingListener;
-        this.cameFrom = cameFrom;
     }
 
     @Override
-    public OrgEventsAdaptor.EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_element, parent, false);
+    public OrganiserEventsAdaptor.EventViewHolder onCreateViewHolder(ViewGroup parent, int
+            viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_element, parent,
+                false);
 
         return new EventViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final OrgEventsAdaptor.EventViewHolder holder, final int position) {
+    public void onBindViewHolder(final OrganiserEventsAdaptor.EventViewHolder holder, int
+            position) {
 
         holder.cardName.setText(eventsList.get(position).getName());
         holder.cardLocation.setText(eventsList.get(position).getLocation());
 
         if (flag == ALL_EVENTS) {
-            holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position).getDeadline()));
+            holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position)
+                    .getDeadline()));
         } else {
-            holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position).getStartDate()));
+            holder.cardDate.setText(CalendarUtil.getStringDateFromMM(eventsList.get(position)
+                    .getStartDate()));
         }
         SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
         if (prefs.getString("user_status", "").equals("Volunteer")) {
@@ -96,11 +97,13 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
             } else {
                 holder.cardChecked.setVisibility(View.VISIBLE);
 
-                mDatabase.child("events").child(eventsList.get(position).getEventID()).child("users").child(user.getUid())
+                mDatabase.child("events").child(eventsList.get(position).getEventID()).child
+                        ("users").child(user.getUid())
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
+                                if (TextUtils.equals(String.valueOf(dataSnapshot.child("status")
+                                        .getValue()), "accepted")) {
                                     holder.cardChecked.setImageResource(R.drawable.ic_checked);
                                 } else {
                                     holder.cardChecked.setImageResource(R.drawable.ic_watch);
@@ -121,22 +124,28 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         populateTypeList();
         populateUriList();
 
-        Picasso.with(context).load(imageUris.get(typeList.indexOf(eventsList.get(position).getType()))).fit().centerCrop().into(holder.cardImage);
+        Picasso.with(context).load(imageUris.get(typeList.indexOf(eventsList.get(position)
+                .getType()))).fit().centerCrop().into(holder.cardImage);
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        storageRef.child("Photos").child("Event").child(eventsList.get(position).getEventID()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+        storageRef.child("Photos").child("Event").child(eventsList.get(position).getEventID())
+                .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
+                final int adapterPosition = holder.getAdapterPosition();
                 if (task.isSuccessful()) {
-                    Log.w(eventsList.get(position).getName(), " has an image.");
-                    Picasso.with(context).load(task.getResult()).fit().centerCrop().into(holder.cardImage, new Callback() {
+                    Log.w(eventsList.get(adapterPosition).getName(), " has an image.");
+                    Picasso.with(context).load(task.getResult()).fit().centerCrop().into(holder
+                            .cardImage, new Callback() {
                         @Override
                         public void onSuccess() {
-                            if (!wasUIActivated && (position == 2 || position == eventsList.size() - 1)) {
+                            if (!wasUIActivated && (adapterPosition == 2 || adapterPosition ==
+                                    eventsList.size() - 1)) {
                                 if (eventPicturesLoadingListener != null) {
                                     wasUIActivated = true;
                                     eventPicturesLoadingListener.onPicturesLoaded();
-									//TODO aici se apeleaza metoda pt animatie daca ultimul event are poza
+                                    //TODO aici se apeleaza metoda pt animatie daca ultimul event
+                                    // are poza
                                 }
                             }
                         }
@@ -147,12 +156,14 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
                         }
                     });
                 } else {
-                    Log.w(eventsList.get(position).getName(), " doesn't have an image.");
-                    if (!wasUIActivated && (position == 2 || position == eventsList.size() - 1)) {
+                    Log.w(eventsList.get(adapterPosition).getName(), " doesn't have an image.");
+                    if (!wasUIActivated && (adapterPosition == 2 || adapterPosition == eventsList
+                            .size() - 1)) {
                         if (eventPicturesLoadingListener != null) {
                             wasUIActivated = true;
                             eventPicturesLoadingListener.onPicturesLoaded();
-							//TODO aici se apeleaza metoda pt animatie daca ultimul event nu are poza
+                            //TODO aici se apeleaza metoda pt animatie daca ultimul event nu are
+                            // poza
                         }
                     }
                 }
@@ -162,20 +173,17 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                if (TextUtils.equals(prefs.getString("user_status", null), "Organiser")) {
-                    Intent intent = new Intent(context.getApplicationContext(), OrganiserSingleEventActivity.class);
-                    intent.putExtra("SingleEvent", eventsList.get(position));
-                    context.startActivity(intent);
-                } else {
-                    Intent intent = new Intent(context.getApplicationContext(), VolunteerSingleEventActivity.class);
-                    intent.putExtra("SingleEvent", eventsList.get(position));
-                    intent.putExtra(VolteemConstants.VOLUNTEER_SINGLE_ACTIVITY_CAME_FROM_KEY, cameFrom);
-                    context.startActivity(intent);
-                }
+                startSingleEventActivity(holder.getAdapterPosition());
             }
         });
+    }
+
+    protected void startSingleEventActivity(int position) {
+        Intent intent = new Intent(context.getApplicationContext(), OrganiserSingleEventActivity
+                .class);
+        intent.putExtra("SingleEvent", eventsList.get(position));
+        context.startActivity(intent);
+
     }
 
     @Override
@@ -186,7 +194,8 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
     private Uri parseUri(int ID) {
         return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + resources.getResourcePackageName(ID)
-                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName(ID));
+                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName
+                (ID));
 
     }
 
@@ -220,12 +229,12 @@ public class OrgEventsAdaptor extends RecyclerView.Adapter<OrgEventsAdaptor.Even
         EventViewHolder(View v) {
             super(v);
 
-            cardName = (TextView) v.findViewById(R.id.NameCardElement);
-            cardDate = (TextView) v.findViewById(R.id.DateCardElement);
-            cardLocation = (TextView) v.findViewById(R.id.LocationCardElement);
-            cardView = (CardView) v.findViewById(R.id.CardElement);
-            cardImage = (ImageView) v.findViewById(R.id.ImageCardElement);
-            cardChecked = (ImageView) v.findViewById(R.id.CardCheck);
+            cardName = v.findViewById(R.id.NameCardElement);
+            cardDate = v.findViewById(R.id.DateCardElement);
+            cardLocation = v.findViewById(R.id.LocationCardElement);
+            cardView = v.findViewById(R.id.CardElement);
+            cardImage = v.findViewById(R.id.ImageCardElement);
+            cardChecked = v.findViewById(R.id.CardCheck);
         }
     }
 }

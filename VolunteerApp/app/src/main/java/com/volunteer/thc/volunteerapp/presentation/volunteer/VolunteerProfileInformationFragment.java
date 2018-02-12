@@ -169,7 +169,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
                                 }).show();
                             }
                         } else {
-
                             DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
                             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             Bundle bundle = new Bundle();
@@ -240,8 +239,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
                     progressDialog.dismiss();
                 }
             });
-
-
         }
     }
 

@@ -38,7 +38,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
+import com.volunteer.thc.volunteerapp.adaptor.OrganiserEventsAdaptor;
+import com.volunteer.thc.volunteerapp.adaptor.VolunteerEventsAdapter;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 
@@ -143,8 +144,9 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                             }
                         });
 
-                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext()
-                                , getResources(), OrgEventsAdaptor.ALL_EVENTS,
+                        VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
+                                getContext()
+                                , getResources(), OrganiserEventsAdaptor.ALL_EVENTS,
                                 VolunteerEventsFragment.this, 1);
                         recyclerView.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager
@@ -198,8 +200,9 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                         }
                     });
 
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(),
-                            getResources(), OrgEventsAdaptor.ALL_EVENTS, VolunteerEventsFragment
+                    VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
+                            getContext(),
+                            getResources(), OrganiserEventsAdaptor.ALL_EVENTS, VolunteerEventsFragment
                             .this, 1);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity

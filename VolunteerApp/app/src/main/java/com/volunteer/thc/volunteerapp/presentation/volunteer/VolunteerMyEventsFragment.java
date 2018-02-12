@@ -25,7 +25,8 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
+import com.volunteer.thc.volunteerapp.adaptor.OrganiserEventsAdaptor;
+import com.volunteer.thc.volunteerapp.adaptor.VolunteerEventsAdapter;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.OrganiserRating;
@@ -174,8 +175,10 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
                             return 0;
                         }
                     });
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(),
-                            getResources(), OrgEventsAdaptor.MY_EVENTS, VolunteerMyEventsFragment
+                    VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
+                            getContext(),
+                            getResources(), OrganiserEventsAdaptor.MY_EVENTS,
+                            VolunteerMyEventsFragment
                             .this, 2);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());

@@ -22,8 +22,8 @@ android {
         applicationId "com.volunteer.thc.volunteerapp"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 7
-        versionName "1.0.9"
+        versionCode 10
+        versionName "1.1.0-Alpha"
     }
     buildTypes {
         release {
