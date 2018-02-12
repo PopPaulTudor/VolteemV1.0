@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void logIn(String email, String password) {
-        Log.d(TAG, "signIn:" + email);
+        Log.d(TAG, "signIn: " + email);
         if (!validateForm()) {
             return;
         }
@@ -148,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
+                            Log.d(TAG, "signInWithEmail: success");
                             startActivityByClass(MainActivity.class);
                         } else {
                             Exception exception = task.getException();
@@ -178,8 +178,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean validateForm() {
-        boolean valid = checkField(mEmail, "Please enter your email address.");
-        valid &= checkField(mPassword, "Please enter your password.");
+        boolean valid = checkField(mEmail, getString(R.string.form_validation_email));
+        valid &= checkField(mPassword, getString(R.string.form_validation_password));
         return valid;
     }
 
@@ -198,9 +198,6 @@ public class LoginActivity extends AppCompatActivity {
     private void startActivityByClass(Class activity) {
         // Log Crashlytics user
         logUser();
-        Answers.getInstance().logLogin(new LoginEvent()
-                .putMethod("LoginMethod")
-                .putSuccess(true));
 
         Intent intent = new Intent(LoginActivity.this, activity);
         startActivity(intent);
@@ -214,6 +211,10 @@ public class LoginActivity extends AppCompatActivity {
             Crashlytics.setUserEmail(mAuth.getCurrentUser().getEmail());
             Crashlytics.setUserName(mAuth.getCurrentUser().getDisplayName());
             Log.d(TAG, "Crashlytics setup successful!");
+
+            Answers.getInstance().logLogin(new LoginEvent()
+                    .putMethod("LoginMethod")
+                    .putSuccess(true));
         }
     }
 

@@ -73,4 +73,6 @@
     <string name="logging_in">Logging in</string>
     <string name="reset_pass_email_confirmation">Password email sent. Please check your inbox.</string>
     <string name="reset_pass_email_failed">Reset failed. Verify if the email is written correctly and try again.</string>
+    <string name="form_validation_email">Please enter your email address.</string>
+    <string name="form_validation_password">Please enter your password.</string>
 </resources>
