@@ -77,7 +77,7 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
     }
 
     @Override
-    public void onBindViewHolder(final OrganiserEventsAdapter.EventViewHolder holder, int
+    public void onBindViewHolder(final OrganiserEventsAdapter.EventViewHolder holder, final int
             position) {
 
         holder.cardName.setText(eventsList.get(position).getName());
@@ -132,14 +132,13 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
                 .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
-                final int adapterPosition = holder.getAdapterPosition();
                 if (task.isSuccessful()) {
-                    Log.w(eventsList.get(adapterPosition).getName(), " has an image.");
+                    Log.w(eventsList.get(position).getName(), " has an image.");
                     Picasso.with(context).load(task.getResult()).fit().centerCrop().into(holder
                             .cardImage, new Callback() {
                         @Override
                         public void onSuccess() {
-                            if (!wasUIActivated && (adapterPosition == 2 || adapterPosition ==
+                            if (!wasUIActivated && (position == 2 || position ==
                                     eventsList.size() - 1)) {
                                 if (eventPicturesLoadingListener != null) {
                                     wasUIActivated = true;
@@ -156,8 +155,8 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
                         }
                     });
                 } else {
-                    Log.w(eventsList.get(adapterPosition).getName(), " doesn't have an image.");
-                    if (!wasUIActivated && (adapterPosition == 2 || adapterPosition == eventsList
+                    Log.w(eventsList.get(position).getName(), " doesn't have an image.");
+                    if (!wasUIActivated && (position == 2 || position == eventsList
                             .size() - 1)) {
                         if (eventPicturesLoadingListener != null) {
                             wasUIActivated = true;
@@ -173,7 +172,7 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSingleEventActivity(holder.getAdapterPosition());
+                startSingleEventActivity(position);
             }
         });
     }

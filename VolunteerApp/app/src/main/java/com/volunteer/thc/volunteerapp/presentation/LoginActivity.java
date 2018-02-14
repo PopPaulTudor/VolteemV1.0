@@ -124,7 +124,8 @@ public class LoginActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             String message = task.isSuccessful() ? getString(R
                                                     .string.reset_pass_email_confirmation) :
-                                                    getString(R.string.reset_pass_email_failed);
+                                                    getString(R
+                                                    .string.reset_pass_email_failed);
                                             Toast.makeText(LoginActivity.this, message,
                                                     Toast.LENGTH_LONG).show();
                                         }
@@ -212,16 +213,13 @@ public class LoginActivity extends AppCompatActivity {
             Crashlytics.setUserName(mAuth.getCurrentUser().getDisplayName());
             Log.d(TAG, "Crashlytics setup successful!");
 
-            Answers.getInstance().logLogin(new LoginEvent()
-                    .putMethod("LoginMethod")
-                    .putSuccess(true));
+            Answers.getInstance().logLogin(new LoginEvent().putMethod("LoginMethod").putSuccess(true));
         }
     }
 
     private InputFilter[] createEmailAddressFilter() {
         InputFilter filter = new InputFilter() {
-            public CharSequence filter(CharSequence source, int start, int end,
-                                       Spanned dest, int dstart, int dend) {
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
                 for (int i = start; i < end; i++) {
                     if (Character.isWhitespace(source.charAt(i))) {
                         return "";
@@ -234,10 +232,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager == null ? null : connectivityManager
-                .getActiveNetworkInfo();
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context
+                .CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager == null ? null : connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
 }

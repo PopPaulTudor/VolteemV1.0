@@ -60,38 +60,45 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organisersingleevent);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         resources = getResources();
         populateUriList();
         populateTypeList();
 
-        squareImageView = (ImageView) findViewById(R.id.collapsing_toolbar_image);
-        acceptedText = (TextView) findViewById(R.id.accept_number);
-        regText = (TextView) findViewById(R.id.reg_number);
+        squareImageView = findViewById(R.id.collapsing_toolbar_image);
+        acceptedText = findViewById(R.id.accept_number);
+        regText = findViewById(R.id.reg_number);
         mCurrentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        appBarLayout = findViewById(R.id.appbar);
 
 
         if (mCurrentEvent.getAccepted_volunteers().size() == 1)
-            acceptedText.setText("         " + mCurrentEvent.getAccepted_volunteers().size() + "\nvolunteer");
+            acceptedText.setText("         " + mCurrentEvent.getAccepted_volunteers().size() +
+                    "\nvolunteer");
         else
-            acceptedText.setText("         " + mCurrentEvent.getAccepted_volunteers().size() + acceptedText.getText());
+            acceptedText.setText("         " + mCurrentEvent.getAccepted_volunteers().size() +
+                    acceptedText.getText());
 
         if (mCurrentEvent.getRegistered_volunteers().size() == 1)
-            regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() + "\nvolunteer");
+            regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() +
+                    "\nvolunteer");
         else
-            regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() + regText.getText());
+            regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() +
+                    regText.getText());
 
 
-        mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+        mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID()).getDownloadUrl
+                ().addOnCompleteListener(new OnCompleteListener<Uri>() {
 
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    Picasso.with(getApplicationContext()).load(task.getResult()).fit().centerInside().into(squareImageView);
+                    Picasso.with(getApplicationContext()).load(task.getResult()).fit()
+                            .centerInside().into(squareImageView);
 
                 } else {
-                    Picasso.with(getApplicationContext()).load(imageUris.get(typeList.indexOf(mCurrentEvent.getType()))).fit().centerCrop().into(squareImageView);
+                    Picasso.with(getApplicationContext()).load(imageUris.get(typeList.indexOf
+                            (mCurrentEvent.getType()))).fit().centerCrop().into(squareImageView);
                 }
             }
         });
@@ -106,9 +113,11 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
+                    toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R
+                            .color.colorPrimary));
                 } else {
-                    toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.transparent));
+                    toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R
+                            .color.transparent));
                 }
             }
         });
@@ -117,8 +126,8 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        tabLayout = findViewById(R.id.tabs);
+        mViewPager = findViewById(R.id.container);
 
 
         if (mCurrentEvent == null) {
@@ -140,13 +149,16 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
         OrganiserSingleEventInfoFragment fragmentInfo = new OrganiserSingleEventInfoFragment();
         fragmentInfo.setArguments(bundle);
 
-        OrganiserSingleEventRegisteredUsersFragment fragmentRegistered = new OrganiserSingleEventRegisteredUsersFragment();
+        OrganiserSingleEventRegisteredUsersFragment fragmentRegistered = new
+                OrganiserSingleEventRegisteredUsersFragment();
         fragmentRegistered.setArguments(bundle);
 
-        OrganiserSingleEventAcceptedUsersFragment fragmentAccepted = new OrganiserSingleEventAcceptedUsersFragment();
+        OrganiserSingleEventAcceptedUsersFragment fragmentAccepted = new
+                OrganiserSingleEventAcceptedUsersFragment();
         fragmentAccepted.setArguments(bundle);
 
-        OrganiserSingleEventViewAdapter mViewPagerAdapter = new OrganiserSingleEventViewAdapter(getSupportFragmentManager(), fragmentInfo, fragmentRegistered, fragmentAccepted);
+        OrganiserSingleEventViewAdapter mViewPagerAdapter = new OrganiserSingleEventViewAdapter
+                (getSupportFragmentManager(), fragmentInfo, fragmentRegistered, fragmentAccepted);
         mViewPager.setAdapter(mViewPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
     }
@@ -160,7 +172,8 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
                 ArrayList<String> acc_users = new ArrayList<>();
 
                 for (DataSnapshot registered_users : dataSnapshot.child("users").getChildren()) {
-                    if (TextUtils.equals(registered_users.child("status").getValue().toString(), "pending")) {
+                    if (TextUtils.equals(registered_users.child("status").getValue().toString(),
+                            "pending")) {
                         reg_users.add(registered_users.child("id").getValue().toString());
                     } else {
                         acc_users.add(registered_users.child("id").getValue().toString());
@@ -192,7 +205,8 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
     private Uri parseUri(int ID) {
         return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + resources.getResourcePackageName(ID)
-                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName(ID));
+                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName
+                (ID));
 
     }
 
