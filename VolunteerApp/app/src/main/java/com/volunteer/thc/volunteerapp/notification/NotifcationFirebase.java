@@ -34,6 +34,7 @@ public class NotifcationFirebase extends FirebaseMessagingService {
 
     @Override
     public void onDeletedMessages() {
+        // TODO delete notification?
     }
 
 

@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+        boolean shouldShowAsSelected = true;
         selectedItem = item;
 
         if (isNetworkAvailable()) {
@@ -214,7 +215,8 @@ public class MainActivity extends AppCompatActivity
                     break;
                 }
                 case R.id.nav_logout: {
-                    AlertDialog logoutAlertDialog = new AlertDialog.Builder(this)
+                    shouldShowAsSelected = false;
+                    final AlertDialog logoutAlertDialog = new AlertDialog.Builder(this)
                             .setTitle(getString(R
                                     .string.logout_message_title))
                             .setMessage(getString(R
@@ -238,7 +240,7 @@ public class MainActivity extends AppCompatActivity
                                     .string.logout_no), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-
+                                    // do nothing, just dismiss dialog
                                 }
                             })
                             .create();
@@ -253,7 +255,8 @@ public class MainActivity extends AppCompatActivity
             if (eventsItem.isChecked()) {
                 eventsItem.setChecked(false);
             }
-            item.setChecked(true);
+
+            item.setChecked(shouldShowAsSelected);
 
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(actionBarTitle);
@@ -263,8 +266,7 @@ public class MainActivity extends AppCompatActivity
                 replaceFragmentByClass(fragment);
             }
         } else {
-            Toast.makeText(MainActivity.this, getString(R.string.no_internet),
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_LONG).show();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -285,10 +287,8 @@ public class MainActivity extends AppCompatActivity
                 break;
             default:
                 Log.e(TAG, "Error showing events for user " + mUser.getUid());
-                Answers.getInstance().logCustom(
-                        new CustomEvent(VolteemConstants.USER_CUSTOM_ERROR_CRASHLYTICS)
-                                .putCustomAttribute("Error showing events for user", mUser.getUid
-                                        ()));
+                Answers.getInstance().logCustom(new CustomEvent(VolteemConstants.USER_CUSTOM_ERROR_CRASHLYTICS)
+                        .putCustomAttribute("Error showing events for user", mUser.getUid()));
                 break;
         }
     }
@@ -300,10 +300,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager == null ? null : connectivityManager
-                .getActiveNetworkInfo();
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager == null ? null : connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
 
@@ -349,9 +347,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e(TAG, databaseError.getDetails());
-                Answers.getInstance().logCustom(
-                        new CustomEvent(VolteemConstants.USER_CUSTOM_ERROR_CRASHLYTICS)
-                                .putCustomAttribute("Error passing data for user", mUser.getUid()));
+                Answers.getInstance().logCustom(new CustomEvent(VolteemConstants.USER_CUSTOM_ERROR_CRASHLYTICS)
+                        .putCustomAttribute("Error passing data for user", mUser.getUid()));
             }
         };
     }

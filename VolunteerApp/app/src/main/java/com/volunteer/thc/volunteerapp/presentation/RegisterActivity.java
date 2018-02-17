@@ -15,11 +15,6 @@ import com.volunteer.thc.volunteerapp.adapter.ViewPagerAdapter;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
-    private ViewPagerAdapter mViewPagerAdapter;
-    private ViewPager mViewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,13 +25,13 @@ public class RegisterActivity extends AppCompatActivity {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccentDark));
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mViewPagerAdapter);
-        tabLayout.setupWithViewPager(mViewPager);
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        ViewPager viewPager = findViewById(R.id.container);
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     @Override
