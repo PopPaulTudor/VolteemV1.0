@@ -27,10 +27,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_register">RegisterActivity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_volunteer_single_event">VolunteerSingleEventActivity</string>
     <string name="app_label">VolunteerApp</string>
     <string name="search_hint">Search events</string>
@@ -50,7 +47,6 @@
     <string name="search">Search</string>
     <string name="filter">Filter</string>
     <string name="chatSingle">Interview</string>
-    <string name="event_register_disclaimer">Joining an event is a commitment. If you leave this event later on, you will lose experience. Are you sure you want to register for this event?</string>
     <string name="no_feedback">This volunteer has no feedback.</string>
     <string name="remove_volunteer">Remove volunteer</string>
     <string name="accept_volunteer">Accept Volunteer</string>
@@ -65,15 +61,23 @@
     <string name="organiser">Organiser</string>
     <string name="events">Events</string>
     <string name="interview">Interview</string>
-    <string name="logout_message">Are you sure you want to logout?</string>
-    <string name="logout_message_title">Are you sure?</string>
     <string name="logout_yes">Yes</string>
     <string name="logout_no">No</string>
-    <string name="no_internet">No internet connection</string>
     <string name="logging_in">Logging in</string>
+
+    <!-- Messages -->
+    <string name="event_register_disclaimer">Joining an event is a commitment. If you leave this event later on, you will lose experience. Are you sure you want to register for this event?</string>
+    <string name="logout_message">Are you sure you want to logout?</string>
+    <string name="logout_message_title">Are you sure?</string>
+    <string name="no_internet">No internet connection</string>
     <string name="reset_pass_email_confirmation">Password email sent. Please check your inbox.</string>
     <string name="reset_pass_email_failed">Reset failed. Verify if the email is written correctly and try again.</string>
     <string name="form_validation_email">Please enter your email address.</string>
     <string name="form_validation_password">Please enter your password.</string>
-    <string name="storage_permission_denied">Some functionalities may be disabled</string>
+    <string name="storage_permission_denied">Some app features may be disabled</string>
+
+    <string name="chat">Interview</string>
+
+    <string name="edittext_hint_email"><font size="25">Email</font></string>
+    <string name="edittext_hint_password"><font size="25">Password</font></string>
 </resources>

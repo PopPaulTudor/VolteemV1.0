@@ -171,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.e(TAG, exception.getMessage());
                                 }
                             }
-                            ///TODO: handle more exceptions
+                            //TODO: handle more exceptions
                         }
                         mProgressDialog.dismiss();
                     }
