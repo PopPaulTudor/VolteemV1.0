@@ -18,9 +18,9 @@ import com.volunteer.thc.volunteerapp.presentation.MainActivity;
  * Created by poppa on 23.08.2017.
  */
 
-public class NotifcationFirebase extends FirebaseMessagingService {
+public class NotificationFirebase extends FirebaseMessagingService {
 
-    public NotifcationFirebase() {
+    public NotificationFirebase() {
     }
 
     @Override

@@ -3,13 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background7"
     android:clickable="true"
     android:orientation="vertical"
-    android:background="@drawable/background7"
     tools:context="com.volunteer.thc.volunteerapp.presentation.CreateEventActivity">
 
     <ScrollView
-        android:id="@+id/create_event"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -134,9 +133,9 @@
                     style="?android:textAppearanceSmall"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Upload Contract"
                     android:layout_margin="5dp"
                     android:background="@color/colorPrimary"
+                    android:text="Upload Contract"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
 
@@ -145,9 +144,9 @@
                     style="?android:textAppearanceSmall"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="SAVE"
                     android:layout_margin="5dp"
                     android:background="@color/colorPrimary"
+                    android:text="SAVE"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
 
@@ -155,10 +154,10 @@
                     android:id="@+id/cancel_event"
                     style="?android:textAppearanceSmall"
                     android:layout_width="match_parent"
-                    android:background="@color/colorPrimary"
                     android:layout_height="match_parent"
-                    android:text="CANCEL"
                     android:layout_margin="5dp"
+                    android:background="@color/colorPrimary"
+                    android:text="CANCEL"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
 

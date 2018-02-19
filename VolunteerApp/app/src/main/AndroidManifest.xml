@@ -109,7 +109,7 @@
             android:name=".notification.NotificationEventReceiver"
             android:process=":remote" />
 
-        <service android:name=".notification.NotifcationFirebase">
+        <service android:name=".notification.NotificationFirebase">
                
             <intent-filter>   
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

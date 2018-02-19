@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
@@ -15,7 +15,6 @@
         android:layout_marginTop="200dp" />
 
     <View
-        android:id="@+id/volunteer_backimage"
         android:layout_width="match_parent"
         android:layout_height="120sp"
         android:background="@color/green" />
@@ -24,13 +23,13 @@
         android:id="@+id/photo"
         android:layout_width="120dp"
         android:layout_height="120dp"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="64dp"
         android:src="@mipmap/volunteer_logo"
         app:civ_border_color="@color/colorPrimary"
         app:civ_border_overlay="true"
-        app:civ_border_width="2dp"
-        android:layout_marginTop="64dp"
-        android:layout_alignParentTop="true" />
+        app:civ_border_width="2dp" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -46,10 +45,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20sp"
-                android:textStyle="bold"
-                android:textSize="30sp"
+                android:gravity="center"
                 android:textColor="@color/black"
-                android:gravity="center" />
+                android:textSize="30sp"
+                android:textStyle="bold" />
 
 
 
@@ -57,10 +56,10 @@
                 android:id="@+id/image_email_volunteer"
                 android:layout_width="40sp"
                 android:layout_height="40sp"
-                android:layout_marginStart="10sp"
                 android:layout_below="@+id/volunteer_name"
-                android:src="@drawable/email"
-                android:layout_marginTop="26dp" />
+                android:layout_marginStart="10sp"
+                android:layout_marginTop="26dp"
+                android:src="@drawable/email" />
 
 
 
@@ -77,19 +76,19 @@
                 android:id="@+id/image_city_volunteer"
                 android:layout_width="40sp"
                 android:layout_height="40sp"
-                android:layout_marginTop="5sp"
                 android:layout_below="@id/image_phone_volunteer"
                 android:layout_marginStart="10sp"
+                android:layout_marginTop="5sp"
                 android:src="@drawable/home" />
 
             <ImageView
                 android:id="@+id/image_age_volunteer"
                 android:layout_width="40sp"
-                android:layout_below="@+id/image_city_volunteer"
                 android:layout_height="40sp"
                 android:layout_alignParentStart="true"
-                android:layout_marginTop="5sp"
+                android:layout_below="@+id/image_city_volunteer"
                 android:layout_marginStart="10sp"
+                android:layout_marginTop="5sp"
                 android:src="@drawable/age" />
 
 
@@ -99,13 +98,13 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/image_email_volunteer"
                 android:layout_alignTop="@+id/image_email_volunteer"
+                android:layout_below="@+id/volunteer_name"
+                android:layout_marginStart="15sp"
                 android:layout_toEndOf="@+id/image_email_volunteer"
                 android:background="@android:color/transparent"
                 android:ellipsize="end"
-                android:layout_below="@+id/volunteer_name"
                 android:ems="10"
                 android:focusable="false"
-                android:layout_marginStart="15sp"
                 android:focusableInTouchMode="false"
                 android:inputType="textPersonName" />
 
@@ -116,10 +115,10 @@
                 android:layout_above="@+id/image_city_volunteer"
                 android:layout_alignEnd="@+id/edit_email"
                 android:layout_below="@+id/edit_email"
+                android:layout_marginStart="15sp"
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:focusable="false"
-                android:layout_marginStart="15sp"
                 android:focusableInTouchMode="false"
                 android:inputType="phone"
                 android:maxLength="13" />
@@ -128,30 +127,29 @@
                 android:id="@+id/edit_city"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_above="@+id/image_age_volunteer"
                 android:layout_alignEnd="@+id/edit_phone"
                 android:layout_below="@+id/image_phone_volunteer"
+                android:layout_marginStart="15sp"
                 android:background="@android:color/transparent"
                 android:ems="10"
-                android:layout_marginStart="15sp"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
-                android:inputType="textPersonName"
-                android:layout_above="@+id/image_age_volunteer" />
+                android:inputType="textPersonName" />
 
             <EditText
-                android:id="@+id/edit_age"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/image_age_volunteer"
+                android:layout_alignBottom="@+id/image_age_volunteer"
+                android:layout_alignEnd="@+id/edit_phone"
+                android:layout_alignParentBottom="true"
+                android:layout_alignTop="@+id/image_age_volunteer"
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:focusable="false"
-                android:layout_alignBaseline="@+id/image_age_volunteer"
-                android:layout_alignBottom="@+id/image_age_volunteer"
                 android:focusableInTouchMode="false"
-                android:inputType="number"
-                android:layout_alignParentBottom="true"
-                android:layout_alignEnd="@+id/edit_phone"
-                android:layout_alignTop="@+id/image_age_volunteer" />
+                android:inputType="number" />
 
         </RelativeLayout>
     </ScrollView>
