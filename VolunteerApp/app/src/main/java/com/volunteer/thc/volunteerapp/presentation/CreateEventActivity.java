@@ -1,7 +1,6 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -12,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -45,10 +43,12 @@ import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.ChatGroup;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.type.EventType;
 import com.volunteer.thc.volunteerapp.notification.NotificationEventReceiver;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,8 +60,10 @@ import java.util.UUID;
 
 public class CreateEventActivity extends AppCompatActivity {
 
+    private static final String TAG = "CreateEventActivity";
     private static final int GALLERY_INTENT = 1;
     private static final int PICK_PDF = 2;
+    private static final int NUMBER_OF_EVENTS_ON_PAGE = 3;
     private EditText mName, mLocation, mDescription, mDeadline, mSize, mStartDate, mFinishDate;
     private ImageView mImage;
     private Spinner mType;
@@ -71,10 +73,9 @@ public class CreateEventActivity extends AppCompatActivity {
     private StorageReference mStorage;
     private Uri uriPicture = null, uriPDF = null;
     private ArrayList<String> typeList = new ArrayList<>();
-    private Resources resources;
     private ArrayList<Uri> imageUris = new ArrayList<>();
-    private boolean hasUserSelectedPicture = false;
-    private boolean hasSelectedPDF = false;
+    private boolean mSelectedPicture = false;
+    private boolean mSelectedPDF = false;
     private Button mLoadPdf;
 
 
@@ -93,28 +94,27 @@ public class CreateEventActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_create_event);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("New event");
+            getSupportActionBar().setTitle(getString(R.string.new_event));
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mName = (EditText) findViewById(R.id.event_deadline);
-        mLocation = (EditText) findViewById(R.id.event_location);
-        mStartDate = (EditText) findViewById(R.id.event_date_start_create);
-        mFinishDate = (EditText) findViewById(R.id.event_date_finish_create);
-        mType = (Spinner) findViewById(R.id.event_type);
-        mDescription = (EditText) findViewById(R.id.event_description);
-        mDeadline = (EditText) findViewById(R.id.event_deadline_create);
-        mImage = (ImageView) findViewById(R.id.event_image);
-        mSize = (EditText) findViewById(R.id.event_size);
+        mName = findViewById(R.id.event_deadline);
+        mLocation = findViewById(R.id.event_location);
+        mStartDate = findViewById(R.id.event_date_start_create);
+        mFinishDate = findViewById(R.id.event_date_finish_create);
+        mType = findViewById(R.id.event_type);
+        mDescription = findViewById(R.id.event_description);
+        mDeadline = findViewById(R.id.event_deadline_create);
+        mImage = findViewById(R.id.event_image);
+        mSize = findViewById(R.id.event_size);
         mStorage = FirebaseStorage.getInstance().getReference();
-        resources = getResources();
 
         populateUriList();
 
-        Picasso.with(this).load(imageUris.get(3)).fit().centerCrop().into(mImage);
-        Button mSaveEvent = (Button) findViewById(R.id.save_event);
-        Button mCancel = (Button) findViewById(R.id.cancel_event);
-        mLoadPdf = (Button) findViewById(R.id.upload_pdf);
+        Picasso.with(this).load(imageUris.get(NUMBER_OF_EVENTS_ON_PAGE)).fit().centerCrop().into(mImage);
+        Button mSaveEvent = findViewById(R.id.save_event);
+        Button mCancel = findViewById(R.id.cancel_event);
+        mLoadPdf = findViewById(R.id.upload_pdf);
 
         populateSpinnerArray();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, typeList);
@@ -124,31 +124,32 @@ public class CreateEventActivity extends AppCompatActivity {
         mType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (!hasUserSelectedPicture) {
+                if (!mSelectedPicture) {
                     Picasso.with(CreateEventActivity.this).load(imageUris.get(mType.getSelectedItemPosition())).fit().centerCrop().into(mImage);
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                // do nothing
             }
         });
 
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (PermissionUtil.isStorageReadPermissionGranted(CreateEventActivity.this)) {
                     Intent intent = new Intent(Intent.ACTION_PICK);
                     intent.setType("image/*");
                     startActivityForResult(intent, GALLERY_INTENT);
-
                 } else {
-                    Snackbar.make(view, "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                    Snackbar.make(view, getString(R.string.allow_storge_permission), Snackbar.LENGTH_LONG).setAction(getString(R.string
+                            .set_permission), new View
+                            .OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                            ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    VolteemConstants.STORAGE_REQUEST_CODE);
                         }
                     }).show();
                 }
@@ -157,17 +158,18 @@ public class CreateEventActivity extends AppCompatActivity {
 
         mLoadPdf.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 if (PermissionUtil.isStorageReadPermissionGranted(CreateEventActivity.this)) {
                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                     intent.setType("application/pdf");
                     startActivityForResult(intent, PICK_PDF);
-
                 } else {
-                    Snackbar.make(v, "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                    Snackbar.make(view, getString(R.string.allow_storge_permission), Snackbar.LENGTH_LONG).setAction(getString(R.string
+                            .set_permission), new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                            ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    VolteemConstants.STORAGE_REQUEST_CODE);
                         }
                     }).show();
                 }
@@ -179,13 +181,12 @@ public class CreateEventActivity extends AppCompatActivity {
         mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
 
         mSaveEvent.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("WrongConstant")
             @Override
             public void onClick(View view) {
+                // hide keyboard on save event pressed
+                hideKeyboardFrom(CreateEventActivity.this, view);
 
                 if (validateForm()) {
-
-                    hideKeyboardFrom(CreateEventActivity.this, view);
                     String name = mName.getText().toString();
                     String location = mLocation.getText().toString();
                     String description = mDescription.getText().toString();
@@ -194,10 +195,10 @@ public class CreateEventActivity extends AppCompatActivity {
                     String type = mType.getSelectedItem().toString();
                     StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
 
-                    if (hasUserSelectedPicture) {
+                    if (mSelectedPicture) {
                         filePath.putBytes(ImageUtils.compressImage(uriPicture, CreateEventActivity.this, getResources()));
                     }
-                    if(hasSelectedPDF){
+                    if (mSelectedPDF) {
                         filePath = mStorage.child("Contracts").child("Event").child(eventID);
                         filePath.putFile(uriPDF);
                     }
@@ -207,14 +208,15 @@ public class CreateEventActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     int lastEvent = (int) dataSnapshot.child("events").getChildrenCount();
-                                    int eventsNr = dataSnapshot.child("eventsnumber").getValue(Integer.class);
+                                    DataSnapshot eventsNumber = dataSnapshot.child("eventsnumber");
+                                    int eventsNr = eventsNumber.getValue() != null ? (Integer) eventsNumber.getValue() : 0;
                                     DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/events/" + lastEvent, eventID);
                                     DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/eventsnumber", eventsNr + 1);
                                 }
 
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
-
+                                    // do nothing for now
                                 }
                             });
 
@@ -226,13 +228,14 @@ public class CreateEventActivity extends AppCompatActivity {
                     alarm.putExtra("nameEvent", name);
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(CreateEventActivity.this, 100, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
                     AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(0, finishDate, pendingIntent);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, finishDate, pendingIntent);
+
+                    ChatGroup chatGroup = new ChatGroup(user.getUid(), UUID.randomUUID().toString(), getString(R.string.you_have_been_accepted),
+                            Calendar.getInstance().getTimeInMillis(), false, new_event.getEventID());
+                    mDatabase.child("conversation").child("group").push().setValue(chatGroup);
 
                     returnToEvents();
                     Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
-                    ChatGroup chatGroup = new ChatGroup(user.getUid(),UUID.randomUUID().toString(),"you have been accepted to ", Calendar.getInstance().getTimeInMillis(),false,new_event.getEventID());
-                    mDatabase.child("conversation").child("group").push().setValue(chatGroup);
                 }
             }
         });
@@ -251,16 +254,15 @@ public class CreateEventActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (data != null) {
-
             if (requestCode == GALLERY_INTENT) {
                 uriPicture = data.getData();
-                hasUserSelectedPicture = true;
+                mSelectedPicture = true;
                 Picasso.with(this).load(uriPicture).fit().centerCrop().into(mImage);
             } else {
                 if (requestCode == PICK_PDF) {
                     uriPDF = data.getData();
-                    hasSelectedPDF = true;
-                    mLoadPdf.setText(ImageUtils.getFileName(uriPDF,CreateEventActivity.this));
+                    mSelectedPDF = true;
+                    mLoadPdf.setText(ImageUtils.getFileName(uriPDF, CreateEventActivity.this));
                 }
             }
         }
@@ -279,19 +281,19 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         AlertDialog leaveAlertDialog = new AlertDialog.Builder(this)
-                .setTitle("Are you sure?")
-                .setMessage("Are you sure you want to leave this page? Your event will not be created and the changes made will be lost.")
+                .setTitle(getString(R.string.are_you_sure))
+                .setMessage(getString(R.string.are_you_sure_message))
                 .setCancelable(true)
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         CreateEventActivity.super.onBackPressed();
                     }
                 })
-                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        // do nothing, dismiss dialog
                     }
                 })
                 .create();
@@ -299,22 +301,22 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     public boolean validateForm() {
-
+        // TODO move some validations on cloud functions
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mStartDate) &&
                 editTextIsValid(mFinishDate) && editTextIsValid(mDescription) &&
                 editTextIsValid(mDeadline) && editTextIsValid(mSize));
-        if (valid && TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
-            Toast.makeText(this, "Please select a type.", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (valid && (deadline > finishDate)) {
-            Toast.makeText(this, "The deadline can not be after the finish date.", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (valid && (startDate > finishDate)) {
-            Toast.makeText(this, "The start date can not be after the finish date.", Toast.LENGTH_SHORT).show();
-            return false;
+        if (valid) {
+            if (TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
+                Toast.makeText(this, getString(R.string.select_type), Toast.LENGTH_SHORT).show();
+                valid = false;
+            } else if ((deadline > finishDate)) {
+                Toast.makeText(this, getString(R.string.deadline_after_finish_date), Toast.LENGTH_SHORT).show();
+                valid = false;
+            } else if (startDate > finishDate) {
+                Toast.makeText(this, getString(R.string.start_date_after_finish_date), Toast.LENGTH_SHORT).show();
+                valid = false;
+            }
         }
         return valid;
     }
@@ -322,7 +324,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private boolean editTextIsValid(EditText mEditText) {
         String text = mEditText.getText().toString();
         if (TextUtils.isEmpty(text)) {
-            mEditText.setError("This field can not be empty.");
+            mEditText.setError(getString(R.string.field_empty));
             mEditText.requestFocus();
             return false;
         } else {
@@ -332,18 +334,15 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void hideKeyboardFrom(Context context, View view) {
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     private void populateSpinnerArray() {
         typeList.add("Type");
-        typeList.add("Sports");
-        typeList.add("Music");
-        typeList.add("Festival");
-        typeList.add("Charity");
-        typeList.add("Training");
-        typeList.add("Other");
+        typeList.addAll(EventType.getAllAsList());
     }
 
     View.OnClickListener setonClickListenerCalendar(final EditText editText) {
@@ -360,11 +359,13 @@ public class CreateEventActivity extends AppCompatActivity {
                         editText.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;
                         myCalendar.set(year, month, dayOfMonth, 12, 15, 0);
-                        if (editText.equals(mStartDate)) startDate = myCalendar.getTimeInMillis();
-                        else if (editText.equals(mFinishDate))
+                        if (editText.equals(mStartDate)) {
+                            startDate = myCalendar.getTimeInMillis();
+                        } else if (editText.equals(mFinishDate)) {
                             finishDate = myCalendar.getTimeInMillis();
-                        else if (editText.equals(mDeadline))
+                        } else if (editText.equals(mDeadline)) {
                             deadline = myCalendar.getTimeInMillis();
+                        }
 
                     }
                 }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
@@ -375,8 +376,8 @@ public class CreateEventActivity extends AppCompatActivity {
 
     private Uri parseUri(int ID) {
         return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-                "://" + resources.getResourcePackageName(ID)
-                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName(ID));
+                "://" + getResources().getResourcePackageName(ID)
+                + '/' + getResources().getResourceTypeName(ID) + '/' + getResources().getResourceEntryName(ID));
 
     }
 

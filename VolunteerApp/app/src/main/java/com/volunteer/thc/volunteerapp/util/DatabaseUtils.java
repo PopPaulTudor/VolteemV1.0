@@ -15,7 +15,7 @@ public final class DatabaseUtils {
     /**
      * Writes new data to a given path in the database
      *
-     * @param path The path to whitch the new data will be written
+     * @param path The path to witch the new data will be written
      * @param data The object which contains the new data
      */
     public static void writeData(String path, @Nullable Object data) {

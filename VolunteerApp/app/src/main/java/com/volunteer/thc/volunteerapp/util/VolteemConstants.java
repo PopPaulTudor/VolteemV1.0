@@ -12,6 +12,8 @@ public class VolteemConstants {
 
     public static final String USER_CUSTOM_ERROR_CRASHLYTICS = "UserCustomError";
 
-    public static final String STARAGE_PERMISSION_OPENED_PREF = "storage_permission_opened";
+    public static final String STORAGE_PERMISSION_OPENED = "storage_permission_opened";
+
+    public static final int STORAGE_REQUEST_CODE = 1;
 
 }

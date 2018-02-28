@@ -24,8 +24,6 @@ import com.volunteer.thc.volunteerapp.util.VolteemConstants;
  */
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int STORAGE_REQUEST_CODE = 1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +39,8 @@ public class SplashActivity extends AppCompatActivity {
         storage.createDirectory(VolteemConstants.VOLTEEM_DIRECTORY_NAME);
 
         if (!sharedPreferences.contains(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            sharedPreferences.edit().putInt(VolteemConstants.STARAGE_PERMISSION_OPENED_PREF, STORAGE_REQUEST_CODE).apply();
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_REQUEST_CODE);
+            sharedPreferences.edit().putInt(VolteemConstants.STORAGE_PERMISSION_OPENED, VolteemConstants.STORAGE_REQUEST_CODE).apply();
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, VolteemConstants.STORAGE_REQUEST_CODE);
         } else if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             startActivityByClass(MainActivity.class);
         } else {
@@ -53,7 +51,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
-            case STORAGE_REQUEST_CODE: {
+            case VolteemConstants.STORAGE_REQUEST_CODE: {
                 if (grantResults.length <= 0 || grantResults[0] == PackageManager.PERMISSION_DENIED) {
                     Toast.makeText(this, getString(R.string.storage_permission_denied), Toast.LENGTH_LONG).show();
                 }

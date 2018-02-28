@@ -72,4 +72,16 @@
     <string name="create_new_account">CREATE NEW ACCOUNT</string>
     <string name="log_in">LOG IN</string>
     <string name="password">Password</string>
+    <string name="new_event">New event</string>
+    <string name="field_empty">This field can not be empty.</string>
+    <string name="select_type">Please select a type.</string>
+    <string name="deadline_after_finish_date">The deadline can not be after the finish date.</string>
+    <string name="start_date_after_finish_date">The start date can not be after the finish date.</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="are_you_sure_message">Are you sure you want to leave this page? Your event will not be created and the changes made will be lost.</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="allow_storge_permission">Please allow storage permission</string>
+    <string name="set_permission">Set Permission</string>
+    <string name="you_have_been_accepted">you have been accepted to</string>
 </resources>
