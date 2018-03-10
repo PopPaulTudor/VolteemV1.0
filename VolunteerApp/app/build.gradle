@@ -1,14 +1,17 @@
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
+        maven { url "https://plugins.gradle.org/m2/" }
     }
 
     dependencies {
         classpath 'io.fabric.tools:gradle:1.25.1'
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.1"
     }
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'org.sonarqube'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -57,9 +60,23 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-
-
-
-
-
 apply plugin: 'com.google.gms.google-services'
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "VolteemApp"
+        property "sonar.projectKey", "org.sonarqube:android-simple-sq-scanner-gradle"
+        property "sonar.language", "java"
+        property "sonar.sources", "src"
+        property "sonar.binaries", "build"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.login", "admin"
+        property "sonar.password", "admin"
+        property "sonar.exclusions", "src/androidTest/java/**"
+    }
+}
+
+
+
+
+
