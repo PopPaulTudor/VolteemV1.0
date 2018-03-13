@@ -14,7 +14,7 @@
     </android.support.v7.widget.RecyclerView>
 
     <TextView
-        android:id="@+id/done"
+        android:id="@+id/feedback_done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -25,22 +25,22 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/text1"
+        android:id="@+id/feedback_thx"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Your feedback is much appreciated."
         android:layout_marginTop="135dp"
+        android:text="Your feedback is much appreciated."
         android:textColor="@android:color/black"
         android:textSize="15sp"
         android:visibility="gone"/>
     <TextView
-        android:id="@+id/text2"
+        android:id="@+id/feedback_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Tap on the above icon to go back to events."
         android:layout_marginTop="165dp"
+        android:text="Tap on the above icon to go back to events."
         android:textColor="@android:color/black"
         android:textSize="15sp"
         android:visibility="gone"/>
