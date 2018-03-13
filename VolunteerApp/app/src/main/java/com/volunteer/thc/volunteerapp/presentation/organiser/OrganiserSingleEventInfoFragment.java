@@ -31,14 +31,12 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.ChangeEvent;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
@@ -49,7 +47,6 @@ import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.UUID;
 
 /**
  * Created by Cristi on 7/27/2017.
@@ -162,12 +159,14 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                                 startActivityForResult(intent, GALLERY_INTENT);
 
                             } else {
-                                Snackbar.make(getView(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                                    }
-                                }).show();
+                                Snackbar.make(getView(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new
+                                        View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission
+                                                        .READ_EXTERNAL_STORAGE}, 1);
+                                            }
+                                        }).show();
                             }
 
                         } else {
@@ -222,15 +221,20 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        boolean result;
         switch (item.getItemId()) {
             case R.id.action_edit:
                 onEditItemPressed();
-                return true;
+                result = true;
+                break;
             case R.id.action_delete:
-                onDeleteItemPressed();
+                result = super.onOptionsItemSelected(item);
+                break;
             default:
-                return super.onOptionsItemSelected(item);
+                result = super.onOptionsItemSelected(item);
+                break;
         }
+        return result;
     }
 
     private void onEditItemPressed() {
@@ -305,11 +309,12 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 filePath.putFile(uriPDF);
 
 
-                for(String id: mCurrentEvent.getAccepted_volunteers()) {
+                for (String id : mCurrentEvent.getAccepted_volunteers()) {
 
                     String newsID = mDatabase.child("news").push().getKey();
-                    mDatabase.child("news").child(newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, "soon", DatabaseUtils.getUserID(), id,
-                            "A new contract has been uploaded for" +mCurrentEvent.getName(), NewsMessage.FEEDBACK, false, false));
+                    mDatabase.child("news").child(newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, "soon",
+                            DatabaseUtils.getUserID(), id,
+                            "A new contract has been uploaded for" + mCurrentEvent.getName(), NewsMessage.FEEDBACK, false, false));
                 }
             }
 
@@ -361,14 +366,18 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                         OrganiserEventsFragment.hasActionHappened = true;
                         for (String volunteer_id : mCurrentEvent.getRegistered_volunteers()) {
                             String newsID = mDatabase.child("news").push().getKey();
-                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(), DatabaseUtils.getUserID(),
-                                    volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED, false, false);
+                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(),
+                                    DatabaseUtils.getUserID(),
+                                    volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED,
+                                    false, false);
                             mDatabase.child("news/" + newsID).setValue(newsMessage);
                         }
                         for (String volunteer_id : mCurrentEvent.getAccepted_volunteers()) {
                             String newsID = mDatabase.child("news").push().getKey();
-                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(), DatabaseUtils.getUserID(),
-                                    volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED, false, false);
+                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(),
+                                    DatabaseUtils.getUserID(),
+                                    volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED,
+                                    false, false);
                             mDatabase.child("news/" + newsID).setValue(newsMessage);
                         }
                         mDatabase.child("events").child(mCurrentEvent.getEventID()).setValue(null);

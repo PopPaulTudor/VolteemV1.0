@@ -40,7 +40,6 @@ public class OrganiserFeedbackActivity extends AppCompatActivity implements Acti
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     if (motionEvent.getRawY() >= done.getTotalPaddingTop()) {
                         finish();
-                        return true;
                     }
                 }
                 return true;
