@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -66,12 +67,12 @@ public class CreateEventActivity extends AppCompatActivity {
     private static final int NUMBER_OF_EVENTS_ON_PAGE = 3;
     private EditText mName, mLocation, mDescription, mDeadline, mSize, mStartDate, mFinishDate;
     private ImageView mImage;
-    private Spinner mType;
+    private Spinner mTypeSpinner; // TODO refactor spinner and use some popup dialog
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
     private long startDate = -1, finishDate, deadline;
     private StorageReference mStorage;
-    private Uri uriPicture = null, uriPDF = null;
+    private Uri mUriPicture = null, mUriPDF = null;
     private ArrayList<String> typeList = new ArrayList<>();
     private ArrayList<Uri> imageUris = new ArrayList<>();
     private boolean mSelectedPicture = false;
@@ -102,7 +103,7 @@ public class CreateEventActivity extends AppCompatActivity {
         mLocation = findViewById(R.id.event_location);
         mStartDate = findViewById(R.id.event_date_start_create);
         mFinishDate = findViewById(R.id.event_date_finish_create);
-        mType = findViewById(R.id.event_type);
+        mTypeSpinner = findViewById(R.id.event_type);
         mDescription = findViewById(R.id.event_description);
         mDeadline = findViewById(R.id.event_deadline_create);
         mImage = findViewById(R.id.event_image);
@@ -119,13 +120,14 @@ public class CreateEventActivity extends AppCompatActivity {
         populateSpinnerArray();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, typeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mType.setAdapter(adapter);
+        mTypeSpinner.setAdapter(adapter);
 
-        mType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!mSelectedPicture) {
-                    Picasso.with(CreateEventActivity.this).load(imageUris.get(mType.getSelectedItemPosition())).fit().centerCrop().into(mImage);
+                    Picasso.with(CreateEventActivity.this).load(imageUris.get(mTypeSpinner.getSelectedItemPosition())).fit().centerCrop().into
+                            (mImage);
                 }
             }
 
@@ -176,9 +178,9 @@ public class CreateEventActivity extends AppCompatActivity {
             }
         });
 
-        mStartDate.setOnClickListener(setonClickListenerCalendar(mStartDate));
-        mFinishDate.setOnClickListener(setonClickListenerCalendar(mFinishDate));
-        mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
+        mStartDate.setOnClickListener(setOnClickListenerCalendar(mStartDate));
+        mFinishDate.setOnClickListener(setOnClickListenerCalendar(mFinishDate));
+        mDeadline.setOnClickListener(setOnClickListenerCalendar(mDeadline));
 
         mSaveEvent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,26 +194,26 @@ public class CreateEventActivity extends AppCompatActivity {
                     String description = mDescription.getText().toString();
                     int size = Integer.parseInt(mSize.getText().toString());
                     final String eventID = mDatabase.child("events").push().getKey();
-                    String type = mType.getSelectedItem().toString();
+                    String type = mTypeSpinner.getSelectedItem().toString();
                     StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
 
                     if (mSelectedPicture) {
-                        filePath.putBytes(ImageUtils.compressImage(uriPicture, CreateEventActivity.this, getResources()));
+                        filePath.putBytes(ImageUtils.compressImage(mUriPicture, CreateEventActivity.this, getResources()));
                     }
                     if (mSelectedPDF) {
                         filePath = mStorage.child("Contracts").child("Event").child(eventID);
-                        filePath.putFile(uriPDF);
+                        filePath.putFile(mUriPDF);
                     }
 
-                    mDatabase.child("users/organisers/" + user.getUid())
+                    mDatabase.child("users/organisers/" + mUser.getUid())
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     int lastEvent = (int) dataSnapshot.child("events").getChildrenCount();
                                     DataSnapshot eventsNumber = dataSnapshot.child("eventsnumber");
                                     int eventsNr = eventsNumber.getValue() != null ? (Integer) eventsNumber.getValue() : 0;
-                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/events/" + lastEvent, eventID);
-                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/eventsnumber", eventsNr + 1);
+                                    DatabaseUtils.writeData("users/organisers/" + mUser.getUid() + "/events/" + lastEvent, eventID);
+                                    DatabaseUtils.writeData("users/organisers/" + mUser.getUid() + "/eventsnumber", eventsNr + 1);
                                 }
 
                                 @Override
@@ -220,7 +222,7 @@ public class CreateEventActivity extends AppCompatActivity {
                                 }
                             });
 
-                    Event new_event = new Event(user.getUid(), name, location, startDate, finishDate, type, eventID, description, deadline, size);
+                    Event new_event = new Event(mUser.getUid(), name, location, startDate, finishDate, type, eventID, description, deadline, size);
                     DatabaseUtils.writeData("events/" + eventID, new_event);
                     DatabaseUtils.writeData("events/" + eventID + "/validity", "valid");
 
@@ -228,14 +230,19 @@ public class CreateEventActivity extends AppCompatActivity {
                     alarm.putExtra("nameEvent", name);
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(CreateEventActivity.this, 100, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
                     AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, finishDate, pendingIntent);
 
-                    ChatGroup chatGroup = new ChatGroup(user.getUid(), UUID.randomUUID().toString(), getString(R.string.you_have_been_accepted),
+                    if (alarmManager != null) {
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, finishDate, pendingIntent);
+                    } else {
+                        Log.w(TAG, "AlarmManager is not available");
+                    }
+
+                    ChatGroup chatGroup = new ChatGroup(mUser.getUid(), UUID.randomUUID().toString(), getString(R.string.you_have_been_accepted),
                             Calendar.getInstance().getTimeInMillis(), false, new_event.getEventID());
                     mDatabase.child("conversation").child("group").push().setValue(chatGroup);
 
                     returnToEvents();
-                    Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    Snackbar.make(view, getString(R.string.event_created), Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }
             }
         });
@@ -243,7 +250,7 @@ public class CreateEventActivity extends AppCompatActivity {
         mCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Event canceled.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                Snackbar.make(view, getString(R.string.event_canceled), Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 returnToEvents();
             }
         });
@@ -255,14 +262,14 @@ public class CreateEventActivity extends AppCompatActivity {
 
         if (data != null) {
             if (requestCode == GALLERY_INTENT) {
-                uriPicture = data.getData();
+                mUriPicture = data.getData();
                 mSelectedPicture = true;
-                Picasso.with(this).load(uriPicture).fit().centerCrop().into(mImage);
+                Picasso.with(this).load(mUriPicture).fit().centerCrop().into(mImage);
             } else {
                 if (requestCode == PICK_PDF) {
-                    uriPDF = data.getData();
+                    mUriPDF = data.getData();
                     mSelectedPDF = true;
-                    mLoadPdf.setText(ImageUtils.getFileName(uriPDF, CreateEventActivity.this));
+                    mLoadPdf.setText(ImageUtils.getFileName(mUriPDF, CreateEventActivity.this));
                 }
             }
         }
@@ -307,7 +314,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 editTextIsValid(mFinishDate) && editTextIsValid(mDescription) &&
                 editTextIsValid(mDeadline) && editTextIsValid(mSize));
         if (valid) {
-            if (TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
+            if (TextUtils.equals(mTypeSpinner.getSelectedItem().toString(), "Type")) {
                 Toast.makeText(this, getString(R.string.select_type), Toast.LENGTH_SHORT).show();
                 valid = false;
             } else if ((deadline > finishDate)) {
@@ -345,7 +352,7 @@ public class CreateEventActivity extends AppCompatActivity {
         typeList.addAll(EventType.getAllAsList());
     }
 
-    View.OnClickListener setonClickListenerCalendar(final EditText editText) {
+    private View.OnClickListener setOnClickListenerCalendar(final EditText editText) {
         return new View.OnClickListener() {
 
             @Override

@@ -84,4 +84,6 @@
     <string name="allow_storge_permission">Please allow storage permission</string>
     <string name="set_permission">Set Permission</string>
     <string name="you_have_been_accepted">you have been accepted to</string>
+    <string name="event_created">Event created!</string>
+    <string name="event_canceled">Event canceled.</string>
 </resources>
