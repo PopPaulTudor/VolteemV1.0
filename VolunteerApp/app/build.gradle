@@ -73,6 +73,7 @@ sonarqube {
         property "sonar.login", "admin"
         property "sonar.password", "admin"
         property "sonar.exclusions", "src/androidTest/java/**"
+        property "sonar.java.test.binaries", "src/androidTest/"
     }
 }
 
