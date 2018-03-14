@@ -97,7 +97,7 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
             } else {
                 holder.cardChecked.setVisibility(View.VISIBLE);
 
-                mDatabase.child("events").child(eventsList.get(position).getEventID()).child
+                mDatabase.child("events").child(eventsList.get(position).getEventId()).child
                         ("users").child(user.getUid())
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -128,7 +128,7 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
                 .getType()))).fit().centerCrop().into(holder.cardImage);
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        storageRef.child("Photos").child("Event").child(eventsList.get(position).getEventID())
+        storageRef.child("Photos").child("Event").child(eventsList.get(position).getEventId())
                 .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {

@@ -117,7 +117,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
 
         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-        StorageReference filePath = mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID());
+        StorageReference filePath = mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventId());
 
         filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -175,7 +175,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             Bundle bundle = new Bundle();
                             bundle.putString("type", "event");
-                            bundle.putString("eventID", mCurrentEvent.getEventID());
+                            bundle.putString("eventID", mCurrentEvent.getEventId());
                             displayPhotoFragment.setArguments(bundle);
                             fragmentTransaction.add(R.id.event_detailed_photo, displayPhotoFragment).addToBackStack("showImage");
                             fragmentTransaction.commit();
@@ -259,57 +259,57 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
         if (validateForm()) {
             if (!currentName.equals(mCurrentEvent.getName())) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("name").setValue(currentName);
+                mDatabase.child("events").child(mCurrentEvent.getEventId()).child("name").setValue(currentName);
                 mCurrentEvent.setName(currentName);
             }
 
             if (!currentLocation.equals(mCurrentEvent.getLocation())) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("location").setValue(currentLocation);
+                mDatabase.child("events").child(mCurrentEvent.getEventId()).child("location").setValue(currentLocation);
                 mCurrentEvent.setLocation(currentLocation);
             }
 
             if (currentStartDate != mCurrentEvent.getStartDate()) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("startDate").setValue(currentStartDate);
+                mDatabase.child("events").child(mCurrentEvent.getEventId()).child("startDate").setValue(currentStartDate);
                 mCurrentEvent.setStartDate(currentStartDate);
             }
             if (currentFinishDate != mCurrentEvent.getFinishDate()) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("finishDate").setValue(currentFinishDate);
+                mDatabase.child("events").child(mCurrentEvent.getEventId()).child("finishDate").setValue(currentFinishDate);
                 mCurrentEvent.setFinishDate(currentFinishDate);
             }
 
             if (!currentType.equals(mCurrentEvent.getType())) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("type").setValue(currentType);
+                mDatabase.child("events").child(mCurrentEvent.getEventId()).child("type").setValue(currentType);
                 mCurrentEvent.setType(currentType);
             }
 
             if (!currentDescription.equals(mCurrentEvent.getDescription())) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("description").setValue(currentDescription);
+                mDatabase.child("events").child(mCurrentEvent.getEventId()).child("description").setValue(currentDescription);
                 mCurrentEvent.setDescription(currentDescription);
             }
 
             if (currentDeadline != mCurrentEvent.getDeadline()) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("deadline").setValue(currentDeadline);
+                mDatabase.child("events").child(mCurrentEvent.getEventId()).child("deadline").setValue(currentDeadline);
                 mCurrentEvent.setDeadline(currentDeadline);
             }
 
             if (!currentSize.equals(mCurrentEvent.getSize())) {
-                mDatabase.child("events").child(mCurrentEvent.getEventID()).child("size").setValue(Integer.parseInt(currentSize));
+                mDatabase.child("events").child(mCurrentEvent.getEventId()).child("size").setValue(Integer.parseInt(currentSize));
                 mCurrentEvent.setSize(Integer.parseInt(currentSize));
             }
 
             if (hasUserSelectedPicture) {
                 StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-                StorageReference filePath = mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID());
+                StorageReference filePath = mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventId());
                 filePath.putBytes(ImageUtils.compressImage(uriPicture, getActivity(), getResources()));
             }
 
             if (hasSelectedPDF) {
                 StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-                StorageReference filePath = mStorage.child("Contracts").child("Event").child(mCurrentEvent.getEventID());
+                StorageReference filePath = mStorage.child("Contracts").child("Event").child(mCurrentEvent.getEventId());
                 filePath.putFile(uriPDF);
 
 
-                for (String id : mCurrentEvent.getAccepted_volunteers()) {
+                for (String id : mCurrentEvent.getAcceptedVolunteers()) {
 
                     String newsID = mDatabase.child("news").push().getKey();
                     mDatabase.child("news").child(newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, "soon",
@@ -364,23 +364,23 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         OrganiserEventsFragment.hasActionHappened = true;
-                        for (String volunteer_id : mCurrentEvent.getRegistered_volunteers()) {
+                        for (String volunteer_id : mCurrentEvent.getRegisteredVolunteers()) {
                             String newsID = mDatabase.child("news").push().getKey();
-                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(),
+                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventId(),
                                     DatabaseUtils.getUserID(),
                                     volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED,
                                     false, false);
                             mDatabase.child("news/" + newsID).setValue(newsMessage);
                         }
-                        for (String volunteer_id : mCurrentEvent.getAccepted_volunteers()) {
+                        for (String volunteer_id : mCurrentEvent.getAcceptedVolunteers()) {
                             String newsID = mDatabase.child("news").push().getKey();
-                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(),
+                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventId(),
                                     DatabaseUtils.getUserID(),
                                     volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED,
                                     false, false);
                             mDatabase.child("news/" + newsID).setValue(newsMessage);
                         }
-                        mDatabase.child("events").child(mCurrentEvent.getEventID()).setValue(null);
+                        mDatabase.child("events").child(mCurrentEvent.getEventId()).setValue(null);
                         Toast.makeText(getActivity(), "Event deleted.", Toast.LENGTH_SHORT).show();
                         getActivity().finish();
                     }

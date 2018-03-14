@@ -130,8 +130,8 @@ public class FirebaseNewsService extends Service {
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
                                     final Event event = dataSnapshot.getValue(Event.class);
-                                    ArrayList<String> members = event.getAccepted_volunteers();
-                                    members.add(event.getCreated_by());
+                                    ArrayList<String> members = event.getAcceptedVolunteers();
+                                    members.add(event.getCreatedBy());
 
                                     for (String id : members) {
                                         if (!id.equals(chatGroup.getSentBy()) && !ConversationActivity.idActive.equals(chatGroup.getUuid())) {

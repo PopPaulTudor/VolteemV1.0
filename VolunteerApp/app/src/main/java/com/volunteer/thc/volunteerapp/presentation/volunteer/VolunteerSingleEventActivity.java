@@ -148,7 +148,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                     }
                     final File localFile = new File(rootPath, currentEvent.getName() + ".pdf");
 
-                    storageRef.child("Contracts").child("Event").child(currentEvent.getEventID())
+                    storageRef.child("Contracts").child("Event").child(currentEvent.getEventId())
                             .getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
@@ -217,15 +217,15 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         String newsID = mDatabase.child("news").push().getKey();
                         mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil
                                 .getCurrentTimeInMillis(),
-                                newsID, currentEvent.getEventID(), user.getUid(), currentEvent
-                                .getCreated_by()
+                                newsID, currentEvent.getEventId(), user.getUid(), currentEvent
+                                .getCreatedBy()
                                 , "A new volunteer registered for your event " + currentEvent
                                 .getName()
                                 , NewsMessage.REGISTERED, false, false));
                         mBottomSheetDialog.dismiss();
                         Toast.makeText(VolunteerSingleEventActivity.this, "Signing up for " +
                                 "event...", Toast.LENGTH_SHORT).show();
-                        mDatabase.child("events").child(currentEvent.getEventID()).child("users")
+                        mDatabase.child("events").child(currentEvent.getEventId()).child("users")
                                 .child(user.getUid())
                                 .setValue(new RegisteredUser("pending", user.getUid(), "valid"));
                         finish();
@@ -266,14 +266,14 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
                         String newsID = mDatabase.child("news").push().getKey();
                         mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil
-                                .getCurrentTimeInMillis(), newsID, currentEvent.getEventID(),
-                                user.getUid(), currentEvent.getCreated_by(), "A volunteer has " +
+                                .getCurrentTimeInMillis(), newsID, currentEvent.getEventId(),
+                                user.getUid(), currentEvent.getCreatedBy(), "A volunteer has " +
                                 "left your event " + currentEvent.getName() + ".", NewsMessage
                                 .VOLUNTEER_LEFT,
                                 false, false));
-                        mDatabase.child("events").child(currentEvent.getEventID()).child("users")
+                        mDatabase.child("events").child(currentEvent.getEventId()).child("users")
                                 .child(user.getUid()).setValue(null);
-                        events.remove(currentEvent.getEventID());
+                        events.remove(currentEvent.getEventId());
                         finish();
                     }
                 });
@@ -298,7 +298,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     }
 
     private void loadUI() {
-        storageRef.child("Photos").child("Event").child(currentEvent.getEventID()).getDownloadUrl
+        storageRef.child("Photos").child("Event").child(currentEvent.getEventId()).getDownloadUrl
                 ().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
@@ -335,7 +335,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             mStatus.setVisibility(View.VISIBLE);
             mLeaveEvent.setVisibility(View.VISIBLE);
 
-            mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user
+            mDatabase.child("events").child(currentEvent.getEventId()).child("users").child(user
                     .getUid())
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override

@@ -245,8 +245,8 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                             acc_users.add(registered_users.child("id").getValue().toString());
                                         }
                                     }
-                                    currentEvent.setRegistered_volunteers(reg_users);
-                                    currentEvent.setAccepted_volunteers(acc_users);
+                                    currentEvent.setRegisteredVolunteers(reg_users);
+                                    currentEvent.setAcceptedVolunteers(acc_users);
                                     if (currentEvent.getFinishDate() < date.getTimeInMillis()) {
                                         if (isFragmentActive()) {
                                             mDatabase.child("users/organisers/" + user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -261,7 +261,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
                                                 }
                                             });
-                                            mDatabase.child("events").child(currentEvent.getEventID()).child("validity").setValue("expired");
+                                            mDatabase.child("events").child(currentEvent.getEventId()).child("validity").setValue("expired");
                                             AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
                                             alert.setTitle("Event finished");
                                             alert.setCancelable(false);
@@ -279,7 +279,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     Intent intent = new Intent(getActivity(), OrganiserFeedbackActivity.class);
                                                     intent.putExtra("name", currentEvent.getName());
-                                                    intent.putExtra("volunteers", currentEvent.getAccepted_volunteers());
+                                                    intent.putExtra("volunteers", currentEvent.getAcceptedVolunteers());
                                                     startActivity(intent);
                                                     dialogInterface.dismiss();
                                                 }
@@ -352,8 +352,8 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                 acc_users.add(registered_users.child("id").getValue().toString());
                             }
                         }
-                        currentEvent.setRegistered_volunteers(reg_users);
-                        currentEvent.setAccepted_volunteers(acc_users);
+                        currentEvent.setRegisteredVolunteers(reg_users);
+                        currentEvent.setAcceptedVolunteers(acc_users);
 
                         mEventsList.add(currentEvent);
                     }

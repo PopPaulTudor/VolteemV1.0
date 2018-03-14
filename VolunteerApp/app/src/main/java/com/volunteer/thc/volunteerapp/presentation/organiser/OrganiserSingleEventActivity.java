@@ -72,22 +72,22 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
         appBarLayout = findViewById(R.id.appbar);
 
 
-        if (mCurrentEvent.getAccepted_volunteers().size() == 1)
-            acceptedText.setText("         " + mCurrentEvent.getAccepted_volunteers().size() +
+        if (mCurrentEvent.getAcceptedVolunteers().size() == 1)
+            acceptedText.setText("         " + mCurrentEvent.getAcceptedVolunteers().size() +
                     "\nvolunteer");
         else
-            acceptedText.setText("         " + mCurrentEvent.getAccepted_volunteers().size() +
+            acceptedText.setText("         " + mCurrentEvent.getAcceptedVolunteers().size() +
                     acceptedText.getText());
 
-        if (mCurrentEvent.getRegistered_volunteers().size() == 1)
-            regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() +
+        if (mCurrentEvent.getRegisteredVolunteers().size() == 1)
+            regText.setText("         " + mCurrentEvent.getRegisteredVolunteers().size() +
                     "\nvolunteer");
         else
-            regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() +
+            regText.setText("         " + mCurrentEvent.getRegisteredVolunteers().size() +
                     regText.getText());
 
 
-        mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID()).getDownloadUrl
+        mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventId()).getDownloadUrl
                 ().addOnCompleteListener(new OnCompleteListener<Uri>() {
 
             @Override
@@ -179,8 +179,8 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
                         acc_users.add(registered_users.child("id").getValue().toString());
                     }
                 }
-                currentEvent.setRegistered_volunteers(reg_users);
-                currentEvent.setAccepted_volunteers(acc_users);
+                currentEvent.setRegisteredVolunteers(reg_users);
+                currentEvent.setAcceptedVolunteers(acc_users);
 
                 mCurrentEvent = currentEvent;
                 setUpUI();

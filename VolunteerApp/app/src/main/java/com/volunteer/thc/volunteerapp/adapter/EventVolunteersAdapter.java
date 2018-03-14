@@ -247,12 +247,14 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String eventID = mDatabase.child("news").push().getKey();
-                                mDatabase.child("news").child(eventID).setValue(new NewsMessage(date.getTimeInMillis(), eventID, event.getEventID(), event.getCreated_by(), volunteerIDs.get(position),
+                                mDatabase.child("news").child(eventID).setValue(new NewsMessage(date.getTimeInMillis(), eventID, event.getEventId()
+                                        , event.getCreatedBy(), volunteerIDs.get(position),
                                         "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
 
-                                mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
+                                mDatabase.child("events").child(event.getEventId()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
                                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
-                                ChatSingle chatSingle = new ChatSingle(event.getCreated_by(), volunteerIDs.get(position), "You have been accepted to " + event.getName(), UUID.randomUUID().toString(), Calendar.getInstance().getTimeInMillis(), false);
+                                ChatSingle chatSingle = new ChatSingle(event.getCreatedBy(), volunteerIDs.get(position), "You have been accepted to" +
+                                        " " + event.getName(), UUID.randomUUID().toString(), Calendar.getInstance().getTimeInMillis(), false);
                                 mDatabase.child("conversation").child("single").push().setValue(chatSingle);
 
 
@@ -362,11 +364,11 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
     public void acceptVolunteer(final String id, Activity activity) {
 
-        mDatabase.child("events").child(event.getEventID()).child("users").child(id).child("status").setValue("accepted");
+        mDatabase.child("events").child(event.getEventId()).child("users").child(id).child("status").setValue("accepted");
         Toast.makeText(activity, "Accepted volunteer!", Toast.LENGTH_LONG).show();
 
         String eventID = mDatabase.child("news").push().getKey();
-        mDatabase.child("news").child(eventID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), eventID, event.getEventID(), event.getCreated_by(), id,
+        mDatabase.child("news").child(eventID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), eventID, event.getEventId(), event.getCreatedBy(), id,
                 "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
 
         mDatabase.child("conversation").child("single").orderByChild("receivedBy").equalTo(id).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -387,7 +389,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 if (!ifHasConv) {
                     uuid = UUID.randomUUID().toString();
                 }
-                ChatSingle chatSingle = new ChatSingle(event.getCreated_by(), id, "You have been accepted to " + event.getName(), uuid, Calendar.getInstance().getTimeInMillis(), false);
+                ChatSingle chatSingle = new ChatSingle(event.getCreatedBy(), id, "You have been accepted to " + event.getName(), uuid, Calendar.getInstance().getTimeInMillis(), false);
                 mDatabase.child("conversation").push().setValue(chatSingle);
 
             }
@@ -406,10 +408,10 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     }
 
     private void removeVolunteerFromEvent(int position) {
-        mDatabase.child("events/" + event.getEventID() + "/users/" + volunteerIDs.get(position)).setValue(null);
+        mDatabase.child("events/" + event.getEventId() + "/users/" + volunteerIDs.get(position)).setValue(null);
         String newsID = mDatabase.child("news").push().getKey();
         mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID,
-                event.getEventID(), user.getUid(), volunteerIDs.get(position), "You have been removed from the event " +
+                event.getEventId(), user.getUid(), volunteerIDs.get(position), "You have been removed from the event " +
                 event.getName(), NewsMessage.VOLUNTEER_LEFT, false, false));
         volunteerIDs.remove(position);
         listVolunteer.remove(position);
