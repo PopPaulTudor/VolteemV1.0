@@ -92,7 +92,7 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
                         mEventsList.add(currentEvent);
                     } else {
                         if (isFragmentActive()) {
-                            mDatabase.child("events/" + currentEvent.getEventId() + "/users/" + user.getUid() + "/flag").setValue("done");
+                            mDatabase.child("events/" + currentEvent.getEventID() + "/users/" + user.getUid() + "/flag").setValue("done");
                             final boolean isUserAccepted = TextUtils.equals(eventSnapshot.child("users").child(user.getUid())
                                     .child("status").getValue().toString(), "accepted");
                             if (isUserAccepted) {
@@ -131,7 +131,7 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
                                         Log.w("rating", starsCount + "");
                                         if (starsCount > 0) {
                                             alert.dismiss();
-                                            mDatabase.child("users").child("organisers").child(currentEvent.getCreatedBy())
+                                            mDatabase.child("users").child("organisers").child(currentEvent.getCreated_by())
                                                     .child("org_rating").runTransaction(new Transaction.Handler() {
                                                 @Override
                                                 public Transaction.Result doTransaction(MutableData mutableData) {

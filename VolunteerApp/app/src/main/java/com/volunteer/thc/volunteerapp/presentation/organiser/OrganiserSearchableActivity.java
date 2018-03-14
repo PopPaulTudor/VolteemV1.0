@@ -81,8 +81,8 @@ public class OrganiserSearchableActivity extends AppCompatActivity {
                                     }
                                 }
 
-                                currentEvent.setRegisteredVolunteers(registeredUsers);
-                                currentEvent.setAcceptedVolunteers(acceptedUsers);
+                                currentEvent.setRegistered_volunteers(registeredUsers);
+                                currentEvent.setAccepted_volunteers(acceptedUsers);
                                 resultEvents.add(currentEvent);
                             }
                         }

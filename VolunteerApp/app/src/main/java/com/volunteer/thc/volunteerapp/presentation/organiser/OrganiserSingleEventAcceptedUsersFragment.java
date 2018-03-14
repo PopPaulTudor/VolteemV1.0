@@ -48,7 +48,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implemen
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_accepted_users, container, false);
 
         currentEvent = (Event) getArguments().getSerializable("currentEvent");
-        mAcceptedUsers = currentEvent.getAcceptedVolunteers();
+        mAcceptedUsers = currentEvent.getAccepted_volunteers();
         progressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
         noVolunteersText = (TextView) view.findViewById(R.id.no_volunteers);
         mAcceptedUsersList = (RecyclerView) view.findViewById(R.id.RecViewAccUsers);
@@ -62,11 +62,11 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implemen
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         currentEvent = currentEvent == null ? (Event) getArguments().getSerializable("currentEvent") : currentEvent;
-        Log.d("EventID", currentEvent.getEventId());
+        Log.d("EventID", currentEvent.getEventID());
 
         if (isVisibleToUser) {
             DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-            database.child("events").child(currentEvent.getEventId()).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            database.child("events").child(currentEvent.getEventID()).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Log.d("SingleEventFragment", "Refreshing accepted users.");

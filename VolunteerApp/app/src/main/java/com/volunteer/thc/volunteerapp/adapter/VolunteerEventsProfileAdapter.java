@@ -61,14 +61,14 @@ public class VolunteerEventsProfileAdapter extends RecyclerView.Adapter<Voluntee
         holder.eventExperience.setText(experience+"");
 
 
-        storageRef.child("Photos").child("Event").child(events.get(position).getEventId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageRef.child("Photos").child("Event").child(events.get(position).getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.with(context).load(uri).centerCrop().fit().centerCrop().into(holder.eventImage);
             }
         });
 
-        String eventOrgID = events.get(position).getCreatedBy();
+        String eventOrgID = events.get(position).getCreated_by();
 
 
         databaseRef.child("users/volunteers/" + user.getUid() + "/feedback/"+eventOrgID).addListenerForSingleValueEvent(new ValueEventListener() {

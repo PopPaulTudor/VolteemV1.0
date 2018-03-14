@@ -8,24 +8,24 @@ import java.util.ArrayList;
  */
 public class Event implements Serializable {
 
-    private String createdBy;
+    private String created_by;
     private String name;
     private String location;
     private String type;
     private String description;
-    private String eventId;
+    private String eventID;
     private long startDate, finishDate, deadline;
     private int size;
-    private ArrayList<String> registeredVolunteers;
-    private ArrayList<String> acceptedVolunteers;
+    private ArrayList<String> registered_volunteers;
+    private ArrayList<String> accepted_volunteers;
 
     public Event() {
 
     }
 
-    public Event(String createdBy, String name, String location, long startDate, long finishDate, String type, String eventId,
+    public Event(String created_by, String name, String location, long startDate, long finishDate, String type, String eventID,
                  String description, long deadline, int size) {
-        this.createdBy = createdBy;
+        this.created_by = created_by;
         this.name = name;
         this.location = location;
         this.startDate = startDate;
@@ -34,14 +34,14 @@ public class Event implements Serializable {
         this.description = description;
         this.deadline = deadline;
         this.size = size;
-        this.eventId = eventId;
-        this.registeredVolunteers = new ArrayList<>();
-        this.acceptedVolunteers = new ArrayList<>();
+        this.eventID = eventID;
+        this.registered_volunteers = new ArrayList<>();
+        this.accepted_volunteers = new ArrayList<>();
     }
 
-    public Event(String createdBy, String name, String location, long startDate, long finishDate, String type, String eventId,
-                 String description, long deadline, int size, ArrayList<String> registeredVolunteers, ArrayList<String> acceptedVolunteers) {
-        this.createdBy = createdBy;
+    public Event(String created_by, String name, String location, long startDate, long finishDate, String type, String eventID,
+                 String description, long deadline, int size, ArrayList<String> registered_volunteers, ArrayList<String> accepted_volunteers) {
+        this.created_by = created_by;
         this.name = name;
         this.location = location;
         this.type = type;
@@ -50,9 +50,9 @@ public class Event implements Serializable {
         this.description = description;
         this.deadline = deadline;
         this.size = size;
-        this.eventId = eventId;
-        this.registeredVolunteers = registeredVolunteers;
-        this.acceptedVolunteers = acceptedVolunteers;
+        this.eventID = eventID;
+        this.registered_volunteers = registered_volunteers;
+        this.accepted_volunteers = accepted_volunteers;
     }
 
     public long getStartDate() {
@@ -71,12 +71,12 @@ public class Event implements Serializable {
         this.finishDate = finishDate;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
+    public String getCreated_by() {
+        return created_by;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+    public void setCreated_by(String created_by) {
+        this.created_by = created_by;
     }
 
     public String getName() {
@@ -127,28 +127,28 @@ public class Event implements Serializable {
         this.size = size;
     }
 
-    public String getEventId() {
-        return eventId;
+    public String getEventID() {
+        return eventID;
     }
 
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
     }
 
-    public ArrayList<String> getRegisteredVolunteers() {
-        return registeredVolunteers;
+    public ArrayList<String> getRegistered_volunteers() {
+        return registered_volunteers;
     }
 
-    public void setRegisteredVolunteers(ArrayList<String> registeredVolunteers) {
-        this.registeredVolunteers = registeredVolunteers;
+    public void setRegistered_volunteers(ArrayList<String> registered_volunteers) {
+        this.registered_volunteers = registered_volunteers;
     }
 
-    public ArrayList<String> getAcceptedVolunteers() {
-        return acceptedVolunteers;
+    public ArrayList<String> getAccepted_volunteers() {
+        return accepted_volunteers;
     }
 
-    public void setAcceptedVolunteers(ArrayList<String> acceptedVolunteers) {
-        this.acceptedVolunteers = acceptedVolunteers;
+    public void setAccepted_volunteers(ArrayList<String> accepted_volunteers) {
+        this.accepted_volunteers = accepted_volunteers;
     }
 
 }

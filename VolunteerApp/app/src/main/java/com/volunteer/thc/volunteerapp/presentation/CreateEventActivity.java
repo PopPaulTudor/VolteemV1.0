@@ -238,7 +238,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     }
 
                     ChatGroup chatGroup = new ChatGroup(mUser.getUid(), UUID.randomUUID().toString(), getString(R.string.you_have_been_accepted),
-                            Calendar.getInstance().getTimeInMillis(), false, new_event.getEventId());
+                            Calendar.getInstance().getTimeInMillis(), false, new_event.getEventID());
                     mDatabase.child("conversation").child("group").push().setValue(chatGroup);
 
                     returnToEvents();
