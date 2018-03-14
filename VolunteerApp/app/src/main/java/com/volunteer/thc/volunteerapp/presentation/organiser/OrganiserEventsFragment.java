@@ -294,7 +294,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                             }
 
                             if (isFragmentActive()) {
-
+                                mSwipeRefreshLayout.setRefreshing(true);
                                 if (mEventsList.isEmpty()) {
 
                                     noEvents.setVisibility(View.VISIBLE);
