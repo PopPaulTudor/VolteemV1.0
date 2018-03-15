@@ -77,11 +77,10 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_organiserevents, container, false);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
-        fab = (FloatingActionButton) view.findViewById(R.id.add_event);
-        recyclerView = (RecyclerView) view.findViewById(R.id.RecViewOrgEvents);
+        mSwipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        fab = view.findViewById(R.id.add_event);
+        recyclerView = view.findViewById(R.id.RecViewOrgEvents);
         recyclerView.setHasFixedSize(true);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -95,7 +94,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                 }
             }
         });
-        noEvents = (TextView) view.findViewById(R.id.no_events_text);
+        noEvents = view.findViewById(R.id.no_events_text);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
@@ -152,7 +151,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
         MenuItem searchMenu = menu.findItem(R.id.app_bar_search);
         filter = menu.findItem(R.id.action_filter);
-        actionFilter = (Spinner) filter.getActionView().findViewById(R.id.filterSpinner);
+        actionFilter = filter.getActionView().findViewById(R.id.filterSpinner);
         populateSpinnerArray();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, typeList) {
             @NonNull
@@ -253,7 +252,8 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                                     long experience = dataSnapshot.child("experience").getValue(Long.class);
-                                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/experience", (experience + (currentEvent.getSize() * 10)));
+                                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/experience", (experience +
+                                                            (currentEvent.getSize() * 10)));
                                                 }
 
                                                 @Override
@@ -298,7 +298,8 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                 if (mEventsList.isEmpty()) {
 
                                     noEvents.setVisibility(View.VISIBLE);
-                                    Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar.LENGTH_LONG).setAction("Action", null);
+                                    Snackbar snackbar = Snackbar.make(getView(), "You don't have any events. How about creating one now?", Snackbar
+                                            .LENGTH_LONG).setAction("Action", null);
                                     snackbar.setAction("Add", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
@@ -312,7 +313,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                         (mEventsList,
                                                 getContext(), getResources(), OrganiserEventsAdapter
                                                 .MY_EVENTS,
-                                        OrganiserEventsFragment.this);
+                                                OrganiserEventsFragment.this);
                                 recyclerView.setAdapter(adapter);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                                 recyclerView.setLayoutManager(linearLayoutManager);

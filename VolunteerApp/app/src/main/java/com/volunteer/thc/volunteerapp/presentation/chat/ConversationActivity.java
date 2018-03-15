@@ -35,7 +35,6 @@ import java.util.Calendar;
 
 public class ConversationActivity extends AppCompatActivity {
 
-
     public static String nameChat = null;
     public static String idActive = "";
     public static OrganiserSingleEventRegisteredUsersFragment fragment;
@@ -55,11 +54,11 @@ public class ConversationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_converation);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(nameChat);
-        final RecyclerView conversation = (RecyclerView) findViewById(R.id.list_conversation);
-        reply = (EditText) findViewById(R.id.input_conversation);
+        final RecyclerView conversation = findViewById(R.id.list_conversation);
+        reply = findViewById(R.id.input_conversation);
 
 
-        ImageView sendMessage = (ImageView) findViewById(R.id.sendMessage);
+        ImageView sendMessage = findViewById(R.id.sendMessage);
         if (getIntent().getStringExtra("type") != null) {
             type = getIntent().getStringExtra("type");
         } else {
