@@ -2,7 +2,6 @@ package com.volunteer.thc.volunteerapp.presentation.organiser;
 
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,62 +29,62 @@ import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adapter.OrganiserSingleEventViewAdapter;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.type.EventType;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 
 /**
  * Created by poppa on 13.07.2017.
  */
-
 public class OrganiserSingleEventActivity extends AppCompatActivity {
 
+    private static final String TAG = "OrgSingleEvA";
     private Event mCurrentEvent;
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
+    private Toolbar mToolbar;
+    private TabLayout mTabLayout;
     private ViewPager mViewPager;
-    private Resources resources;
-    private AppBarLayout appBarLayout;
-    private TextView acceptedText, regText;
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-    private ImageView squareImageView;
-    private ArrayList<Uri> imageUris = new ArrayList<>();
-    private ArrayList<String> typeList = new ArrayList<>();
-
+    private ImageView mSquareImageView;
+    private ArrayList<Uri> mImageUris = new ArrayList<>();
+    private ArrayList<String> mTypeList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organisersingleevent);
-        toolbar = findViewById(R.id.toolbar);
-        resources = getResources();
+        mCurrentEvent = (Event) getIntent().getSerializableExtra(VolteemConstants.INTENT_EXTRA_SINGLE_EVENT);
+
+        mTabLayout = findViewById(R.id.tabs);
+        mViewPager = findViewById(R.id.container);
+        mToolbar = findViewById(R.id.toolbar);
+        mSquareImageView = findViewById(R.id.collapsing_toolbar_image);
+        TextView acceptedText = findViewById(R.id.accept_number);
+        TextView regText = findViewById(R.id.reg_number);
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
+
         populateUriList();
         populateTypeList();
 
-        squareImageView = findViewById(R.id.collapsing_toolbar_image);
-        acceptedText = findViewById(R.id.accept_number);
-        regText = findViewById(R.id.reg_number);
-        mCurrentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
-        appBarLayout = findViewById(R.id.appbar);
-
-
-        if (mCurrentEvent.getAccepted_volunteers().size() == 1)
+        // TODO refactor this (fix warning)
+        if (mCurrentEvent.getAccepted_volunteers().size() == 1) {
             acceptedText.setText("         " + mCurrentEvent.getAccepted_volunteers().size() +
                     "\nvolunteer");
-        else
+        } else {
             acceptedText.setText("         " + mCurrentEvent.getAccepted_volunteers().size() +
                     acceptedText.getText());
+        }
 
-        if (mCurrentEvent.getRegistered_volunteers().size() == 1)
+        if (mCurrentEvent.getRegistered_volunteers().size() == 1) {
             regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() +
                     "\nvolunteer");
-        else
+        } else {
             regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() +
                     regText.getText());
-
+        }
 
         mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID()).getDownloadUrl
                 ().addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -94,15 +93,13 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
                     Picasso.with(getApplicationContext()).load(task.getResult()).fit()
-                            .centerInside().into(squareImageView);
-
+                            .centerInside().into(mSquareImageView);
                 } else {
-                    Picasso.with(getApplicationContext()).load(imageUris.get(typeList.indexOf
-                            (mCurrentEvent.getType()))).fit().centerCrop().into(squareImageView);
+                    Picasso.with(getApplicationContext()).load(mImageUris.get(mTypeList.indexOf
+                            (mCurrentEvent.getType()))).fit().centerCrop().into(mSquareImageView);
                 }
             }
         });
-
 
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             int scrollRange = -1;
@@ -113,39 +110,34 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R
+                    mToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R
                             .color.colorPrimary));
                 } else {
-                    toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R
+                    mToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R
                             .color.transparent));
                 }
             }
         });
 
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        tabLayout = findViewById(R.id.tabs);
-        mViewPager = findViewById(R.id.container);
-
 
         if (mCurrentEvent == null) {
-            String eventID = getIntent().getStringExtra("eventID");
+            String eventID = getIntent().getStringExtra(VolteemConstants.INTENT_EVENT_ID);
             if (eventID == null) {
-                eventID = getIntent().getStringExtra("newsEventID");
+                eventID = getIntent().getStringExtra(VolteemConstants.INTENT_NEWS_EVENT_ID);
             }
             getEvent(eventID);
-
         } else {
-            setUpUI();
+            setUpUi();
         }
     }
 
-    private void setUpUI() {
-
+    private void setUpUi() {
         Bundle bundle = new Bundle();
-        bundle.putSerializable("currentEvent", mCurrentEvent);
+        bundle.putSerializable(VolteemConstants.INTENT_CURRENT_EVENT, mCurrentEvent);
         OrganiserSingleEventInfoFragment fragmentInfo = new OrganiserSingleEventInfoFragment();
         fragmentInfo.setArguments(bundle);
 
@@ -160,7 +152,7 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
         OrganiserSingleEventViewAdapter mViewPagerAdapter = new OrganiserSingleEventViewAdapter
                 (getSupportFragmentManager(), fragmentInfo, fragmentRegistered, fragmentAccepted);
         mViewPager.setAdapter(mViewPagerAdapter);
-        tabLayout.setupWithViewPager(mViewPager);
+        mTabLayout.setupWithViewPager(mViewPager);
     }
 
     private void getEvent(String eventID) {
@@ -172,62 +164,62 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
                 ArrayList<String> acc_users = new ArrayList<>();
 
                 for (DataSnapshot registered_users : dataSnapshot.child("users").getChildren()) {
-                    if (TextUtils.equals(registered_users.child("status").getValue().toString(),
-                            "pending")) {
-                        reg_users.add(registered_users.child("id").getValue().toString());
+                    if (TextUtils.equals(String.valueOf(registered_users.child("status").getValue()), "pending")) {
+                        reg_users.add(String.valueOf(registered_users.child("id").getValue()));
                     } else {
-                        acc_users.add(registered_users.child("id").getValue().toString());
+                        acc_users.add(String.valueOf(registered_users.child("id").getValue()));
                     }
                 }
-                currentEvent.setRegistered_volunteers(reg_users);
-                currentEvent.setAccepted_volunteers(acc_users);
+
+                if (currentEvent != null) {
+                    currentEvent.setRegistered_volunteers(reg_users);
+                    currentEvent.setAccepted_volunteers(acc_users);
+                }
 
                 mCurrentEvent = currentEvent;
-                setUpUI();
-                tabLayout.getTabAt(1).select();
+                setUpUi();
+
+                // TODO use viewPager.setCurrentItem(int position)
+                mTabLayout.getTabAt(1).select();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e("OrgSingleEvA", databaseError.getMessage());
+                Log.e(TAG, databaseError.getMessage());
             }
         });
     }
 
     @Override
     public void onBackPressed() {
-        if (getIntent().getStringExtra("eventID") != null) {
+        if (getIntent().getStringExtra(VolteemConstants.INTENT_EVENT_ID) != null) {
             startActivity(new Intent(this, MainActivity.class));
+        } else {
+            super.onBackPressed();
         }
-        super.onBackPressed();
     }
 
     private Uri parseUri(int ID) {
         return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-                "://" + resources.getResourcePackageName(ID)
-                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName
+                "://" + getResources().getResourcePackageName(ID)
+                + '/' + getResources().getResourceTypeName(ID) + '/' + getResources().getResourceEntryName
                 (ID));
 
     }
 
     private void populateUriList() {
-        imageUris.add(parseUri(R.drawable.image_sports));
-        imageUris.add(parseUri(R.drawable.image_music));
-        imageUris.add(parseUri(R.drawable.image_festival));
-        imageUris.add(parseUri(R.drawable.image_charity));
-        imageUris.add(parseUri(R.drawable.image_training));
-        imageUris.add(parseUri(R.drawable.image_other));
+        // TODO refactor with custom adapter
+        mImageUris.add(parseUri(R.drawable.image_sports));
+        mImageUris.add(parseUri(R.drawable.image_music));
+        mImageUris.add(parseUri(R.drawable.image_festival));
+        mImageUris.add(parseUri(R.drawable.image_charity));
+        mImageUris.add(parseUri(R.drawable.image_training));
+        mImageUris.add(parseUri(R.drawable.image_other));
     }
 
     private void populateTypeList() {
-        typeList.add("Sports");
-        typeList.add("Music");
-        typeList.add("Festival");
-        typeList.add("Charity");
-        typeList.add("Training");
-        typeList.add("Other");
+        mTypeList.addAll(EventType.getAllAsList());
     }
-
 
     @Override
     public boolean onSupportNavigateUp() {

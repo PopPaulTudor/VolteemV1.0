@@ -44,6 +44,7 @@ import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -76,7 +77,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_info, container, false);
 
-        mCurrentEvent = (Event) getArguments().getSerializable("currentEvent");
+        mCurrentEvent = (Event) getArguments().getSerializable(VolteemConstants.INTENT_CURRENT_EVENT);
         populateSpinnerArray();
 
         saveChanges = (Button) view.findViewById(R.id.save_changes);
@@ -175,7 +176,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             Bundle bundle = new Bundle();
                             bundle.putString("type", "event");
-                            bundle.putString("eventID", mCurrentEvent.getEventID());
+                            bundle.putString(VolteemConstants.INTENT_EVENT_ID, mCurrentEvent.getEventID());
                             displayPhotoFragment.setArguments(bundle);
                             fragmentTransaction.add(R.id.event_detailed_photo, displayPhotoFragment).addToBackStack("showImage");
                             fragmentTransaction.commit();

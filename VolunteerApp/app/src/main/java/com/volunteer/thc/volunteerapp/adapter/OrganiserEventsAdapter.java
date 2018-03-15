@@ -35,6 +35,7 @@ import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,7 +181,7 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
     protected void startSingleEventActivity(int position) {
         Intent intent = new Intent(context.getApplicationContext(), OrganiserSingleEventActivity
                 .class);
-        intent.putExtra("SingleEvent", eventsList.get(position));
+        intent.putExtra(VolteemConstants.INTENT_EXTRA_SINGLE_EVENT, eventsList.get(position));
         context.startActivity(intent);
 
     }

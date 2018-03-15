@@ -16,6 +16,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 
 /**
@@ -62,7 +63,7 @@ public class DisplayPhotoFragment extends Fragment {
                 Toast.makeText(getContext(),"You don't have a photo",Toast.LENGTH_SHORT).show();
             }
         } else {
-            String eventID = getArguments().getString("eventID");
+            String eventID = getArguments().getString(VolteemConstants.INTENT_EVENT_ID);
 
             StorageReference storageRef = FirebaseStorage.getInstance().getReference();
             storageRef.child("Photos").child("Event").child(eventID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

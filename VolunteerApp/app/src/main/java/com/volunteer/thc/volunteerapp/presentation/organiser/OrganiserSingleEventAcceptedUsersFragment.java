@@ -24,6 +24,7 @@ import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.RegisteredUser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 
@@ -47,7 +48,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implemen
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_accepted_users, container, false);
 
-        currentEvent = (Event) getArguments().getSerializable("currentEvent");
+        currentEvent = (Event) getArguments().getSerializable(VolteemConstants.INTENT_CURRENT_EVENT);
         mAcceptedUsers = currentEvent.getAccepted_volunteers();
         progressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
         noVolunteersText = (TextView) view.findViewById(R.id.no_volunteers);
@@ -61,7 +62,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implemen
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        currentEvent = currentEvent == null ? (Event) getArguments().getSerializable("currentEvent") : currentEvent;
+        currentEvent = currentEvent == null ? (Event) getArguments().getSerializable(VolteemConstants.INTENT_CURRENT_EVENT) : currentEvent;
         Log.d("EventID", currentEvent.getEventID());
 
         if (isVisibleToUser) {

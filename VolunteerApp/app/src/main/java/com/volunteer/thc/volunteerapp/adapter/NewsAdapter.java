@@ -99,13 +99,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 switch (newsList.get(position).getType()) {
                     case NewsMessage.ACCEPT:
                         intent = new Intent(context, VolunteerSingleEventActivity.class);
-                        intent.putExtra("newsEventID", newsList.get(position).getEventID());
+                        intent.putExtra(VolteemConstants.INTENT_NEWS_EVENT_ID, newsList.get(position).getEventID());
                         intent.putExtra(VolteemConstants.VOLUNTEER_SINGLE_ACTIVITY_CAME_FROM_KEY,
                                 2);
                         break;
                     case NewsMessage.REGISTERED:
                         intent = new Intent(context, OrganiserSingleEventActivity.class);
-                        intent.putExtra("newsEventID", newsList.get(position).getEventID());
+                        intent.putExtra(VolteemConstants.INTENT_NEWS_EVENT_ID, newsList.get(position).getEventID());
                         break;
                     default:
                         intent = new Intent(context, MainActivity.class);

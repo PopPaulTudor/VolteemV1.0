@@ -23,6 +23,7 @@ import com.volunteer.thc.volunteerapp.adapter.EventVolunteersAdapter;
 import com.volunteer.thc.volunteerapp.interrface.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 
@@ -49,7 +50,7 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implem
 
         progressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
         noVolunteersText = (TextView) view.findViewById(R.id.no_volunteers);
-        currentEvent = (Event) getArguments().getSerializable("currentEvent");
+        currentEvent = (Event) getArguments().getSerializable(VolteemConstants.INTENT_CURRENT_EVENT);
         mRegisteredUsersRecView = (RecyclerView) view.findViewById(R.id.RecViewRegUsers);
         mRegisteredUsersRecView.setHasFixedSize(true);
 

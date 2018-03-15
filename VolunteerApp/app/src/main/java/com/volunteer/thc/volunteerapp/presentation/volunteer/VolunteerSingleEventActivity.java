@@ -57,6 +57,7 @@ import java.util.ArrayList;
 
 public class VolunteerSingleEventActivity extends AppCompatActivity {
 
+    private static final String TAG = "VolSinEventAct";
     private TextView mEventName, mEventLocation, mEventType, mEventDescription, mEventDeadline,
             mEventSize, mStatus, mEventStartDate, mEventFinishDate;
     private Event currentEvent;
@@ -116,9 +117,9 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         if (currentEvent != null) {
             loadUI();
         } else {
-            String eventID = getIntent().getStringExtra("eventID");
+            String eventID = getIntent().getStringExtra(VolteemConstants.INTENT_EVENT_ID);
             if (eventID == null) {
-                eventID = getIntent().getStringExtra("newsEventID");
+                eventID = getIntent().getStringExtra(VolteemConstants.INTENT_NEWS_EVENT_ID);
             }
             mDatabase.child("events/" + eventID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -129,7 +130,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.e("VolSingleEveA", databaseError.getMessage());
+                    Log.e(TAG, databaseError.getMessage());
                 }
             });
         }
@@ -364,7 +365,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (getIntent().getStringExtra("eventID") != null) {
+        if (getIntent().getStringExtra(VolteemConstants.INTENT_EVENT_ID) != null) {
             startActivity(new Intent(this, MainActivity.class));
         }
         super.onBackPressed();

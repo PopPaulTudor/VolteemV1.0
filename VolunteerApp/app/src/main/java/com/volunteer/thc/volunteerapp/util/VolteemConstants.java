@@ -16,4 +16,11 @@ public class VolteemConstants {
 
     public static final int STORAGE_REQUEST_CODE = 1;
 
+    public static final String INTENT_EXTRA_SINGLE_EVENT = "SingleEvent";
+
+    public static final String INTENT_EVENT_ID = "eventID";
+
+    public static final String INTENT_NEWS_EVENT_ID = "newsEventID";
+
+    public static final String INTENT_CURRENT_EVENT = "currentEvent";
 }

@@ -36,7 +36,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatAdapter extends ArrayAdapter<Message> {
 
-    public ArrayList<Message> data = new ArrayList<>();
     private Context context;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -45,7 +44,6 @@ public class ChatAdapter extends ArrayAdapter<Message> {
     public ChatAdapter(Context context, ArrayList<Message> objects) {
         super(context, R.layout.chat_item, objects);
         this.context = context;
-        this.data = objects;
     }
 
 
@@ -59,8 +57,8 @@ public class ChatAdapter extends ArrayAdapter<Message> {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.chat_item, parent, false);
-            viewHolder.textElement = (TextView) convertView.findViewById(R.id.chat_text_element);
-            viewHolder.imageElement = (CircleImageView) convertView.findViewById(R.id.chat_icon_element);
+            viewHolder.textElement = convertView.findViewById(R.id.chat_text_element);
+            viewHolder.imageElement = convertView.findViewById(R.id.chat_icon_element);
 
             convertView.setTag(viewHolder);
         } else {
@@ -84,8 +82,6 @@ public class ChatAdapter extends ArrayAdapter<Message> {
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Organiser organiser = dataSnapshot.getValue(Organiser.class);
                                 viewHolder.textElement.setText(organiser.getCompany());
-
-
                             }
 
                             @Override

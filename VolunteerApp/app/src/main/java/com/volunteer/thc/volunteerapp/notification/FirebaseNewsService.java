@@ -327,7 +327,7 @@ public class FirebaseNewsService extends Service {
             default:
                 intent = new Intent(this, MainActivity.class);
         }
-        intent.putExtra("eventID", message.getEventID());
+        intent.putExtra(VolteemConstants.INTENT_EVENT_ID, message.getEventID());
         PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
         final Notification notification = new Notification.Builder(this)
                 .setContentTitle("News")
