@@ -40,7 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adapter.OrganiserEventsAdapter;
 import com.volunteer.thc.volunteerapp.adapter.VolunteerEventsAdapter;
-import com.volunteer.thc.volunteerapp.interrface.ActionListener;
+import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 
 import java.util.ArrayList;

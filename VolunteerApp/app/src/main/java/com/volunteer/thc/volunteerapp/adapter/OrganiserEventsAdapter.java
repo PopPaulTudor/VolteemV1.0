@@ -31,7 +31,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.interrface.ActionListener;
+import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;

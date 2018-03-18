@@ -35,7 +35,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.interrface.ActionListener;
+import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.ChatSingle;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;

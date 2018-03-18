@@ -17,7 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adapter.EventFeedbackVolunteersAdapter;
-import com.volunteer.thc.volunteerapp.interrface.ActionListener;
+import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 
 import java.util.ArrayList;

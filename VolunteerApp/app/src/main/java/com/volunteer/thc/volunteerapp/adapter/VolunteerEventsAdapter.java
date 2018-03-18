@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
-import com.volunteer.thc.volunteerapp.interrface.ActionListener;
+import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.VolteemConstants;

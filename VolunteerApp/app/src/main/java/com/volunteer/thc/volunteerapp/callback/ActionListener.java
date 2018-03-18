@@ -1,4 +1,4 @@
-package com.volunteer.thc.volunteerapp.interrface;
+package com.volunteer.thc.volunteerapp.callback;
 
 /**
  * Created by Cristi on 10/15/2017.
