@@ -42,7 +42,6 @@ import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.OrganiserRating;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.chat.ConversationActivity;
-import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserEventsFragment;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
@@ -76,7 +75,9 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     private ActionListener.VolunteersRemovedListener volunteersRemovedListener;
 
 
-    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context, OrganiserSingleEventRegisteredUsersFragment fragment, Activity activity, ActionListener.VolunteersRemovedListener volunteersRemovedListener) {
+    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context,
+                                  OrganiserSingleEventRegisteredUsersFragment fragment, Activity activity, ActionListener.VolunteersRemovedListener
+                                          volunteersRemovedListener) {
         listVolunteer = list;
         this.classParent = classParent;
         this.volunteerIDs = volunteerIDs;
@@ -87,7 +88,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         this.volunteersRemovedListener = volunteersRemovedListener;
     }
 
-    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context, Activity activity, ActionListener.VolunteersRemovedListener volunteersRemovedListener) {
+    public EventVolunteersAdapter(ArrayList<Volunteer> list, ArrayList<String> volunteerIDs, String classParent, Event event, Context context,
+                                  Activity activity, ActionListener.VolunteersRemovedListener volunteersRemovedListener) {
         listVolunteer = list;
         this.classParent = classParent;
         this.volunteerIDs = volunteerIDs;
@@ -199,7 +201,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                         } else {
                             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                                 final String feedbackText = dataSnapshot1.getValue().toString();
-                                mDatabase.child("users/organisers/" + dataSnapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                mDatabase.child("users/organisers/" + dataSnapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener
+                                        () {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot2) {
                                         ++counter;
@@ -251,7 +254,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                                         , event.getCreated_by(), volunteerIDs.get(position),
                                         "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
 
-                                mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child("status").setValue("accepted");
+                                mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child
+                                        ("status").setValue("accepted");
                                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
                                 ChatSingle chatSingle = new ChatSingle(event.getCreated_by(), volunteerIDs.get(position), "You have been accepted " +
                                         "to " + event.getName(), UUID.randomUUID().toString(), Calendar.getInstance().getTimeInMillis(), false);
@@ -363,12 +367,12 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     }
 
     public void acceptVolunteer(final String id, Activity activity) {
-
         mDatabase.child("events").child(event.getEventID()).child("users").child(id).child("status").setValue("accepted");
         Toast.makeText(activity, "Accepted volunteer!", Toast.LENGTH_LONG).show();
 
         String eventID = mDatabase.child("news").push().getKey();
-        mDatabase.child("news").child(eventID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), eventID, event.getEventID(), event.getCreated_by(), id,
+        mDatabase.child("news").child(eventID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), eventID, event.getEventID(), event
+                .getCreated_by(), id,
                 "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
 
         mDatabase.child("conversation").child("single").orderByChild("receivedBy").equalTo(id).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -389,7 +393,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 if (!ifHasConv) {
                     uuid = UUID.randomUUID().toString();
                 }
-                ChatSingle chatSingle = new ChatSingle(event.getCreated_by(), id, "You have been accepted to " + event.getName(), uuid, Calendar.getInstance().getTimeInMillis(), false);
+                ChatSingle chatSingle = new ChatSingle(event.getCreated_by(), id, "You have been accepted to " + event.getName(), uuid, Calendar
+                        .getInstance().getTimeInMillis(), false);
                 mDatabase.child("conversation").push().setValue(chatSingle);
 
             }
@@ -403,8 +408,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         int position = volunteerIDs.indexOf(id);
         listVolunteer.remove(position);
         volunteerIDs.remove(position);
-
-        OrganiserEventsFragment.hasActionHappened = true;
     }
 
     private void removeVolunteerFromEvent(int position) {
@@ -434,7 +437,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         boolean ifHasConv = false;
                         if (!dataSnapshot.hasChildren()) {
-                            ChatSingle chatSingle = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
+                            ChatSingle chatSingle = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0,
+                                    false);
                             intent.putExtra("chatSingle", chatSingle);
                         } else {
                             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
@@ -447,7 +451,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                             }
 
                             if (!ifHasConv) {
-                                ChatSingle chatSingle = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
+                                ChatSingle chatSingle = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(),
+                                        0, false);
                                 intent.putExtra("chatSingle", chatSingle);
 
                             }

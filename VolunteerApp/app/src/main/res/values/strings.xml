@@ -86,4 +86,9 @@
     <string name="you_have_been_accepted">you have been accepted to</string>
     <string name="event_created">Event created!</string>
     <string name="event_canceled">Event canceled.</string>
+    <string name="organiser_no_events">You don\'t have any events. How about creating one now?</string>
+    <string name="events_add">Add</string>
+    <string name="event_finished">Event finished</string>
+    <string name="done">DONE</string>
+    <string name="give_feedback">GIVE FEEDBACK</string>
 </resources>

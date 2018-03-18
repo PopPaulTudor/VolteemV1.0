@@ -1,6 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation.organiser;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,9 +33,9 @@ import java.util.ArrayList;
  * Created by Cristi on 7/27/2017.
  */
 
-public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implements ActionListener.VolunteersRemovedListener{
+public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implements ActionListener.VolunteersRemovedListener {
 
-    public static EventVolunteersAdapter adapter;
+    private EventVolunteersAdapter adapter;
     private ArrayList<String> mAcceptedUsers = new ArrayList<>();
     private ArrayList<Volunteer> mVolunteers = new ArrayList<>();
     private Event currentEvent;
@@ -45,14 +46,17 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implemen
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_accepted_users, container, false);
 
-        currentEvent = (Event) getArguments().getSerializable(VolteemConstants.INTENT_CURRENT_EVENT);
-        mAcceptedUsers = currentEvent.getAccepted_volunteers();
-        progressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
-        noVolunteersText = (TextView) view.findViewById(R.id.no_volunteers);
-        mAcceptedUsersList = (RecyclerView) view.findViewById(R.id.RecViewAccUsers);
+        if (getArguments() != null) {
+            currentEvent = (Event) getArguments().getSerializable(VolteemConstants.INTENT_CURRENT_EVENT);
+            mAcceptedUsers = currentEvent == null ? null : currentEvent.getAccepted_volunteers();
+        }
+
+        progressBar = view.findViewById(R.id.indeterminateBar);
+        noVolunteersText = view.findViewById(R.id.no_volunteers);
+        mAcceptedUsersList = view.findViewById(R.id.RecViewAccUsers);
         mAcceptedUsersList.setHasFixedSize(true);
 
         return view;
@@ -73,10 +77,10 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implemen
                     Log.d("SingleEventFragment", "Refreshing accepted users.");
                     mAcceptedUsers = new ArrayList<>();
 
-                    if (dataSnapshot!= null) {
+                    if (dataSnapshot != null) {
                         for (DataSnapshot data : dataSnapshot.getChildren()) {
                             RegisteredUser registeredUser = data.getValue(RegisteredUser.class);
-                            if(TextUtils.equals(registeredUser.getStatus(), "accepted")) {
+                            if (TextUtils.equals(registeredUser.getStatus(), "accepted")) {
                                 mAcceptedUsers.add(registeredUser.getId());
                             }
                         }
@@ -108,7 +112,8 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implemen
                         if (TextUtils.equals(mAcceptedUsers.get(mAcceptedUsers.size() - 1), volunteerID)) {
 
                             progressBar.setVisibility(View.GONE);
-                            adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", currentEvent, getContext(), getActivity(), OrganiserSingleEventAcceptedUsersFragment.this);
+                            adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", currentEvent, getContext(), getActivity(),
+                                    OrganiserSingleEventAcceptedUsersFragment.this);
                             mAcceptedUsersList.setAdapter(adapter);
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                             mAcceptedUsersList.setLayoutManager(linearLayoutManager);
@@ -125,7 +130,8 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implemen
             progressBar.setVisibility(View.GONE);
             noVolunteersText.setVisibility(View.VISIBLE);
             mVolunteers = new ArrayList<>();
-            adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", currentEvent, getContext(), getActivity(), OrganiserSingleEventAcceptedUsersFragment.this);
+            adapter = new EventVolunteersAdapter(mVolunteers, mAcceptedUsers, "accept", currentEvent, getContext(), getActivity(),
+                    OrganiserSingleEventAcceptedUsersFragment.this);
             mAcceptedUsersList.setAdapter(adapter);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             mAcceptedUsersList.setLayoutManager(linearLayoutManager);

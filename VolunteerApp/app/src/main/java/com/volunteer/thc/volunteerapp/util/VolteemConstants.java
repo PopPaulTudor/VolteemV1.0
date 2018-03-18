@@ -8,6 +8,8 @@ public class VolteemConstants {
     public static final String VOLUNTEER_SINGLE_ACTIVITY_CAME_FROM_KEY =
             "VOLUNTEER_SINGLE_ACTIVITY_CAME_FROM_KEY";
 
+    public static final String VOLUNTEER_EVENT_STATUS_PENDING = "VOLUNTEER_EVENT_STATUS_PENDING";
+
     public static final String VOLTEEM_DIRECTORY_NAME = "Volteem";
 
     public static final String USER_CUSTOM_ERROR_CRASHLYTICS = "UserCustomError";

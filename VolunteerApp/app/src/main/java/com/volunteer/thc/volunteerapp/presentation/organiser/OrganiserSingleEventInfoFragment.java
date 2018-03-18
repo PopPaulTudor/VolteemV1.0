@@ -364,7 +364,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 .setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        OrganiserEventsFragment.hasActionHappened = true;
                         for (String volunteer_id : mCurrentEvent.getRegistered_volunteers()) {
                             String newsID = mDatabase.child("news").push().getKey();
                             NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(),
