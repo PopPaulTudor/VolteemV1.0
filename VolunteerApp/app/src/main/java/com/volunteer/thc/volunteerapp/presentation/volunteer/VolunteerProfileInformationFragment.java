@@ -61,7 +61,7 @@ public class VolunteerProfileInformationFragment extends Fragment {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private StorageReference mStorage = FirebaseStorage.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private EditText  mAge, mCity, mPhone;
+    private EditText mAge, mCity, mPhone;
     private TextView mEmail;
     private Volunteer volunteer1;
     private TextView mVolunteerName;
@@ -70,7 +70,7 @@ public class VolunteerProfileInformationFragment extends Fragment {
     private CircleImageView circleImageView;
     private CircleImageView circleImageViewMenu;
     private FloatingActionButton mEditFloating, mCancelFloating;
-    private ImageView mImagePhone,mImageAge,mImageLocation;
+    private ImageView mImagePhone, mImageAge, mImageLocation;
     private Uri uri;
 
     @Nullable
@@ -78,28 +78,28 @@ public class VolunteerProfileInformationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_volunteer_profile_information, container, false);
 
-        NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+        NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
 
 
         prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        mUserName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_name);
+        mUserName = navigationView.getHeaderView(0).findViewById(R.id.nav_header_name);
 
         volunteer1 = new Volunteer();
-        mVolunteerName = (TextView) view.findViewById(R.id.ProfileVolunteerName);
-        mEmail = (TextView) view.findViewById(R.id.ProfileVolunteerEmail);
-        mAge = (EditText) view.findViewById(R.id.ProfileVolunteerDate);
-        mCity = (EditText) view.findViewById(R.id.ProfileVolunteerCity);
-        mPhone = (EditText) view.findViewById(R.id.ProfileVolunteerPhone);
-        circleImageView = (CircleImageView) view.findViewById(R.id.ProfileVolunteerImage);
+        mVolunteerName = view.findViewById(R.id.ProfileVolunteerName);
+        mEmail = view.findViewById(R.id.ProfileVolunteerEmail);
+        mAge = view.findViewById(R.id.ProfileVolunteerDate);
+        mCity = view.findViewById(R.id.ProfileVolunteerCity);
+        mPhone = view.findViewById(R.id.ProfileVolunteerPhone);
+        circleImageView = view.findViewById(R.id.ProfileVolunteerImage);
 
         circleImageViewMenu = navigationView.findViewById(R.id.photo);
 
-        mEditFloating = (FloatingActionButton) view.findViewById(R.id.volunteer_profile_edit);
-        mCancelFloating = (FloatingActionButton) view.findViewById(R.id.volunteer_profile_cancel);
+        mEditFloating = view.findViewById(R.id.volunteer_profile_edit);
+        mCancelFloating = view.findViewById(R.id.volunteer_profile_cancel);
 
-        mImageAge=(ImageView)view.findViewById(R.id.icon_edit_age);
-        mImageLocation=(ImageView) view.findViewById(R.id.icon_edit_city) ;
-        mImagePhone=(ImageView) view.findViewById(R.id.icon_edit_phone);
+        mImageAge = view.findViewById(R.id.icon_edit_age);
+        mImageLocation = view.findViewById(R.id.icon_edit_city);
+        mImagePhone = view.findViewById(R.id.icon_edit_phone);
 
 
         mEmail.setTag(mEmail.getKeyListener());
@@ -161,12 +161,14 @@ public class VolunteerProfileInformationFragment extends Fragment {
                                 startActivityForResult(intent, GALLERY_INTENT);
 
                             } else {
-                                Snackbar.make(getView(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                                    }
-                                }).show();
+                                Snackbar.make(getView(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new
+                                        View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission
+                                                        .READ_EXTERNAL_STORAGE}, 1);
+                                            }
+                                        }).show();
                             }
                         } else {
                             DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
@@ -210,7 +212,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
                 Log.w("ProfileReadCanceled: ", databaseError.toException());
             }
         };
@@ -251,7 +252,7 @@ public class VolunteerProfileInformationFragment extends Fragment {
 
     private void onSaveItemPressed() {
 
-        String currentFirstName, currentLastName, currentCity = null, currentPhone = null, fullName = null;
+        String currentCity = null, currentPhone = null, fullName = null;
         int currentAge = 0;
         boolean changedName = false;
         if (mAge.getText().length() != 0) {
@@ -345,7 +346,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
     }
 
     private void toggleFocusOff() {
-
         mEmail.setFocusableInTouchMode(false);
         mEmail.setFocusable(false);
         mAge.setFocusableInTouchMode(false);
@@ -364,7 +364,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
     }
 
     private boolean editTextIsValid(EditText mEditText) {
-
         String text = mEditText.getText().toString();
         if (TextUtils.isEmpty(text)) {
             mEditText.setError("This field can not be empty.");
@@ -381,15 +380,12 @@ public class VolunteerProfileInformationFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private void visibilityEditIcon(boolean visible)
-    {
-        if(visible)
-        {
+    private void visibilityEditIcon(boolean visible) {
+        if (visible) {
             mImagePhone.setVisibility(View.VISIBLE);
             mImageLocation.setVisibility(View.VISIBLE);
             mImageAge.setVisibility(View.VISIBLE);
-        }else
-        {
+        } else {
             mImagePhone.setVisibility(View.INVISIBLE);
             mImageLocation.setVisibility(View.INVISIBLE);
             mImageAge.setVisibility(View.INVISIBLE);

@@ -62,8 +62,8 @@ public class SettingsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         setAppVersionName(view);
-        generateOrganiserRegisterCode = (Button) view.findViewById(R.id.settings_generate_code);
-        notificationsSwitch = (SwitchCompat) view.findViewById(R.id.notification_button);
+        generateOrganiserRegisterCode = view.findViewById(R.id.settings_generate_code);
+        notificationsSwitch = view.findViewById(R.id.notification_button);
         prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
         notifications = prefs.getBoolean("notifications", true);
         notificationsSwitch.setChecked(notifications);
@@ -162,9 +162,9 @@ public class SettingsFragment extends Fragment {
                         (TypedValue.COMPLEX_UNIT_DIP, 300, getResources().getDisplayMetrics()));
                 mBottomSheetDialog.show();
 
-                mOldPassword = (EditText) parentView.findViewById(R.id.oldPassword);
-                mNewPassword = (EditText) parentView.findViewById(R.id.newPassword);
-                mNewPasswordAgain = (EditText) parentView.findViewById(R.id.newPasswordAgain);
+                mOldPassword = parentView.findViewById(R.id.oldPassword);
+                mNewPassword = parentView.findViewById(R.id.newPassword);
+                mNewPasswordAgain = parentView.findViewById(R.id.newPasswordAgain);
 
                 parentView.findViewById(R.id.change_password).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -214,7 +214,7 @@ public class SettingsFragment extends Fragment {
                         (TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics()));
                 mBottomSheetDialog.show();
 
-                mPassword = (EditText) parentView.findViewById(R.id.password);
+                mPassword = parentView.findViewById(R.id.password);
 
                 parentView.findViewById(R.id.delete_account).setOnClickListener(new View.OnClickListener() {
                     @Override

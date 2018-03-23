@@ -34,8 +34,8 @@ public class DisplayPhotoFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.photo_detailed, container, false);
-        imageView = (ImageView) view.findViewById(R.id.photo_display);
-        button = (ImageView) view.findViewById(R.id.photo_button);
+        imageView = view.findViewById(R.id.photo_display);
+        button = view.findViewById(R.id.photo_button);
 
 
         button.setOnClickListener(new View.OnClickListener() {

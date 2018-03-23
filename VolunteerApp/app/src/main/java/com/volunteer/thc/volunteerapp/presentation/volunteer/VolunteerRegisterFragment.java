@@ -80,20 +80,20 @@ public class VolunteerRegisterFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_volunteerregister, container, false);
 
-        spinner = (Spinner) view.findViewById(R.id.gender);
+        spinner = view.findViewById(R.id.gender);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-        mEmail = (EditText) view.findViewById(R.id.email);
-        mPassword = (EditText) view.findViewById(R.id.password);
-        mPhone = (EditText) view.findViewById(R.id.user_phone);
-        mCity = (EditText) view.findViewById(R.id.user_city);
-        mAge = (EditText) view.findViewById(R.id.user_age);
-        mFirstname = (EditText) view.findViewById(R.id.first_name);
-        mLastname = (EditText) view.findViewById(R.id.last_name);
-        mImage = (CircleImageView) view.findViewById(R.id.photo);
-        mRegister = (Button) view.findViewById(R.id.register_user);
-        mBack = (Button) view.findViewById(R.id.back);
-        mConfirmPass = (EditText) view.findViewById(R.id.passwordConfirm);
+        mEmail = view.findViewById(R.id.email);
+        mPassword = view.findViewById(R.id.password);
+        mPhone = view.findViewById(R.id.user_phone);
+        mCity = view.findViewById(R.id.user_city);
+        mAge = view.findViewById(R.id.user_age);
+        mFirstname = view.findViewById(R.id.first_name);
+        mLastname = view.findViewById(R.id.last_name);
+        mImage = view.findViewById(R.id.photo);
+        mRegister = view.findViewById(R.id.register_user);
+        mBack = view.findViewById(R.id.back);
+        mConfirmPass = view.findViewById(R.id.passwordConfirm);
         intent = new Intent(getActivity(), MainActivity.class);
 
         uriFemale = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
@@ -180,10 +180,8 @@ public class VolunteerRegisterFragment extends Fragment {
 
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-
                         if (task.isSuccessful()) {
                             Log.d(TAG, "createUserwithEmail:Succes");
-
 
                             mPhone.setVisibility(View.GONE);
                             mFirstname.setVisibility(View.GONE);
@@ -289,7 +287,6 @@ public class VolunteerRegisterFragment extends Fragment {
     }
 
     private boolean checkPass() {
-
         if (!mPassword.getText().toString().equals(mConfirmPass.getText().toString())) {
             mConfirmPass.setError("Passwords doesn't match");
             mConfirmPass.requestFocus();
@@ -299,8 +296,6 @@ public class VolunteerRegisterFragment extends Fragment {
             mConfirmPass.setError(null);
             return true;
         }
-
-
     }
 
     @Override

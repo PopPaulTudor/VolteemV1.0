@@ -1,6 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation.organiser;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,6 +37,7 @@ import java.util.Collections;
 
 public class OrganiserScoreboardFragment extends Fragment {
 
+    private static final String TAG = "OrgScoreF";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private TextView mRating, mRank, mExperience, mCongratsText;
@@ -48,16 +50,16 @@ public class OrganiserScoreboardFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_organiser_scoreboard, container, false);
 
-        mRating = (TextView) view.findViewById(R.id.rating);
-        mRank = (TextView) view.findViewById(R.id.leaderboardPosition);
-        mExperience = (TextView) view.findViewById(R.id.experienceText);
-        mCongratsText = (TextView) view.findViewById(R.id.congratsText);
-        showHideLeaderboard = (Button) view.findViewById(R.id.leaderboard_show_hide);
-        mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
-        leaderboardRecView = (RecyclerView) view.findViewById(R.id.leaderboardRecView);
+        mRating = view.findViewById(R.id.rating);
+        mRank = view.findViewById(R.id.leaderboardPosition);
+        mExperience = view.findViewById(R.id.experienceText);
+        mCongratsText = view.findViewById(R.id.congratsText);
+        showHideLeaderboard = view.findViewById(R.id.leaderboard_show_hide);
+        mProgressBar = view.findViewById(R.id.indeterminateBar);
+        leaderboardRecView = view.findViewById(R.id.leaderboardRecView);
         leaderboardRecView.setHasFixedSize(true);
 
         mDatabase.child("users/organisers/" + user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -72,7 +74,7 @@ public class OrganiserScoreboardFragment extends Fragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e("OrgScoreF", databaseError.getMessage());
+                Log.e(TAG, databaseError.getMessage());
             }
         });
 
@@ -105,7 +107,8 @@ public class OrganiserScoreboardFragment extends Fragment {
                     showHideLeaderboard.setText("HIDE RANKING");
                     leaderboard = new ArrayList<>();
                     mProgressBar.setVisibility(View.VISIBLE);
-                    mDatabase.child("users/organisers").orderByChild("experience").limitToLast(10).addListenerForSingleValueEvent(new ValueEventListener() {
+                    mDatabase.child("users/organisers").orderByChild("experience").limitToLast(10)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {

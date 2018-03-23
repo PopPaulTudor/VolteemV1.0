@@ -50,13 +50,13 @@ public class VolunteerSearchableActivity extends AppCompatActivity implements Ac
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.RecViewVolSearchableEvents);
+        recyclerView = findViewById(R.id.RecViewVolSearchableEvents);
         recyclerView.setHasFixedSize(true);
 
         mLongAnimTime = getResources().getInteger(android.R.integer.config_longAnimTime);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.indeterminateBar);
-        mNoResultText = (TextView) findViewById(R.id.nothing_found_text);
+        mProgressBar = findViewById(R.id.indeterminateBar);
+        mNoResultText = findViewById(R.id.nothing_found_text);
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {

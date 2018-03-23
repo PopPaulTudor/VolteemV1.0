@@ -48,10 +48,10 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implem
 
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_registered_users, container, false);
 
-        progressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
-        noVolunteersText = (TextView) view.findViewById(R.id.no_volunteers);
+        progressBar = view.findViewById(R.id.indeterminateBar);
+        noVolunteersText = view.findViewById(R.id.no_volunteers);
         currentEvent = (Event) getArguments().getSerializable(VolteemConstants.INTENT_CURRENT_EVENT);
-        mRegisteredUsersRecView = (RecyclerView) view.findViewById(R.id.RecViewRegUsers);
+        mRegisteredUsersRecView = view.findViewById(R.id.RecViewRegUsers);
         mRegisteredUsersRecView.setHasFixedSize(true);
 
         progressBar.setVisibility(View.VISIBLE);

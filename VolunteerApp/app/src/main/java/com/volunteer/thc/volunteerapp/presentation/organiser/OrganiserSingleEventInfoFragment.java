@@ -80,18 +80,18 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         mCurrentEvent = (Event) getArguments().getSerializable(VolteemConstants.INTENT_CURRENT_EVENT);
         populateSpinnerArray();
 
-        saveChanges = (Button) view.findViewById(R.id.save_changes);
-        cancelChanges = (Button) view.findViewById(R.id.cancel_changes);
-        mName = (EditText) view.findViewById(R.id.event_deadline);
-        mLocation = (EditText) view.findViewById(R.id.event_location);
-        mStartDate = (EditText) view.findViewById(R.id.event_date_start);
-        mFinishDate = (EditText) view.findViewById(R.id.event_date_finish);
-        mDeadline = (EditText) view.findViewById(R.id.event_name);
-        mType = (Spinner) view.findViewById(R.id.event_type);
-        mDescription = (EditText) view.findViewById(R.id.event_description);
-        mSize = (EditText) view.findViewById(R.id.event_size);
-        mImage = (ImageView) view.findViewById(R.id.event_org_image);
-        changeContract = (Button) view.findViewById(R.id.event_contract);
+        saveChanges = view.findViewById(R.id.save_changes);
+        cancelChanges = view.findViewById(R.id.cancel_changes);
+        mName = view.findViewById(R.id.event_deadline);
+        mLocation = view.findViewById(R.id.event_location);
+        mStartDate = view.findViewById(R.id.event_date_start);
+        mFinishDate = view.findViewById(R.id.event_date_finish);
+        mDeadline = view.findViewById(R.id.event_name);
+        mType = view.findViewById(R.id.event_type);
+        mDescription = view.findViewById(R.id.event_description);
+        mSize = view.findViewById(R.id.event_size);
+        mImage = view.findViewById(R.id.event_org_image);
+        changeContract = view.findViewById(R.id.event_contract);
 
         changeContract.setClickable(false);
         mImage.setClickable(false);
@@ -153,25 +153,27 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String choice = arrayAdapter.getItem(which);
-                        if (choice.contains("Change")) {
+                        if (choice != null && choice.contains("Change")) {
                             if (PermissionUtil.isStorageReadPermissionGranted(getContext())) {
                                 Intent intent = new Intent(Intent.ACTION_PICK);
                                 intent.setType("image/*");
                                 startActivityForResult(intent, GALLERY_INTENT);
 
                             } else {
-                                Snackbar.make(getView(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new
-                                        View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission
-                                                        .READ_EXTERNAL_STORAGE}, 1);
-                                            }
-                                        }).show();
+                                if (getView() != null) {
+                                    Snackbar.make(getView(), getString(R.string.storage_permission_needed), Snackbar.LENGTH_LONG)
+                                            .setAction("Set Permission", new
+                                                    View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission
+                                                                    .READ_EXTERNAL_STORAGE}, 1);
+                                                        }
+                                                    }).show();
+                                }
                             }
 
                         } else {
-
                             DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
                             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             Bundle bundle = new Bundle();
@@ -416,7 +418,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     }
 
     public void toggleEdit(boolean bool) {
-
         mName.setEnabled(bool);
         mLocation.setEnabled(bool);
         mType.setEnabled(bool);
@@ -428,7 +429,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     }
 
     public boolean validateForm() {
-
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) &&
                 editTextIsValid(mDescription) && editTextIsValid(mDeadline) && editTextIsValid(mSize));
@@ -436,7 +436,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     }
 
     private boolean editTextIsValid(EditText mEditText) {
-
         String text = mEditText.getText().toString();
         if (TextUtils.isEmpty(text)) {
             mEditText.setError("This field can not be empty.");
@@ -471,7 +470,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
                         month++;
                         editText.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;

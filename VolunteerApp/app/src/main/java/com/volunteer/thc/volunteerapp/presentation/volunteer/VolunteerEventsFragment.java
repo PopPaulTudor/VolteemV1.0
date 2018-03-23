@@ -76,10 +76,10 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
         View view = inflater.inflate(R.layout.fragment_volunteerevents, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
+        recyclerView = view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
-        noEvents = (TextView) view.findViewById(R.id.no_events_text);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        noEvents = view.findViewById(R.id.no_events_text);
+        mSwipeRefreshLayout = view.findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -236,7 +236,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
         MenuItem searchMenu = menu.findItem(R.id.app_bar_search);
         filter = menu.findItem(R.id.action_filter);
-        actionFilter = (Spinner) filter.getActionView().findViewById(R.id.filterSpinner);
+        actionFilter = filter.getActionView().findViewById(R.id.filterSpinner);
         populateSpinnerArray();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout
                 .simple_spinner_dropdown_item, typeList) {

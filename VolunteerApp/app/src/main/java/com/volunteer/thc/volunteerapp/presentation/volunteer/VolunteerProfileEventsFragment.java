@@ -41,7 +41,7 @@ public class VolunteerProfileEventsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_volunteer_profile_events, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_events_profile);
+        recyclerView = view.findViewById(R.id.recycler_view_events_profile);
         loadEvents();
 
         return view;

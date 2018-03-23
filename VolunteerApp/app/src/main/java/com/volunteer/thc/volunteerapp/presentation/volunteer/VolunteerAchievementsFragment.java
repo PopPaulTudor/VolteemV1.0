@@ -1,6 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,10 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adapter.AchievementsAdapter;
 
@@ -24,39 +21,15 @@ import java.util.ArrayList;
 
 public class VolunteerAchievementsFragment extends Fragment{
 
-    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private ArrayList<String> checkList=new ArrayList<String>();
-    private RecyclerView recyclerView;
+    private ArrayList<String> checkList = new ArrayList<>();
 
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_volunteer_achivements, container, false);
-        recyclerView= (RecyclerView) view.findViewById(R.id.volunteer_achivements_recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.volunteer_achivements_recycler_view);
         recyclerView.setHasFixedSize(true);
-
-        /*
-        mDatabase.child("users").child(user.getUid()).child("achievements").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-               for(DataSnapshot achivSnapshot : dataSnapshot.getChildren()){
-                   String checkElement= achivSnapshot.getValue(String.class);
-                   checkList.add(checkElement);
-
-               }
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        */
 
         checkList.add("Da");
         checkList.add("Da");

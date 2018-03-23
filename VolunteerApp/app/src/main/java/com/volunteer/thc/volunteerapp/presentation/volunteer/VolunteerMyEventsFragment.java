@@ -60,10 +60,10 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
                              final Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_volunteer_my_events, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolMyEvents);
+        recyclerView = view.findViewById(R.id.RecViewVolMyEvents);
         recyclerView.setHasFixedSize(true);
-        mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
-        noEvents = (TextView) view.findViewById(R.id.no_events_text);
+        mProgressBar = view.findViewById(R.id.indeterminateBar);
+        noEvents = view.findViewById(R.id.no_events_text);
 
         mLongAnimTime = getResources().getInteger(android.R.integer.config_longAnimTime);
 
@@ -120,8 +120,8 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
                                         .setPositiveButton("DONE", null)
                                         .create();
 
-                                final RatingBar ratingBar = (RatingBar) alertView.findViewById(R.id.ratingBar);
-                                final TextView noStarsText = (TextView) alertView.findViewById(R.id.noStarsText);
+                                final RatingBar ratingBar = alertView.findViewById(R.id.ratingBar);
+                                final TextView noStarsText = alertView.findViewById(R.id.noStarsText);
 
                                 alert.show();
                                 alert.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {

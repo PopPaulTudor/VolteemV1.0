@@ -47,12 +47,12 @@ public class VolunteerScoreboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_volunteer_scoreboard, container, false);
-        experienceText = (TextView) view.findViewById(R.id.experienceText);
-        mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
-        leaderboardPosition = (TextView) view.findViewById(R.id.leaderboardPosition);
-        congratsText = (TextView) view.findViewById(R.id.congratsText);
-        showHideLeaderboard = (Button) view.findViewById(R.id.leaderboard_show_hide);
-        leaderboardRecView = (RecyclerView) view.findViewById(R.id.leaderboardRecView);
+        experienceText = view.findViewById(R.id.experienceText);
+        mProgressBar = view.findViewById(R.id.indeterminateBar);
+        leaderboardPosition = view.findViewById(R.id.leaderboardPosition);
+        congratsText = view.findViewById(R.id.congratsText);
+        showHideLeaderboard = view.findViewById(R.id.leaderboard_show_hide);
+        leaderboardRecView = view.findViewById(R.id.leaderboardRecView);
         leaderboardRecView.setHasFixedSize(true);
 
         mDatabase.child("users/volunteers/" + user.getUid() + "/experience").addListenerForSingleValueEvent(new ValueEventListener() {
