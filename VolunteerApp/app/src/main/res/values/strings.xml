@@ -91,4 +91,6 @@
     <string name="event_finished">Event finished</string>
     <string name="done">DONE</string>
     <string name="give_feedback">GIVE FEEDBACK</string>
+    <string name="change_saved">Changes saved!</string>
+    <string name="storage_permission_needed">Please allow storage permission</string>
 </resources>

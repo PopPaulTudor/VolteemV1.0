@@ -56,6 +56,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class OrganiserProfileFragment extends Fragment {
 
     private static final int GALLERY_INTENT = 1;
+    private static final String TAG = "ProfileReadCanceled";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private EditText mEmail, mCompany, mPhone, mCity;
@@ -71,19 +72,20 @@ public class OrganiserProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_organiserprofile, container, false);
-        NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+
+        if (getActivity() != null) {
+            NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
+            circleImageViewMenu = navigationView.findViewById(R.id.photo);
+        }
 
 
         organiser = new Organiser();
-        mEmail = (EditText) view.findViewById(R.id.edit_email);
-        mCompany = (EditText) view.findViewById(R.id.edit_company);
-        mCity = (EditText) view.findViewById(R.id.edit_city);
-        mPhone = (EditText) view.findViewById(R.id.ProfileVolunteerPhone);
-        circleImageView = (CircleImageView) view.findViewById(R.id.photo);
-        circleImageViewMenu = (CircleImageView) navigationView.findViewById(R.id.photo);
-
+        mEmail = view.findViewById(R.id.edit_email);
+        mCompany = view.findViewById(R.id.edit_company);
+        mCity = view.findViewById(R.id.edit_city);
+        mPhone = view.findViewById(R.id.ProfileVolunteerPhone);
+        circleImageView = view.findViewById(R.id.photo);
 
         mCompany.setTag(mCompany.getKeyListener());
         mEmail.setTag(mEmail.getKeyListener());
@@ -91,7 +93,7 @@ public class OrganiserProfileFragment extends Fragment {
         mPhone.setTag(mPhone.getKeyListener());
         mEmail.setKeyListener(null);
 
-        mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
+        mProgressBar = view.findViewById(R.id.indeterminateBar);
         mProgressBar.setVisibility(View.VISIBLE);
 
         toggleEditOff();
@@ -112,64 +114,72 @@ public class OrganiserProfileFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String choice = arrayAdapter.getItem(which);
-                        if (choice.contains("Change")) {
+                        if (choice != null && choice.contains("Change")) {
                             if (PermissionUtil.isStorageReadPermissionGranted(getContext())) {
                                 Intent intent = new Intent(Intent.ACTION_PICK);
                                 intent.setType("image/*");
                                 startActivityForResult(intent, GALLERY_INTENT);
 
                             } else {
-                                Snackbar.make(getView(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                                    }
-                                }).show();
+                                if (getView() != null) {
+                                    Snackbar.make(getView(), getString(R.string.storage_permission_needed), Snackbar.LENGTH_LONG).setAction("Set " +
+                                                    "Permission",
+                                            new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission
+                                                            .READ_EXTERNAL_STORAGE
+                                                    }, 1);
+                                                }
+                                            }).show();
+                                }
                             }
-
                         } else {
-
-                            DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
-                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                            Bundle bundle = new Bundle();
-                            bundle.putString("type","user");
-                            bundle.putString("userName", user.getDisplayName());
-                            displayPhotoFragment.setArguments(bundle);
-                            fragmentTransaction.add(R.id.organiser_profile_container, displayPhotoFragment).addToBackStack("showImage");
-                            fragmentTransaction.commit();
-
+                            if (getFragmentManager() != null) {
+                                DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
+                                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                                Bundle bundle = new Bundle();
+                                bundle.putString("type", "user");
+                                bundle.putString("userName", user.getDisplayName());
+                                displayPhotoFragment.setArguments(bundle);
+                                fragmentTransaction.add(R.id.organiser_profile_container, displayPhotoFragment).addToBackStack("showImage");
+                                fragmentTransaction.commit();
+                            }
                         }
-
                     }
                 });
                 builderSingle.show();
             }
         });
 
-
         ValueEventListener mOrganiserProfileListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 organiser = dataSnapshot.getValue(Organiser.class);
 
-                mCompany.setText(organiser.getCompany());
-                mEmail.setText(organiser.getEmail());
-                mPhone.setText(organiser.getPhone());
-                mCity.setText(organiser.getCity());
+                if (organiser != null) {
+                    mCompany.setText(organiser.getCompany());
+                    mEmail.setText(organiser.getEmail());
+                    mPhone.setText(organiser.getPhone());
+                    mCity.setText(organiser.getCity());
 
-                storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
-                    }
-                });
+                    storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
+                        }
+                    });
+                } else {
+                    Log.w(TAG, "Organiser not found!");
+                    // TODO handle exceptions
+                }
                 mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
-                Log.w("ProfileReadCanceled: ", databaseError.toException());
+                // TODO handle exceptions
+                Log.w(TAG, databaseError.toException());
             }
         };
 
@@ -182,7 +192,6 @@ public class OrganiserProfileFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_profile_edit, menu);
         mEdit = menu.findItem(R.id.action_edit);
@@ -221,12 +230,10 @@ public class OrganiserProfileFragment extends Fragment {
 
         if (mCompany.getText().length() != 0) {
             currentCompany = mCompany.getText().toString();
-
         }
 
         if (mCity.getText().length() != 0) {
             currentCity = mCity.getText().toString();
-
         }
 
         if (mPhone.getText().length() != 0) {
@@ -234,22 +241,22 @@ public class OrganiserProfileFragment extends Fragment {
         }
 
         if (validateForm()) {
-            if (!currentCompany.equals(organiser.getCompany()) && !currentCompany.isEmpty()) {
+            if (currentCompany != null && !currentCompany.equals(organiser.getCompany()) && !currentCompany.isEmpty()) {
                 mDatabase.child("users").child("organisers").child(user.getUid()).child("company").setValue(currentCompany);
                 organiser.setCompany(currentCompany);
             }
 
-            if (!currentCity.equals(organiser.getCity()) && !currentCity.isEmpty()) {
+            if (currentCity != null && !currentCity.equals(organiser.getCity()) && !currentCity.isEmpty()) {
                 mDatabase.child("users").child("organisers").child(user.getUid()).child("city").setValue(currentCity);
                 organiser.setCity(currentCity);
             }
 
-            if (!currentPhone.equals(organiser.getPhone()) && !currentPhone.isEmpty()) {
+            if (currentPhone != null && !currentPhone.equals(organiser.getPhone()) && !currentPhone.isEmpty()) {
                 mDatabase.child("users").child("organisers").child(user.getUid()).child("phone").setValue(currentPhone);
                 organiser.setPhone(currentPhone);
             }
 
-            Toast.makeText(getActivity(), "Changes saved!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.change_saved), Toast.LENGTH_SHORT).show();
             hideKeyboardFrom(getActivity(), getView());
             toggleEditOff();
             toggleFocusOff();
@@ -276,21 +283,18 @@ public class OrganiserProfileFragment extends Fragment {
     }
 
     private void toggleEditOn() {
-
         mCompany.setKeyListener((KeyListener) mCompany.getTag());
         mPhone.setKeyListener((KeyListener) mPhone.getTag());
         mCity.setKeyListener((KeyListener) mCity.getTag());
     }
 
     private void toggleEditOff() {
-
         mCompany.setKeyListener(null);
         mPhone.setKeyListener(null);
         mCity.setKeyListener(null);
     }
 
     private void toggleFocusOn() {
-
         mEmail.setFocusableInTouchMode(true);
         mEmail.setFocusable(true);
         mCompany.setFocusableInTouchMode(true);
@@ -302,7 +306,6 @@ public class OrganiserProfileFragment extends Fragment {
     }
 
     private void toggleFocusOff() {
-
         mEmail.setFocusableInTouchMode(false);
         mEmail.setFocusable(false);
         mCompany.setFocusableInTouchMode(false);
@@ -314,17 +317,13 @@ public class OrganiserProfileFragment extends Fragment {
     }
 
     private boolean validateForm() {
-
-        boolean valid;
-        valid = (editTextIsValid(mCompany) && editTextIsValid(mCity) && editTextIsValid(mPhone));
-        return valid;
+        return (editTextIsValid(mCompany) && editTextIsValid(mCity) && editTextIsValid(mPhone));
     }
 
     private boolean editTextIsValid(EditText mEditText) {
-
         String text = mEditText.getText().toString();
         if (TextUtils.isEmpty(text)) {
-            mEditText.setError("This field can not be empty.");
+            mEditText.setError(getString(R.string.field_empty));
             mEditText.requestFocus();
             return false;
         } else {
@@ -335,7 +334,9 @@ public class OrganiserProfileFragment extends Fragment {
 
     private void hideKeyboardFrom(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
 
@@ -350,7 +351,8 @@ public class OrganiserProfileFragment extends Fragment {
             StorageReference filePath = storageRef.child("Photos").child("User").child(user.getUid());
             final ProgressDialog progressDialog = new ProgressDialog(getContext());
             progressDialog.show();
-            filePath.putBytes(ImageUtils.compressImage(uri, getActivity(),getResources())).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            filePath.putBytes(ImageUtils.compressImage(uri, getActivity(), getResources())).addOnSuccessListener(new OnSuccessListener<UploadTask
+                    .TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     progressDialog.dismiss();
