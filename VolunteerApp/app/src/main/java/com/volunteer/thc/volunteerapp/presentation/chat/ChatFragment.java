@@ -64,14 +64,14 @@ public class ChatFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
 
-        listChat = (ListView) v.findViewById(R.id.list_chat);
+        listChat = v.findViewById(R.id.list_chat);
 
         chatAdapter = new ChatAdapter(getContext(), array);
         listChat.setAdapter(chatAdapter);
-        noChatImage = (ImageView) v.findViewById(R.id.no_chat_image);
+        noChatImage = v.findViewById(R.id.no_chat_image);
         rootLayout = v.findViewById(R.id.root_layout);
-        noChatText = (TextView) v.findViewById(R.id.no_chat_text);
-        final FloatingActionButton floatingActionButton = (FloatingActionButton) v.findViewById(R.id.change_list_chat);
+        noChatText = v.findViewById(R.id.no_chat_text);
+        final FloatingActionButton floatingActionButton = v.findViewById(R.id.change_list_chat);
         populateList(type);
 
 
@@ -143,42 +143,44 @@ public class ChatFragment extends Fragment {
                                     startActivity(intent);
 
                                 } else {
-                                    mDatabase.child("users").child("organisers").child(arrayWork.get(position).getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            Organiser organiser = dataSnapshot.getValue(Organiser.class);
-                                            ConversationActivity.nameChat = organiser.getCompany();
-                                            Intent intent = new Intent(getContext(), ConversationActivity.class);
-                                            intent.putExtra("chat", arrayWork.get(position));
-                                            intent.putExtra("class", "fragment");
-                                            intent.putExtra("type", type);
-                                            startActivity(intent);
-
-                                            mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(arrayWork.get(position).getUuid()).addValueEventListener(new ValueEventListener() {
+                                    mDatabase.child("users").child("organisers").child(arrayWork.get(position).getSentBy())
+                                            .addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    long size = dataSnapshot.getChildrenCount();
-                                                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                                        if (size > 100) {
-                                                            dataSnapshot1.getRef().removeValue();
-                                                            size--;
-                                                        } else {
-                                                            break;
+                                                    Organiser organiser = dataSnapshot.getValue(Organiser.class);
+                                                    ConversationActivity.nameChat = organiser.getCompany();
+                                                    Intent intent = new Intent(getContext(), ConversationActivity.class);
+                                                    intent.putExtra("chat", arrayWork.get(position));
+                                                    intent.putExtra("class", "fragment");
+                                                    intent.putExtra("type", type);
+                                                    startActivity(intent);
+
+                                                    mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(arrayWork.get(position)
+                                                            .getUuid()).addValueEventListener(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                                            long size = dataSnapshot.getChildrenCount();
+                                                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                                                if (size > 100) {
+                                                                    dataSnapshot1.getRef().removeValue();
+                                                                    size--;
+                                                                } else {
+                                                                    break;
+                                                                }
+                                                            }
                                                         }
-                                                    }
+
+                                                        @Override
+                                                        public void onCancelled(DatabaseError databaseError) {
+
+                                                        }
+                                                    });
                                                 }
 
                                                 @Override
                                                 public void onCancelled(DatabaseError databaseError) {
-
                                                 }
                                             });
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-                                        }
-                                    });
                                 }
                             }
 
@@ -209,19 +211,20 @@ public class ChatFragment extends Fragment {
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(arrayWork.get(position).getUuid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                                    dataSnapshot1.getRef().removeValue();
-                                                }
+                                        mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(arrayWork.get(position).getUuid())
+                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                                            dataSnapshot1.getRef().removeValue();
+                                                        }
 
-                                            }
+                                                    }
 
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
-                                            }
-                                        });
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+                                                    }
+                                                });
                                         chatAdapter.remove(arrayWork.get(position));
                                         arrayWork.remove(arrayWork.get(position));
                                         chatAdapter.notifyDataSetChanged();
@@ -267,8 +270,8 @@ public class ChatFragment extends Fragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             rootLayout.setVisibility(View.INVISIBLE);
-            final int revealX = (int) (view.getX() + view.getWidth() / 2);
-            final int revealY = (int) (view.getY() + view.getHeight() / 2);
+            final int revealX = (int) (view.getX() + (double) view.getWidth() / 2);
+            final int revealY = (int) (view.getY() + (double) view.getHeight() / 2);
 
 
             ViewTreeObserver viewTreeObserver = rootLayout.getViewTreeObserver();

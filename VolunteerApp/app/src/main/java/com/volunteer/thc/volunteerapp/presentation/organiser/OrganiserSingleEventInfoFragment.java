@@ -295,7 +295,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 mCurrentEvent.setDeadline(currentDeadline);
             }
 
-            if (!currentSize.equals(mCurrentEvent.getSize())) {
+            if (!currentSize.equals(String.valueOf(mCurrentEvent.getSize()))) {
                 mDatabase.child("events").child(mCurrentEvent.getEventID()).child("size").setValue(Integer.parseInt(currentSize));
                 mCurrentEvent.setSize(Integer.parseInt(currentSize));
             }

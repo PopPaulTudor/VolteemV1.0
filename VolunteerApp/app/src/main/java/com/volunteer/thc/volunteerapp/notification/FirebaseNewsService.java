@@ -237,7 +237,7 @@ public class FirebaseNewsService extends Service {
                                 if (dataSnapshot.exists()) {
 
                                     final Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
-                                    final long ONE_MEGABYTE = 1024 * 1024;
+                                    final long ONE_MEGABYTE = 1024L * 1024L;
                                     storageRef.child("Photos").child("User").child(chatSingle.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                         @Override
                                         public void onSuccess(byte[] bytes) {
@@ -254,7 +254,7 @@ public class FirebaseNewsService extends Service {
 
                                             final Organiser organiser = dataSnapshot.getValue(Organiser.class);
 
-                                            final long ONE_MEGABYTE = 1024 * 1024;
+                                            final long ONE_MEGABYTE = 1024L * 1024L;
                                             storageRef.child("Photos").child("User").child(chatSingle.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                                 @Override
                                                 public void onSuccess(byte[] bytes) {

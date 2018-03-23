@@ -251,7 +251,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
     }
 
     private void onSaveItemPressed() {
-
         String currentCity = null, currentPhone = null, fullName = null;
         int currentAge = 0;
         boolean changedName = false;
@@ -272,12 +271,12 @@ public class VolunteerProfileInformationFragment extends Fragment {
                 volunteer1.setAge(currentAge);
             }
 
-            if (!currentCity.equals(volunteer1.getCity()) && !currentCity.isEmpty()) {
+            if (currentCity != null && !currentCity.equals(volunteer1.getCity()) && !currentCity.isEmpty()) {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("city").setValue(currentCity);
                 volunteer1.setCity(currentCity);
             }
 
-            if (!currentPhone.equals(volunteer1.getPhone()) && currentPhone.isEmpty()) {
+            if (currentPhone != null && !currentPhone.equals(volunteer1.getPhone()) && currentPhone.isEmpty()) {
                 mDatabase.child("users").child("volunteers").child(user.getUid()).child("phone").setValue(currentPhone);
                 volunteer1.setPhone(currentPhone);
             }
@@ -289,15 +288,17 @@ public class VolunteerProfileInformationFragment extends Fragment {
             toggleFocusOff();
         }
 
+        /*
         if (changedName) {
             mUserName.setText(fullName);
             prefs.edit().putString("name", fullName).apply();
         }
+        */
+
         mCancelFloating.setVisibility(View.GONE);
         mEditFloating.setImageResource(R.drawable.ic_edit);
         statusEdit = false;
         visibilityEditIcon(false);
-
     }
 
     private void onCancelItemPressed() {
