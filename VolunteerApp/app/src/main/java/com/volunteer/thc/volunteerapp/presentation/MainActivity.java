@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences mPrefs;
     private CircleImageView mImage;
     private Intent serviceIntent;
-    private MenuItem eventsItem, selectedItem;
+    private MenuItem eventsItem, selectedItem, profileItem;
     private UserType mUserType;
 
     @Override
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         eventsItem = navigationView.getMenu().findItem(R.id.nav_events);
         eventsItem.setChecked(true);
-        final MenuItem profileItem = navigationView.getMenu().findItem(R.id.nav_profile);
+        profileItem = navigationView.getMenu().findItem(R.id.nav_profile);
 
         View header = navigationView.getHeaderView(0);
         mImage = header.findViewById(R.id.photo);
@@ -279,6 +279,7 @@ public class MainActivity extends AppCompatActivity
                     break;
             }
 
+            profileItem.setChecked(false);
             if (eventsItem.isChecked()) {
                 eventsItem.setChecked(false);
             }
