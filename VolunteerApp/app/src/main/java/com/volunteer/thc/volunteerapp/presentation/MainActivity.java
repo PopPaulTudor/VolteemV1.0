@@ -93,9 +93,35 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         eventsItem = navigationView.getMenu().findItem(R.id.nav_events);
         eventsItem.setChecked(true);
+        final MenuItem profileItem = navigationView.getMenu().findItem(R.id.nav_profile);
 
         View header = navigationView.getHeaderView(0);
         mImage = header.findViewById(R.id.photo);
+        mImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = mUserType == UserType.VOLUNTEER ? new VolunteerProfileFragment() :
+                        new OrganiserProfileFragment();
+
+                DrawerLayout drawer = findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+
+                eventsItem.setChecked(false);
+                if (selectedItem != null) {
+                    selectedItem.setChecked(false);
+                }
+                profileItem.setChecked(true);
+
+                replaceFragmentByClass(fragment);
+
+                String actionBarTitle = getString(R.string.profile);
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle(actionBarTitle);
+                }
+            }
+        });
+
+
         mUserName = header.findViewById(R.id.nav_header_name);
         mUserTypeView = header.findViewById(R.id.nav_header_status);
 
