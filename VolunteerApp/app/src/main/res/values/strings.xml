@@ -105,4 +105,6 @@
     <string name="change_image">Change Image</string>
     <string name="view_image">View Image</string>
     <string name="no_photo">You don\'t have a photo</string>
+    <string name="old_version_title">Old version</string>
+    <string name="old_version_message">You are using an outdated app version. Please update to the newest version.</string>
 </resources>

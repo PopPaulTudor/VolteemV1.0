@@ -286,7 +286,7 @@ public class SettingsFragment extends Fragment {
             Log.e("SettingsFragment", e.getMessage());
         }
 
-        TextView appNameView = (TextView) view.findViewById(R.id.text_settings);
+        TextView appNameView = view.findViewById(R.id.text_settings);
         appNameView.setText("- App version: " + version + " -");
     }
 
