@@ -25,4 +25,6 @@ public class VolteemConstants {
     public static final String INTENT_NEWS_EVENT_ID = "newsEventID";
 
     public static final String INTENT_CURRENT_EVENT = "currentEvent";
+
+    public static final String BUNDLE_USER_ID = "userID";
 }

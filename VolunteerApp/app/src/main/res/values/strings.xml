@@ -102,4 +102,7 @@
     <string name="invalid_email_address">Please enter a valid email address.</string>
     <string name="invalid_password">Your password must be at least 6 characters long.</string>
     <string name="password_not_match">Passwords do not match</string>
+    <string name="change_image">Change Image</string>
+    <string name="view_image">View Image</string>
+    <string name="no_photo">You don\'t have a photo</string>
 </resources>

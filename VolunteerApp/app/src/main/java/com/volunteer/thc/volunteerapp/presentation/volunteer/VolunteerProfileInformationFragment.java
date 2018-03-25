@@ -6,9 +6,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -47,13 +47,13 @@ import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by poppa on 17.01.2018.
  */
-
 public class VolunteerProfileInformationFragment extends Fragment {
 
     public static final int GALLERY_INTENT = 1;
@@ -65,8 +65,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
     private TextView mEmail;
     private Volunteer volunteer1;
     private TextView mVolunteerName;
-    private SharedPreferences prefs;
-    private TextView mUserName;
     private CircleImageView circleImageView;
     private CircleImageView circleImageViewMenu;
     private FloatingActionButton mEditFloating, mCancelFloating;
@@ -75,15 +73,10 @@ public class VolunteerProfileInformationFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_volunteer_profile_information, container, false);
 
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
-
-
-        prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        mUserName = navigationView.getHeaderView(0).findViewById(R.id.nav_header_name);
-
         volunteer1 = new Volunteer();
         mVolunteerName = view.findViewById(R.id.ProfileVolunteerName);
         mEmail = view.findViewById(R.id.ProfileVolunteerEmail);
@@ -142,26 +135,24 @@ public class VolunteerProfileInformationFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
                 final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.select_dialog_item);
-                arrayAdapter.add("Change Image");
-                arrayAdapter.add("View Image");
+                arrayAdapter.add(getString(R.string.view_image));
+                arrayAdapter.add(getString(R.string.change_image));
 
                 builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String choice = arrayAdapter.getItem(which);
 
-
                         if (choice.contains("Change")) {
                             if (PermissionUtil.isStorageReadPermissionGranted(getContext())) {
                                 Intent intent = new Intent(Intent.ACTION_PICK);
                                 intent.setType("image/*");
                                 startActivityForResult(intent, GALLERY_INTENT);
-
                             } else {
-                                Snackbar.make(getView(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new
+                                Snackbar.make(getView(), getString(R.string.storage_permission_needed), Snackbar.LENGTH_LONG).setAction("Set " +
+                                        "Permission", new
                                         View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -172,28 +163,29 @@ public class VolunteerProfileInformationFragment extends Fragment {
                             }
                         } else {
                             DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
-                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             Bundle bundle = new Bundle();
                             bundle.putString("type", "user");
-                            bundle.putString("userID", user.getUid());
+                            bundle.putString(VolteemConstants.BUNDLE_USER_ID, user.getUid());
                             displayPhotoFragment.setArguments(bundle);
-                            fragmentTransaction.add(R.id.volunteer_profile_container, displayPhotoFragment).addToBackStack("showImage");
+                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                            fragmentTransaction.add(R.id.volunteer_profile_container, displayPhotoFragment).addToBackStack(null);
                             fragmentTransaction.commit();
-
                         }
-
                     }
                 });
+
                 builderSingle.show();
             }
         });
 
-
         ValueEventListener mVolunteerProfileListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 volunteer1 = dataSnapshot.getValue(Volunteer.class);
+                if (volunteer1 == null) {
+                    return;
+                }
+
                 mEmail.setText(volunteer1.getEmail());
                 mPhone.setText(volunteer1.getPhone());
                 mCity.setText(volunteer1.getCity());
@@ -206,12 +198,11 @@ public class VolunteerProfileInformationFragment extends Fragment {
                         Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
                     }
                 });
-
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                // TODO handle more exceptions
                 Log.w("ProfileReadCanceled: ", databaseError.toException());
             }
         };
@@ -243,17 +234,14 @@ public class VolunteerProfileInformationFragment extends Fragment {
         }
     }
 
-
     private void onEditItemPressed() {
         toggleEditOn();
         toggleFocusOn();
-
     }
 
     private void onSaveItemPressed() {
         String currentCity = null, currentPhone = null, fullName = null;
         int currentAge = 0;
-        boolean changedName = false;
         if (mAge.getText().length() != 0) {
             currentAge = Integer.parseInt(mAge.getText().toString());
         }
@@ -288,13 +276,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
             toggleFocusOff();
         }
 
-        /*
-        if (changedName) {
-            mUserName.setText(fullName);
-            prefs.edit().putString("name", fullName).apply();
-        }
-        */
-
         mCancelFloating.setVisibility(View.GONE);
         mEditFloating.setImageResource(R.drawable.ic_edit);
         statusEdit = false;
@@ -320,22 +301,18 @@ public class VolunteerProfileInformationFragment extends Fragment {
     }
 
     private void toggleEditOn() {
-
         mPhone.setKeyListener((KeyListener) mPhone.getTag());
         mAge.setKeyListener((KeyListener) mAge.getTag());
         mCity.setKeyListener((KeyListener) mCity.getTag());
     }
 
     private void toggleEditOff() {
-
-
         mPhone.setKeyListener(null);
         mCity.setKeyListener(null);
         mAge.setKeyListener(null);
     }
 
     private void toggleFocusOn() {
-
         mEmail.setFocusableInTouchMode(true);
         mEmail.setFocusable(true);
         mAge.setFocusableInTouchMode(true);
@@ -358,10 +335,7 @@ public class VolunteerProfileInformationFragment extends Fragment {
     }
 
     private boolean validateForm() {
-
-        boolean valid;
-        valid = (editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity));
-        return valid;
+        return editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity);
     }
 
     private boolean editTextIsValid(EditText mEditText) {
@@ -393,6 +367,4 @@ public class VolunteerProfileInformationFragment extends Fragment {
 
         }
     }
-
-
 }

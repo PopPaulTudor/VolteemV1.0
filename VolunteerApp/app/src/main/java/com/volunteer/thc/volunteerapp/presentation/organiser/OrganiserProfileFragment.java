@@ -46,6 +46,7 @@ import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -107,8 +108,8 @@ public class OrganiserProfileFragment extends Fragment {
 
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
                 final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.select_dialog_item);
-                arrayAdapter.add("Change Image");
                 arrayAdapter.add("View Image");
+                arrayAdapter.add("Change Image");
 
                 builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                     @Override
@@ -137,12 +138,12 @@ public class OrganiserProfileFragment extends Fragment {
                         } else {
                             if (getFragmentManager() != null) {
                                 DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
-                                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                                 Bundle bundle = new Bundle();
                                 bundle.putString("type", "user");
-                                bundle.putString("userName", user.getDisplayName());
+                                bundle.putString(VolteemConstants.BUNDLE_USER_ID, user.getUid());
                                 displayPhotoFragment.setArguments(bundle);
-                                fragmentTransaction.add(R.id.organiser_profile_container, displayPhotoFragment).addToBackStack("showImage");
+                                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                                fragmentTransaction.add(R.id.organiser_profile_container, displayPhotoFragment).addToBackStack(null);
                                 fragmentTransaction.commit();
                             }
                         }
