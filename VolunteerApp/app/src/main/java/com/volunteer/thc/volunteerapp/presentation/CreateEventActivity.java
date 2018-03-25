@@ -112,7 +112,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         populateUriList();
 
-        Picasso.with(this).load(imageUris.get(NUMBER_OF_EVENTS_ON_PAGE)).fit().centerCrop().into(mImage);
+        Picasso.get().load(imageUris.get(NUMBER_OF_EVENTS_ON_PAGE)).fit().centerCrop().into(mImage);
         Button mSaveEvent = findViewById(R.id.save_event);
         Button mCancel = findViewById(R.id.cancel_event);
         mLoadPdf = findViewById(R.id.upload_pdf);
@@ -126,7 +126,7 @@ public class CreateEventActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!mSelectedPicture) {
-                    Picasso.with(CreateEventActivity.this).load(imageUris.get(mTypeSpinner.getSelectedItemPosition())).fit().centerCrop().into
+                    Picasso.get().load(imageUris.get(mTypeSpinner.getSelectedItemPosition())).fit().centerCrop().into
                             (mImage);
                 }
             }
@@ -264,7 +264,7 @@ public class CreateEventActivity extends AppCompatActivity {
             if (requestCode == GALLERY_INTENT) {
                 mUriPicture = data.getData();
                 mSelectedPicture = true;
-                Picasso.with(this).load(mUriPicture).fit().centerCrop().into(mImage);
+                Picasso.get().load(mUriPicture).fit().centerCrop().into(mImage);
             } else {
                 if (requestCode == PICK_PDF) {
                     mUriPDF = data.getData();

@@ -125,7 +125,7 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
         populateTypeList();
         populateUriList();
 
-        Picasso.with(context).load(imageUris.get(typeList.indexOf(eventsList.get(position)
+        Picasso.get().load(imageUris.get(typeList.indexOf(eventsList.get(position)
                 .getType()))).fit().centerCrop().into(holder.cardImage);
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -135,7 +135,7 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
                     Log.w(eventsList.get(position).getName(), " has an image.");
-                    Picasso.with(context).load(task.getResult()).fit().centerCrop().into(holder
+                    Picasso.get().load(task.getResult()).fit().centerCrop().into(holder
                             .cardImage, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -151,8 +151,8 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
                         }
 
                         @Override
-                        public void onError() {
-
+                        public void onError(Exception ex) {
+                            // TODO handle
                         }
                     });
                 } else {

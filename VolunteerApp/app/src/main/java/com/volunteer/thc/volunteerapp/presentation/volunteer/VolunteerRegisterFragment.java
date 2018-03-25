@@ -104,7 +104,7 @@ public class VolunteerRegisterFragment extends Fragment {
                 + '/' + getResources().getResourceTypeName(R.drawable.user) + '/' + getResources().getResourceEntryName(R.drawable.user));
 
         uri = uriMale;
-        Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+        Picasso.get().load(uri).fit().centerCrop().into(mImage);
         gender.add("Gender");
         gender.add("Male");
         gender.add("Female");
@@ -304,7 +304,7 @@ public class VolunteerRegisterFragment extends Fragment {
 
         if (requestCode == GALLERY_INTENT && (data != null)) {
             uri = data.getData();
-            Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+            Picasso.get().load(uri).fit().centerCrop().into(mImage);
         }
     }
 }

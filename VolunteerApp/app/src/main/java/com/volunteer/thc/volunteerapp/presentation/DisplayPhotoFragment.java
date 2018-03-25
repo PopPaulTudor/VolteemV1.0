@@ -53,7 +53,7 @@ public class DisplayPhotoFragment extends Fragment {
                 storageRef.child("Photos").child("User").child(userID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Picasso.with(getContext()).load(uri).fit().centerCrop().into(imageView);
+                        Picasso.get().load(uri).fit().centerCrop().into(imageView);
                     }
                 });
             } else {
@@ -65,7 +65,7 @@ public class DisplayPhotoFragment extends Fragment {
             storageRef.child("Photos").child("Event").child(eventID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    Picasso.with(getContext()).load(uri).fit().centerInside().into(imageView);
+                    Picasso.get().load(uri).fit().centerInside().into(imageView);
                 }
             });
         }

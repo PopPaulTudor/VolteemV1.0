@@ -90,7 +90,7 @@ public class OrganiserRegisterFragment extends Fragment {
         uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + getResources().getResourcePackageName(R.drawable.user)
                 + '/' + getResources().getResourceTypeName(R.drawable.user) + '/' + getResources().getResourceEntryName(R.drawable.user));
-        Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+        Picasso.get().load(uri).fit().centerCrop().into(mImage);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -318,7 +318,7 @@ public class OrganiserRegisterFragment extends Fragment {
 
         if (requestCode == GALLERY_INTENT && (data != null)) {
             uri = data.getData();
-            Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+            Picasso.get().load(uri).fit().centerCrop().into(mImage);
         }
     }
 }

@@ -53,7 +53,7 @@ public class AchievementsAdapter extends RecyclerView.Adapter<AchievementsAdapte
         mStorage.child("Photos").child("Achivements").child(adress).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Picasso.with(context).load(uri).fit().centerCrop().into(holder.circleImageView);
+                Picasso.get().load(uri).fit().centerCrop().into(holder.circleImageView);
             }
         });
 
@@ -79,8 +79,8 @@ public class AchievementsAdapter extends RecyclerView.Adapter<AchievementsAdapte
 
         EventViewHolder(View itemView) {
             super(itemView);
-            circleImageView = (CircleImageView) itemView.findViewById(R.id.achivements_image);
-            cardView=(CardView) itemView.findViewById(R.id.achivements_card);
+            circleImageView = itemView.findViewById(R.id.achivements_image);
+            cardView = itemView.findViewById(R.id.achivements_card);
 
         }
     }

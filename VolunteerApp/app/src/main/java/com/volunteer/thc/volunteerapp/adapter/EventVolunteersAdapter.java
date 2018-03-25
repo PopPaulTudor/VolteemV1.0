@@ -120,7 +120,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
         mStorage.child("Photos").child("User").child(volunteerIDs.get(position)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Picasso.with(context).load(uri).fit().centerCrop().into(holder.volunteerImage);
+                Picasso.get().load(uri).fit().centerCrop().into(holder.volunteerImage);
             }
         });
 

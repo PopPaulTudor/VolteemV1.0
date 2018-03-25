@@ -195,7 +195,7 @@ public class VolunteerProfileInformationFragment extends Fragment {
                 mStorage.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
+                        Picasso.get().load(uri).fit().centerCrop().into(circleImageView);
                     }
                 });
             }
@@ -226,8 +226,8 @@ public class VolunteerProfileInformationFragment extends Fragment {
             filePathProfile.putBytes(ImageUtils.compressImage(uri, getActivity(), getResources())).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
-                    Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageViewMenu);
+                    Picasso.get().load(uri).fit().centerCrop().into(circleImageView);
+                    Picasso.get().load(uri).fit().centerCrop().into(circleImageViewMenu);
                     progressDialog.dismiss();
                 }
             });

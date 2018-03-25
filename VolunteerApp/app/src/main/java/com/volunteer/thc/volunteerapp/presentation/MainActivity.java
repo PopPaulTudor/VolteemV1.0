@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Picasso.with(getApplicationContext()).load(uri).fit().centerCrop().into
+                        Picasso.get().load(uri).fit().centerCrop().into
                                 (mImage);
                     }
                 });

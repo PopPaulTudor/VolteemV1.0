@@ -304,11 +304,11 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    Picasso.with(getApplicationContext()).load(task.getResult()).fit()
+                    Picasso.get().load(task.getResult()).fit()
                             .centerInside()
                             .into(collapsingToolbarImage);
                 } else {
-                    Picasso.with(getApplicationContext()).load(imageUris.get(typeList.indexOf
+                    Picasso.get().load(imageUris.get(typeList.indexOf
                             (currentEvent.getType()))).fit().centerCrop().into
                             (collapsingToolbarImage);
                 }

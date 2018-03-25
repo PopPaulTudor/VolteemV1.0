@@ -92,10 +92,10 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    Picasso.with(getApplicationContext()).load(task.getResult()).fit()
+                    Picasso.get().load(task.getResult()).fit()
                             .centerInside().into(mSquareImageView);
                 } else {
-                    Picasso.with(getApplicationContext()).load(mImageUris.get(mTypeList.indexOf
+                    Picasso.get().load(mImageUris.get(mTypeList.indexOf
                             (mCurrentEvent.getType()))).fit().centerCrop().into(mSquareImageView);
                 }
             }

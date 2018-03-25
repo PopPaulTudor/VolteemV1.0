@@ -123,7 +123,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+                Picasso.get().load(uri).fit().centerCrop().into(mImage);
             }
         });
 
@@ -406,7 +406,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             if (requestCode == GALLERY_INTENT) {
                 uriPicture = data.getData();
                 hasUserSelectedPicture = true;
-                Picasso.with(getActivity()).load(uriPicture).fit().centerCrop().into(mImage);
+                Picasso.get().load(uriPicture).fit().centerCrop().into(mImage);
             } else {
                 if (requestCode == PICK_PDF) {
                     uriPDF = data.getData();

@@ -101,7 +101,7 @@ public class ChatAdapter extends ArrayAdapter<Message> {
             storageRef.child("Photos").child("User").child(message.getSentBy()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    Picasso.with(context).load(uri).fit().centerCrop().into(viewHolder.imageElement);
+                    Picasso.get().load(uri).fit().centerCrop().into(viewHolder.imageElement);
                 }
             });
         } else {
@@ -120,7 +120,7 @@ public class ChatAdapter extends ArrayAdapter<Message> {
             storageRef.child("Photos").child("Event").child(chatGroup.getUuidEvent()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    Picasso.with(context).load(uri).fit().centerCrop().into(viewHolder.imageElement);
+                    Picasso.get().load(uri).fit().centerCrop().into(viewHolder.imageElement);
 
                 }
             });

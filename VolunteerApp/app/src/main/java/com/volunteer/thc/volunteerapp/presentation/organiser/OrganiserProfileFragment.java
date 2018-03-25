@@ -167,7 +167,7 @@ public class OrganiserProfileFragment extends Fragment {
                     storageRef.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
+                            Picasso.get().load(uri).fit().centerCrop().into(circleImageView);
                         }
                     });
                 } else {
@@ -357,8 +357,8 @@ public class OrganiserProfileFragment extends Fragment {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     progressDialog.dismiss();
-                    Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageView);
-                    Picasso.with(getContext()).load(uri).fit().centerCrop().into(circleImageViewMenu);
+                    Picasso.get().load(uri).fit().centerCrop().into(circleImageView);
+                    Picasso.get().load(uri).fit().centerCrop().into(circleImageViewMenu);
                 }
             });
         }
