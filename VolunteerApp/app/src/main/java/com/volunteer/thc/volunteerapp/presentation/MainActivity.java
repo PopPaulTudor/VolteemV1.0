@@ -91,8 +91,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
+
         eventsItem = navigationView.getMenu().findItem(R.id.nav_events);
         eventsItem.setChecked(true);
+        selectedItem = eventsItem;
         profileItem = navigationView.getMenu().findItem(R.id.nav_profile);
 
         View header = navigationView.getHeaderView(0);
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity
                 eventsItem.setChecked(false);
                 if (selectedItem != null) {
                     selectedItem.setChecked(false);
+                    selectedItem = profileItem;
                 }
                 profileItem.setChecked(true);
 
@@ -155,6 +158,32 @@ public class MainActivity extends AppCompatActivity
         }
 
         drawer.closeDrawers();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // deselect all menu items
+        deselectAllMenuItems();
+
+        if (selectedItem != null) {
+            selectedItem.setChecked(true);
+        }
+    }
+
+    private void deselectAllMenuItems() {
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        for (int i = 0; i < navigationView.getMenu().size(); i++) {
+            MenuItem menuItem = navigationView.getMenu().getItem(i);
+            menuItem.setChecked(false);
+
+            if (menuItem.getSubMenu() != null) {
+                for (int j = 0; j < menuItem.getSubMenu().size(); j++) {
+                    MenuItem menuItem2 = menuItem.getSubMenu().getItem(j);
+                    menuItem2.setChecked(false);
+                }
+            }
+        }
     }
 
     @Override
