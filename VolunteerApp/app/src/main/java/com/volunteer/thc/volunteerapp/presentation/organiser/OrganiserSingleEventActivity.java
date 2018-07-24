@@ -45,12 +45,13 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
-
+    private TextView acceptedTextView, registeredTextView;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private StorageReference mStorage = FirebaseStorage.getInstance().getReference();
     private ImageView mSquareImageView;
     private ArrayList<Uri> mImageUris = new ArrayList<>();
     private ArrayList<String> mTypeList = new ArrayList<>();
+    private AppBarLayout appBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,28 +63,46 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
         mViewPager = findViewById(R.id.container);
         mToolbar = findViewById(R.id.toolbar);
         mSquareImageView = findViewById(R.id.collapsing_toolbar_image);
-        TextView acceptedText = findViewById(R.id.accept_number);
-        TextView regText = findViewById(R.id.reg_number);
-        AppBarLayout appBarLayout = findViewById(R.id.appbar);
+        acceptedTextView = findViewById(R.id.accept_number);
+        registeredTextView = findViewById(R.id.reg_number);
+        appBarLayout = findViewById(R.id.appbar);
 
         populateUriList();
         populateTypeList();
 
+        if (mCurrentEvent == null) {
+            String eventID = getIntent().getStringExtra(VolteemConstants.INTENT_EVENT_ID);
+            if (eventID == null) {
+                eventID = getIntent().getStringExtra(VolteemConstants.INTENT_NEWS_EVENT_ID);
+            }
+            getEvent(eventID);
+        } else {
+            setUpUi();
+        }
+
+        setSupportActionBar(mToolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private void setUpUi() {
+
         // TODO refactor this (fix warning)
         if (mCurrentEvent.getAccepted_volunteers().size() == 1) {
-            acceptedText.setText("         " + mCurrentEvent.getAccepted_volunteers().size() +
+            acceptedTextView.setText("         " + mCurrentEvent.getAccepted_volunteers().size() +
                     "\nvolunteer");
         } else {
-            acceptedText.setText("         " + mCurrentEvent.getAccepted_volunteers().size() +
-                    acceptedText.getText());
+            acceptedTextView.setText("         " + mCurrentEvent.getAccepted_volunteers().size() +
+                    acceptedTextView.getText());
         }
 
         if (mCurrentEvent.getRegistered_volunteers().size() == 1) {
-            regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() +
+            registeredTextView.setText("         " + mCurrentEvent.getRegistered_volunteers().size() +
                     "\nvolunteer");
         } else {
-            regText.setText("         " + mCurrentEvent.getRegistered_volunteers().size() +
-                    regText.getText());
+            registeredTextView.setText("         " + mCurrentEvent.getRegistered_volunteers().size() +
+                    registeredTextView.getText());
         }
 
         mStorage.child("Photos").child("Event").child(mCurrentEvent.getEventID()).getDownloadUrl
@@ -118,24 +137,6 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
                 }
             }
         });
-
-        setSupportActionBar(mToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
-        if (mCurrentEvent == null) {
-            String eventID = getIntent().getStringExtra(VolteemConstants.INTENT_EVENT_ID);
-            if (eventID == null) {
-                eventID = getIntent().getStringExtra(VolteemConstants.INTENT_NEWS_EVENT_ID);
-            }
-            getEvent(eventID);
-        } else {
-            setUpUi();
-        }
-    }
-
-    private void setUpUi() {
         Bundle bundle = new Bundle();
         bundle.putSerializable(VolteemConstants.INTENT_CURRENT_EVENT, mCurrentEvent);
         OrganiserSingleEventInfoFragment fragmentInfo = new OrganiserSingleEventInfoFragment();
