@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -130,6 +131,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                // mDatabase.child("news/" + newsList.get(position).getNewsID()).setValue(null);
                 newsList.remove(position);
                 notifyItemRemoved(position);
+                notifyItemRangeChanged(position, newsList.size());
                 if(newsList.isEmpty()) {
                     newsDeletedListener.onNewsDeleted();
                 }
