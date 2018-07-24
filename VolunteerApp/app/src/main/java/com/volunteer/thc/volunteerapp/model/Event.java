@@ -18,13 +18,14 @@ public class Event implements Serializable {
     private int size;
     private ArrayList<String> registered_volunteers;
     private ArrayList<String> accepted_volunteers;
+    private ArrayList<String> requiredQuestions;
 
     public Event() {
 
     }
 
     public Event(String created_by, String name, String location, long startDate, long finishDate, String type, String eventID,
-                 String description, long deadline, int size) {
+                 String description, long deadline, int size, ArrayList<String> requiredQuestions) {
         this.created_by = created_by;
         this.name = name;
         this.location = location;
@@ -35,6 +36,7 @@ public class Event implements Serializable {
         this.deadline = deadline;
         this.size = size;
         this.eventID = eventID;
+        this.requiredQuestions = requiredQuestions;
         this.registered_volunteers = new ArrayList<>();
         this.accepted_volunteers = new ArrayList<>();
     }
@@ -151,4 +153,11 @@ public class Event implements Serializable {
         this.accepted_volunteers = accepted_volunteers;
     }
 
+    public ArrayList<String> getRequiredQuestions() {
+        return requiredQuestions;
+    }
+
+    public void setRequiredQuestions(ArrayList<String> requiredQuestions) {
+        this.requiredQuestions = requiredQuestions;
+    }
 }
