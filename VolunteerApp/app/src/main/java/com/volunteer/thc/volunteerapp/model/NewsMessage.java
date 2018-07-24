@@ -77,4 +77,11 @@ public class NewsMessage extends Message {
     }
 
 
+    public String getReceivedBy() {
+        return receivedBy;
+    }
+
+    public void setReceivedBy(String receivedBy) {
+        this.receivedBy = receivedBy;
+    }
 }
