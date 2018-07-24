@@ -40,6 +40,8 @@ import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 import java.util.Calendar;
 import java.util.Random;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
+
 /**
  * Created by Cristi on 8/26/2017.
  */
@@ -51,6 +53,7 @@ public class FirebaseNewsService extends Service {
     private SharedPreferences prefs;
     private Calendar date = Calendar.getInstance();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+    private int badgeCount = 0;
 
     @Nullable
     @Override
@@ -82,6 +85,10 @@ public class FirebaseNewsService extends Service {
                             if (!newsMessage.isNotified()) {
                                 if (prefs.getBoolean("notifications", true)) {
                                     sendNews(newsMessage);
+                                    badgeCount = prefs.getInt("badgeCount", 0);
+                                    ++badgeCount;
+                                    prefs.edit().putInt("badgeCount", badgeCount).apply();
+                                    ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
                                 }
                                 mDatabase.child("news/" + dataSnapshot.getKey() + "/notified").setValue(true);
                                 if (newsMessage.getType() == NewsMessage.EVENT_DELETED) {
@@ -223,13 +230,16 @@ public class FirebaseNewsService extends Service {
         });
         */
 
-        mDatabase.child("conversation").child("single").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
+        mDatabase.child("conversation").child("single").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 final ChatSingle chatSingle = dataSnapshot.getValue(ChatSingle.class);
                 if (!chatSingle.isReceived() && !chatSingle.getContent().contains("You have been accepted to ")) {
                     mDatabase.child("conversation/single/" + dataSnapshot.getKey() + "/received").setValue(true);
-
+                    badgeCount = prefs.getInt("badgeCount", 0);
+                    ++badgeCount;
+                    prefs.edit().putInt("badgeCount", badgeCount).apply();
+                    ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
                     if (!ConversationActivity.idActive.equals(chatSingle.getUuid())) {
                         mDatabase.child("users").child("volunteers").child(chatSingle.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override

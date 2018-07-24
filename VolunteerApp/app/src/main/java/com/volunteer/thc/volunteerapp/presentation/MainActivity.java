@@ -54,6 +54,7 @@ import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerRewardsFra
 import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 
 public class MainActivity extends AppCompatActivity
@@ -138,6 +139,8 @@ public class MainActivity extends AppCompatActivity
                 });
 
         mPrefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        mPrefs.edit().putInt("badgeCount", 0).apply();
+        ShortcutBadger.applyCount(this, 0);
 
         String userType = mPrefs.getString("user_status", null);
         mUserType = UserType.lookupFromPrefsValue(userType);

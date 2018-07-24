@@ -72,7 +72,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 break;
         }
 
-        holder.content.setText(newsList.get(position).getContent());
+        holder.content.setText(newsList.get(position).getContent()); //TODO: resolve icon bug
         holder.time.setText(CalendarUtil.getNewsStringDateFromMM(newsList.get(position).getExpireDate()));
         holder.item.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -131,6 +131,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                // mDatabase.child("news/" + newsList.get(position).getNewsID()).setValue(null);
                 newsList.remove(position);
                 notifyItemRemoved(position);
+                notifyItemRangeChanged(position, newsList.size());
                 if(newsList.isEmpty()) {
                     newsDeletedListener.onNewsDeleted();
                 }
