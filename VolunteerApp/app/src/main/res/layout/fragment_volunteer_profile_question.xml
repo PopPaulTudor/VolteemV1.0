@@ -12,21 +12,66 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
+            android:layout_height="match_parent"
+            android:layout_margin="5dp">
 
             <TextView
+                android:id="@+id/all_questions_answered_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="intrebarile minunate ale lui Cristi"
-                android:textColor="@color/colorAccent"
-                android:textSize="69dp" />
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:drawableTop="@drawable/ic_questions_answered"
+                android:text="@string/all_questions_answered"
+                android:textColor="@android:color/black"
+                android:textSize="15sp"
+                android:visibility="gone" />
 
+            <TextView
+                android:id="@+id/answer_questions_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:text="@string/answer_questions"
+                android:textColor="@color/colorAccent"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/question_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/answer_questions_text"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/loading_questions"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <RelativeLayout
+                android:id="@+id/answerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/question_text"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="50dp"
+                android:layout_marginEnd="70dp"
+                android:layout_marginTop="16dp"
+                android:visibility="visible">
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/next_question"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/answerLayout"
+                android:layout_marginEnd="10dp"
+                android:text="@string/next_question"
+                android:visibility="gone" />
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>
-
-
-
 
 </RelativeLayout>

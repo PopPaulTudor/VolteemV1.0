@@ -17,7 +17,7 @@ public class InterviewQuestion {
     private AnswerType answerType;
 
     public InterviewQuestion() {
-        super();
+
     }
 
     public InterviewQuestion(String questionText, Map<String, Boolean> answerList, AnswerType answerType) {

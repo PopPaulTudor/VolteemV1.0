@@ -129,7 +129,6 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimary" />
 
-        <activity android:name=".presentation.volunteer.AnswerQuestionsActivity"></activity>
     </application>
 
 </manifest>

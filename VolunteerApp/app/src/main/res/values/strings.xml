@@ -107,4 +107,8 @@
     <string name="no_photo">You don\'t have a photo</string>
     <string name="old_version_title">Old version</string>
     <string name="old_version_message">You are using an outdated app version. Please update to the newest version.</string>
+    <string name="answer_questions">Answer questions</string>
+    <string name="loading_questions">Loading questions...</string>
+    <string name="next_question">NEXT QUESTION</string>
+    <string name="all_questions_answered">You\'ve answered all available questions!</string>
 </resources>

@@ -202,7 +202,6 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
 
     @Override
     public void onPicturesLoaded() {
-		//TODO asta e metoda care se apeleaza pt animatie in my events, aproape identica cu cealalta
         recyclerView.setAlpha(0f);
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.animate()

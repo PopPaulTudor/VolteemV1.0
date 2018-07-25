@@ -20,6 +20,7 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adapter.VolunteerEventsProfileAdapter;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.util.CalculateUtils;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,15 +50,13 @@ public class VolunteerProfileEventsFragment extends Fragment {
 
 
     private void loadEvents() {
-        mDatabase.child("events").orderByChild("users/" + user.getUid() + "/status").equalTo("accepted").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("events").orderByChild("users/" + user.getUid() + "/flag").equalTo(VolteemConstants.VOLUNTEER_EVENT_FLAG_DONE)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<Event> mEventsList = new ArrayList<>();
                 for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
-                    final Event currentEvent = eventSnapshot.getValue(Event.class);
-                    if (currentEvent.getFinishDate() < Calendar.getInstance().getTimeInMillis()) {
-                        mEventsList.add(currentEvent);
-                    }
+                    mEventsList.add(eventSnapshot.getValue(Event.class));
                 }
 
                 for (int i = 0; i < mEventsList.size(); ++i) {
