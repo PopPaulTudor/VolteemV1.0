@@ -139,8 +139,6 @@ public class MainActivity extends AppCompatActivity
                 });
 
         mPrefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        mPrefs.edit().putInt("badgeCount", 0).apply();
-        ShortcutBadger.applyCount(this, 0);
 
         String userType = mPrefs.getString("user_status", null);
         mUserType = UserType.lookupFromPrefsValue(userType);
@@ -168,6 +166,9 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         // deselect all menu items
         deselectAllMenuItems();
+
+        mPrefs.edit().putInt("badgeCount", 0).apply();
+        ShortcutBadger.applyCount(this, 0);
 
         if (selectedItem != null) {
             selectedItem.setChecked(true);

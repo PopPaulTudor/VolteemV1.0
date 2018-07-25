@@ -104,7 +104,7 @@ public class OrganiserEventsAdapter extends RecyclerView.Adapter<OrganiserEvents
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (TextUtils.equals(String.valueOf(dataSnapshot.child("status")
-                                        .getValue()), "accepted")) {
+                                        .getValue()), VolteemConstants.VOLUNTEER_EVENT_STATUS_ACCEPTED)) {
                                     holder.cardChecked.setImageResource(R.drawable.ic_checked);
                                 } else {
                                     holder.cardChecked.setImageResource(R.drawable.ic_watch);

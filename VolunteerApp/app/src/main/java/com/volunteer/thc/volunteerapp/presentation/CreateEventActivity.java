@@ -134,6 +134,7 @@ public class CreateEventActivity extends AppCompatActivity {
         resources = getResources();
         longAnimTime = resources.getInteger(android.R.integer.config_longAnimTime);
         populateUriList();
+        populateSpinnerArray();
 
         Picasso.get().load(imageUris.get(NUMBER_OF_EVENTS_ON_PAGE)).fit().centerCrop().into(mImage);
         Button mSaveEvent = findViewById(R.id.save_event);
@@ -483,7 +484,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         int lastEvent = (int) dataSnapshot.child("events").getChildrenCount();
                         DataSnapshot eventsNumber = dataSnapshot.child("eventsnumber");
-                        int eventsNr = eventsNumber.getValue() != null ? (Integer) eventsNumber.getValue() : 0;
+                        long eventsNr = eventsNumber.getValue() != null ? (Long) eventsNumber.getValue() : 0;
                         DatabaseUtils.writeData("users/organisers/" + mUser.getUid() + "/events/" + lastEvent, eventID);
                         DatabaseUtils.writeData("users/organisers/" + mUser.getUid() + "/eventsnumber", eventsNr + 1);
                     }

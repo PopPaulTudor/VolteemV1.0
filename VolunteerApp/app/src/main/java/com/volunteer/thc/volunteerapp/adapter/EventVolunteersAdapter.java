@@ -44,6 +44,7 @@ import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.chat.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -255,7 +256,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                                         "You have been accepted at " + event.getName() + "!", NewsMessage.ACCEPT, false, false));
 
                                 mDatabase.child("events").child(event.getEventID()).child("users").child(volunteerIDs.get(position)).child
-                                        ("status").setValue("accepted");
+                                        ("status").setValue(VolteemConstants.VOLUNTEER_EVENT_STATUS_ACCEPTED);
                                 Toast.makeText(parent.getContext(), "Accepted volunteer!", Toast.LENGTH_LONG).show();
                                 ChatSingle chatSingle = new ChatSingle(event.getCreated_by(), volunteerIDs.get(position), "You have been accepted " +
                                         "to " + event.getName(), UUID.randomUUID().toString(), Calendar.getInstance().getTimeInMillis(), false);
@@ -367,7 +368,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     }
 
     public void acceptVolunteer(final String id, Activity activity) {
-        mDatabase.child("events").child(event.getEventID()).child("users").child(id).child("status").setValue("accepted");
+        mDatabase.child("events").child(event.getEventID()).child("users").child(id).child("status").setValue(VolteemConstants.VOLUNTEER_EVENT_STATUS_ACCEPTED);
         Toast.makeText(activity, "Accepted volunteer!", Toast.LENGTH_LONG).show();
 
         String eventID = mDatabase.child("news").push().getKey();

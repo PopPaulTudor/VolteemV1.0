@@ -29,7 +29,7 @@ public class VolunteerEventsAdapter extends OrganiserEventsAdapter {
     protected void startSingleEventActivity(int position) {
         Intent intent = new Intent(context.getApplicationContext(), VolunteerSingleEventActivity
                 .class);
-        intent.putExtra("SingleEvent", eventsList.get(position));
+        intent.putExtra(VolteemConstants.INTENT_EXTRA_SINGLE_EVENT, eventsList.get(position));
         intent.putExtra(VolteemConstants.VOLUNTEER_SINGLE_ACTIVITY_CAME_FROM_KEY, mCameFrom);
         context.startActivity(intent);
     }
