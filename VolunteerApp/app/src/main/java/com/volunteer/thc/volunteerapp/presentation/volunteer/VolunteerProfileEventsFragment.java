@@ -16,10 +16,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.VolunteerEventsProfileAdapter;
+import com.volunteer.thc.volunteerapp.adapter.VolunteerEventsProfileAdapter;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.util.CalculateUtils;
 
@@ -43,7 +41,7 @@ public class VolunteerProfileEventsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_volunteer_profile_events, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_events_profile);
+        recyclerView = view.findViewById(R.id.recycler_view_events_profile);
         loadEvents();
 
         return view;

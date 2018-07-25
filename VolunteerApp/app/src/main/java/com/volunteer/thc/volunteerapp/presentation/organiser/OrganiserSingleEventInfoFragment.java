@@ -31,14 +31,12 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.ChangeEvent;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
@@ -46,10 +44,10 @@ import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.UUID;
 
 /**
  * Created by Cristi on 7/27/2017.
@@ -79,21 +77,21 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_info, container, false);
 
-        mCurrentEvent = (Event) getArguments().getSerializable("currentEvent");
+        mCurrentEvent = (Event) getArguments().getSerializable(VolteemConstants.INTENT_CURRENT_EVENT);
         populateSpinnerArray();
 
-        saveChanges = (Button) view.findViewById(R.id.save_changes);
-        cancelChanges = (Button) view.findViewById(R.id.cancel_changes);
-        mName = (EditText) view.findViewById(R.id.event_deadline);
-        mLocation = (EditText) view.findViewById(R.id.event_location);
-        mStartDate = (EditText) view.findViewById(R.id.event_date_start);
-        mFinishDate = (EditText) view.findViewById(R.id.event_date_finish);
-        mDeadline = (EditText) view.findViewById(R.id.event_name);
-        mType = (Spinner) view.findViewById(R.id.event_type);
-        mDescription = (EditText) view.findViewById(R.id.event_description);
-        mSize = (EditText) view.findViewById(R.id.event_size);
-        mImage = (ImageView) view.findViewById(R.id.event_org_image);
-        changeContract = (Button) view.findViewById(R.id.event_contract);
+        saveChanges = view.findViewById(R.id.save_changes);
+        cancelChanges = view.findViewById(R.id.cancel_changes);
+        mName = view.findViewById(R.id.event_deadline);
+        mLocation = view.findViewById(R.id.event_location);
+        mStartDate = view.findViewById(R.id.event_date_start);
+        mFinishDate = view.findViewById(R.id.event_date_finish);
+        mDeadline = view.findViewById(R.id.event_name);
+        mType = view.findViewById(R.id.event_type);
+        mDescription = view.findViewById(R.id.event_description);
+        mSize = view.findViewById(R.id.event_size);
+        mImage = view.findViewById(R.id.event_org_image);
+        changeContract = view.findViewById(R.id.event_contract);
 
         changeContract.setClickable(false);
         mImage.setClickable(false);
@@ -125,7 +123,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
         filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+                Picasso.get().load(uri).fit().centerCrop().into(mImage);
             }
         });
 
@@ -155,28 +153,32 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String choice = arrayAdapter.getItem(which);
-                        if (choice.contains("Change")) {
+                        if (choice != null && choice.contains("Change")) {
                             if (PermissionUtil.isStorageReadPermissionGranted(getContext())) {
                                 Intent intent = new Intent(Intent.ACTION_PICK);
                                 intent.setType("image/*");
                                 startActivityForResult(intent, GALLERY_INTENT);
 
                             } else {
-                                Snackbar.make(getView(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                                    }
-                                }).show();
+                                if (getView() != null) {
+                                    Snackbar.make(getView(), getString(R.string.storage_permission_needed), Snackbar.LENGTH_LONG)
+                                            .setAction("Set Permission", new
+                                                    View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission
+                                                                    .READ_EXTERNAL_STORAGE}, 1);
+                                                        }
+                                                    }).show();
+                                }
                             }
 
                         } else {
-
                             DisplayPhotoFragment displayPhotoFragment = new DisplayPhotoFragment();
                             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             Bundle bundle = new Bundle();
                             bundle.putString("type", "event");
-                            bundle.putString("eventID", mCurrentEvent.getEventID());
+                            bundle.putString(VolteemConstants.INTENT_EVENT_ID, mCurrentEvent.getEventID());
                             displayPhotoFragment.setArguments(bundle);
                             fragmentTransaction.add(R.id.event_detailed_photo, displayPhotoFragment).addToBackStack("showImage");
                             fragmentTransaction.commit();
@@ -222,15 +224,20 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        boolean result;
         switch (item.getItemId()) {
             case R.id.action_edit:
                 onEditItemPressed();
-                return true;
+                result = true;
+                break;
             case R.id.action_delete:
-                onDeleteItemPressed();
+                result = super.onOptionsItemSelected(item);
+                break;
             default:
-                return super.onOptionsItemSelected(item);
+                result = super.onOptionsItemSelected(item);
+                break;
         }
+        return result;
     }
 
     private void onEditItemPressed() {
@@ -288,7 +295,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 mCurrentEvent.setDeadline(currentDeadline);
             }
 
-            if (!currentSize.equals(mCurrentEvent.getSize())) {
+            if (!currentSize.equals(String.valueOf(mCurrentEvent.getSize()))) {
                 mDatabase.child("events").child(mCurrentEvent.getEventID()).child("size").setValue(Integer.parseInt(currentSize));
                 mCurrentEvent.setSize(Integer.parseInt(currentSize));
             }
@@ -305,11 +312,12 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 filePath.putFile(uriPDF);
 
 
-                for(String id: mCurrentEvent.getAccepted_volunteers()) {
+                for (String id : mCurrentEvent.getAccepted_volunteers()) {
 
                     String newsID = mDatabase.child("news").push().getKey();
-                    mDatabase.child("news").child(newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, "soon", DatabaseUtils.getUserID(), id,
-                            "A new contract has been uploaded for" +mCurrentEvent.getName(), NewsMessage.FEEDBACK, false, false));
+                    mDatabase.child("news").child(newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, "soon",
+                            DatabaseUtils.getUserID(), id,
+                            "A new contract has been uploaded for" + mCurrentEvent.getName(), NewsMessage.FEEDBACK, false, false));
                 }
             }
 
@@ -358,17 +366,20 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 .setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        OrganiserEventsFragment.hasActionHappened = true;
                         for (String volunteer_id : mCurrentEvent.getRegistered_volunteers()) {
                             String newsID = mDatabase.child("news").push().getKey();
-                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(), DatabaseUtils.getUserID(),
-                                    volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED, false, false);
+                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(),
+                                    DatabaseUtils.getUserID(),
+                                    volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED,
+                                    false, false);
                             mDatabase.child("news/" + newsID).setValue(newsMessage);
                         }
                         for (String volunteer_id : mCurrentEvent.getAccepted_volunteers()) {
                             String newsID = mDatabase.child("news").push().getKey();
-                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(), DatabaseUtils.getUserID(),
-                                    volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED, false, false);
+                            NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, mCurrentEvent.getEventID(),
+                                    DatabaseUtils.getUserID(),
+                                    volunteer_id, mCurrentEvent.getName() + " has been deleted by its organiser.", NewsMessage.EVENT_DELETED,
+                                    false, false);
                             mDatabase.child("news/" + newsID).setValue(newsMessage);
                         }
                         mDatabase.child("events").child(mCurrentEvent.getEventID()).setValue(null);
@@ -395,7 +406,7 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
             if (requestCode == GALLERY_INTENT) {
                 uriPicture = data.getData();
                 hasUserSelectedPicture = true;
-                Picasso.with(getActivity()).load(uriPicture).fit().centerCrop().into(mImage);
+                Picasso.get().load(uriPicture).fit().centerCrop().into(mImage);
             } else {
                 if (requestCode == PICK_PDF) {
                     uriPDF = data.getData();
@@ -407,7 +418,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     }
 
     public void toggleEdit(boolean bool) {
-
         mName.setEnabled(bool);
         mLocation.setEnabled(bool);
         mType.setEnabled(bool);
@@ -419,7 +429,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     }
 
     public boolean validateForm() {
-
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) &&
                 editTextIsValid(mDescription) && editTextIsValid(mDeadline) && editTextIsValid(mSize));
@@ -427,7 +436,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
     }
 
     private boolean editTextIsValid(EditText mEditText) {
-
         String text = mEditText.getText().toString();
         if (TextUtils.isEmpty(text)) {
             mEditText.setError("This field can not be empty.");
@@ -462,7 +470,6 @@ public class OrganiserSingleEventInfoFragment extends Fragment {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
                         month++;
                         editText.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;

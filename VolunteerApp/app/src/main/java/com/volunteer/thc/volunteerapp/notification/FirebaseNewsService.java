@@ -25,22 +25,22 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.ChatGroup;
 import com.volunteer.thc.volunteerapp.model.ChatSingle;
-import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.Organiser;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
-import com.volunteer.thc.volunteerapp.presentation.Chat.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
+import com.volunteer.thc.volunteerapp.presentation.chat.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventActivity;
 import com.volunteer.thc.volunteerapp.presentation.volunteer.VolunteerSingleEventActivity;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 /**
  * Created by Cristi on 8/26/2017.
@@ -53,6 +53,7 @@ public class FirebaseNewsService extends Service {
     private SharedPreferences prefs;
     private Calendar date = Calendar.getInstance();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+    private int badgeCount = 0;
 
     @Nullable
     @Override
@@ -84,6 +85,10 @@ public class FirebaseNewsService extends Service {
                             if (!newsMessage.isNotified()) {
                                 if (prefs.getBoolean("notifications", true)) {
                                     sendNews(newsMessage);
+                                    badgeCount = prefs.getInt("badgeCount", 0);
+                                    ++badgeCount;
+                                    prefs.edit().putInt("badgeCount", badgeCount).apply();
+                                    ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
                                 }
                                 mDatabase.child("news/" + dataSnapshot.getKey() + "/notified").setValue(true);
                                 if (newsMessage.getType() == NewsMessage.EVENT_DELETED) {
@@ -118,13 +123,16 @@ public class FirebaseNewsService extends Service {
         });
 
 
-        mDatabase.child("conversation").child("single").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
+        mDatabase.child("conversation").child("single").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 final ChatSingle chatSingle = dataSnapshot.getValue(ChatSingle.class);
                 if (!chatSingle.isReceived() && !chatSingle.getContent().contains("You have been accepted to ")) {
                     mDatabase.child("conversation/single/" + dataSnapshot.getKey() + "/received").setValue(true);
-
+                    badgeCount = prefs.getInt("badgeCount", 0);
+                    ++badgeCount;
+                    prefs.edit().putInt("badgeCount", badgeCount).apply();
+                    ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
                     if (!ConversationActivity.idActive.equals(chatSingle.getUuid())) {
                         mDatabase.child("users").child("volunteers").child(chatSingle.getSentBy()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -132,7 +140,7 @@ public class FirebaseNewsService extends Service {
                                 if (dataSnapshot.exists()) {
 
                                     final Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
-                                    final long ONE_MEGABYTE = 1024 * 1024;
+                                    final long ONE_MEGABYTE = 1024L * 1024L;
                                     storageRef.child("Photos").child("User").child(chatSingle.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                         @Override
                                         public void onSuccess(byte[] bytes) {
@@ -149,7 +157,7 @@ public class FirebaseNewsService extends Service {
 
                                             final Organiser organiser = dataSnapshot.getValue(Organiser.class);
 
-                                            final long ONE_MEGABYTE = 1024 * 1024;
+                                            final long ONE_MEGABYTE = 1024L * 1024L;
                                             storageRef.child("Photos").child("User").child(chatSingle.getSentBy()).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                                 @Override
                                                 public void onSuccess(byte[] bytes) {
@@ -213,8 +221,8 @@ public class FirebaseNewsService extends Service {
         Intent intent;
         switch (message.getType()) {
             case NewsMessage.ACCEPT:
-                prefs.edit().putInt("cameFrom", 2).apply();
                 intent = new Intent(this, VolunteerSingleEventActivity.class);
+                intent.putExtra(VolteemConstants.VOLUNTEER_SINGLE_ACTIVITY_CAME_FROM_KEY, 2);
                 break;
             case NewsMessage.REGISTERED:
                 intent = new Intent(this, OrganiserSingleEventActivity.class);
@@ -222,7 +230,7 @@ public class FirebaseNewsService extends Service {
             default:
                 intent = new Intent(this, MainActivity.class);
         }
-        intent.putExtra("eventID", message.getEventID());
+        intent.putExtra(VolteemConstants.INTENT_EVENT_ID, message.getEventID());
         PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
         final Notification notification = new Notification.Builder(this)
                 .setContentTitle("News")

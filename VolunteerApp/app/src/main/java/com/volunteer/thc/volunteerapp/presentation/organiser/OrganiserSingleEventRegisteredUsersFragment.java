@@ -19,10 +19,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.EventVolunteersAdapter;
-import com.volunteer.thc.volunteerapp.interrface.ActionListener;
+import com.volunteer.thc.volunteerapp.adapter.EventVolunteersAdapter;
+import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 
 public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implements ActionListener.VolunteersRemovedListener{
 
+    public static EventVolunteersAdapter adapter;
     private ArrayList<String> mRegisteredUsers;
     private ArrayList<Volunteer> mVolunteers = new ArrayList<>();
     private RecyclerView mRegisteredUsersRecView;
@@ -39,8 +41,6 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implem
     private Event currentEvent;
     private ProgressBar progressBar;
     private TextView noVolunteersText;
-    public static EventVolunteersAdapter adapter;
-
 
     @Nullable
     @Override
@@ -48,15 +48,16 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implem
 
         View view = inflater.inflate(R.layout.fragment_organiser_single_event_registered_users, container, false);
 
-        progressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
-        noVolunteersText = (TextView) view.findViewById(R.id.no_volunteers);
-        currentEvent = (Event) getArguments().getSerializable("currentEvent");
-        mRegisteredUsersRecView = (RecyclerView) view.findViewById(R.id.RecViewRegUsers);
+        progressBar = view.findViewById(R.id.indeterminateBar);
+        noVolunteersText = view.findViewById(R.id.no_volunteers);
+        currentEvent = (Event) getArguments().getSerializable(VolteemConstants.INTENT_CURRENT_EVENT);
+        mRegisteredUsersRecView = view.findViewById(R.id.RecViewRegUsers);
         mRegisteredUsersRecView.setHasFixedSize(true);
 
         progressBar.setVisibility(View.VISIBLE);
 
-        mDatabase.child("events/" + currentEvent.getEventID() + "/users").orderByChild("status").equalTo("pending").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("events/" + currentEvent.getEventID() + "/users").orderByChild("status")
+                .equalTo(VolteemConstants.VOLUNTEER_EVENT_STATUS_PENDING).addListenerForSingleValueEvent (new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mRegisteredUsers = new ArrayList<>();

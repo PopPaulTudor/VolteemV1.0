@@ -2,9 +2,7 @@ package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
@@ -52,14 +50,16 @@ import com.volunteer.thc.volunteerapp.model.RegisteredUser;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
-import com.volunteer.thc.volunteerapp.widgets.SquareImageView;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class VolunteerSingleEventActivity extends AppCompatActivity {
 
-    private TextView mEventName, mEventLocation, mEventType, mEventDescription, mEventDeadline, mEventSize, mStatus, mEventStartDate, mEventFinishDate;
+    private static final String TAG = "VolSinEventAct";
+    private TextView mEventName, mEventLocation, mEventType, mEventDescription, mEventDeadline,
+            mEventSize, mStatus, mEventStartDate, mEventFinishDate;
     private Event currentEvent;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -72,50 +72,54 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private Button mLeaveEvent, mDownloadContract;
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private SquareImageView squareImageView;
+    private int mCameForm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCameForm = getIntent().getIntExtra(VolteemConstants
+                .VOLUNTEER_SINGLE_ACTIVITY_CAME_FROM_KEY, 0);
+
         initActivityTransitions();
         setContentView(R.layout.activity_volunteer_single_event);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarImage = (ImageView) findViewById(R.id.collapsing_toolbar_image);
-        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+        collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarImage = findViewById(R.id.collapsing_toolbar_image);
+        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color
+                .transparent));
         storageRef = FirebaseStorage.getInstance().getReference();
 
         resources = getResources();
         populateTypeList();
         populateUriList();
 
-        mEventName = (TextView) findViewById(R.id.event_name);
-        mEventLocation = (TextView) findViewById(R.id.event_location);
-        mEventStartDate = (TextView) findViewById(R.id.event_start_date);
-        mEventFinishDate = (TextView) findViewById(R.id.event_finish_date);
-        mEventType = (TextView) findViewById(R.id.event_type);
-        mEventDescription = (TextView) findViewById(R.id.event_description);
-        mEventDeadline = (TextView) findViewById(R.id.event_deadline);
-        mEventSize = (TextView) findViewById(R.id.event_size);
-        mStatus = (TextView) findViewById(R.id.event_status);
+        mEventName = findViewById(R.id.event_name);
+        mEventLocation = findViewById(R.id.event_location);
+        mEventStartDate = findViewById(R.id.event_start_date);
+        mEventFinishDate = findViewById(R.id.event_finish_date);
+        mEventType = findViewById(R.id.event_type);
+        mEventDescription = findViewById(R.id.event_description);
+        mEventDeadline = findViewById(R.id.event_deadline);
+        mEventSize = findViewById(R.id.event_size);
+        mStatus = findViewById(R.id.event_status);
 
 
-        mSignupForEventFloatingButton = (FloatingActionButton) findViewById(R.id.fab);
-        mLeaveEvent = (Button) findViewById(R.id.event_leave);
-        mDownloadContract = (Button) findViewById(R.id.event_pdf);
-        currentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
+        mSignupForEventFloatingButton = findViewById(R.id.fab);
+        mLeaveEvent = findViewById(R.id.event_leave);
+        mDownloadContract = findViewById(R.id.event_pdf);
+        currentEvent = (Event) getIntent().getSerializableExtra(VolteemConstants.INTENT_EXTRA_SINGLE_EVENT);
 
         if (currentEvent != null) {
             loadUI();
         } else {
-            String eventID = getIntent().getStringExtra("eventID");
+            String eventID = getIntent().getStringExtra(VolteemConstants.INTENT_EVENT_ID);
             if (eventID == null) {
-                eventID = getIntent().getStringExtra("newsEventID");
+                eventID = getIntent().getStringExtra(VolteemConstants.INTENT_NEWS_EVENT_ID);
             }
             mDatabase.child("events/" + eventID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -126,35 +130,40 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.e("VolSingleEveA", databaseError.getMessage());
+                    Log.e(TAG, databaseError.getMessage());
                 }
             });
         }
-
 
 
         mDownloadContract.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if (PermissionUtil.isStorageWritePermissionGranted(VolunteerSingleEventActivity.this)) {
-                    final File rootPath = new File(Environment.getExternalStorageDirectory(), "Volteem");
+                if (PermissionUtil.isStorageWritePermissionGranted(VolunteerSingleEventActivity
+                        .this)) {
+                    final File rootPath = new File(Environment.getExternalStorageDirectory(),
+                            "Volteem");
                     if (!rootPath.exists()) {
                         rootPath.mkdirs();
                     }
                     final File localFile = new File(rootPath, currentEvent.getName() + ".pdf");
 
-                    storageRef.child("Contracts").child("Event").child(currentEvent.getEventID()).getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    storageRef.child("Contracts").child("Event").child(currentEvent.getEventID())
+                            .getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
-                            Snackbar.make(getCurrentFocus(), "Contract downloaded", Snackbar.LENGTH_LONG).setAction("Open Folder", new View.OnClickListener() {
+                            Snackbar.make(getCurrentFocus(), "Contract downloaded", Snackbar
+                                    .LENGTH_LONG).setAction("Open Folder", new View
+                                    .OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
 
                                     // TODO: 29.10.2017 send user to path
                                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                                    intent.setDataAndType(Uri.fromFile(localFile.getAbsoluteFile()), "*/*");
+                                    intent.setDataAndType(Uri.fromFile(localFile.getAbsoluteFile
+                                            ()), "*/*");
                                     startActivity(Intent.createChooser(intent, "pdf"));
 
                                 }
@@ -165,15 +174,20 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             if (e.toString().contains("does not exist at location")) {
-                                Snackbar.make(getCurrentFocus(), "Contract is not uploaded yet. We will notify you when the contract will be available", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(getCurrentFocus(), "Contract is not uploaded yet. " +
+                                                "We will notify you when the contract will be " +
+                                                "available",
+                                        Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
                 } else {
-                    Snackbar.make(getCurrentFocus(), "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                    Snackbar.make(getCurrentFocus(), "Please allow storage permission", Snackbar
+                            .LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ActivityCompat.requestPermissions(VolunteerSingleEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                            ActivityCompat.requestPermissions(VolunteerSingleEventActivity.this,
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                         }
                     }).show();
                 }
@@ -184,27 +198,39 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mSignupForEventFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(VolunteerSingleEventActivity.this);
-                View parentView = getLayoutInflater().inflate(R.layout.event_register_bottom_sheet_design, null);
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog
+                        (VolunteerSingleEventActivity.this);
+                View parentView = getLayoutInflater().inflate(R.layout
+                        .event_register_bottom_sheet_design, null);
                 mBottomSheetDialog.setContentView(parentView);
-                BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
+                BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View)
+                        parentView.getParent());
                 mBottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension
                         (TypedValue.COMPLEX_UNIT_DIP, 210, getResources().getDisplayMetrics()));
                 mBottomSheetDialog.show();
 
-                parentView.findViewById(R.id.register_event).setOnClickListener(new View.OnClickListener() {
+                parentView.findViewById(R.id.register_event).setOnClickListener(new View
+                        .OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
                         VolunteerEventsFragment.hasActionHappened = true;
                         String newsID = mDatabase.child("news").push().getKey();
-                        NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, currentEvent.getEventID(), user.getUid(), currentEvent.getCreated_by()
-                                , "A new volunteer registered for your event" + currentEvent.getName(), NewsMessage.REGISTERED, false, false);
-                        mDatabase.child("news/" + newsID).setValue(newsMessage);
+
+                        mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil
+                                .getCurrentTimeInMillis(),
+                                newsID, currentEvent.getEventID(), user.getUid(), currentEvent
+                                .getCreated_by()
+                                , "A new volunteer registered for your event " + currentEvent
+                                .getName()
+                                , NewsMessage.REGISTERED, false, false));
+
                         mBottomSheetDialog.dismiss();
-                        Toast.makeText(VolunteerSingleEventActivity.this, "Signing up for event...", Toast.LENGTH_SHORT).show();
-                        mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid())
-                                .setValue(new RegisteredUser("pending", user.getUid(), "valid"));
+                        Toast.makeText(VolunteerSingleEventActivity.this, "Signing up for " +
+                                "event...", Toast.LENGTH_SHORT).show();
+                        mDatabase.child("events").child(currentEvent.getEventID()).child("users")
+                                .child(user.getUid())
+                                .setValue(new RegisteredUser(VolteemConstants.VOLUNTEER_EVENT_STATUS_PENDING, user.getUid(), VolteemConstants.VOLUNTEER_EVENT_FLAG_PENDING));
                         finish();
                     }
                 });
@@ -222,10 +248,13 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(VolunteerSingleEventActivity.this);
-                View parentView = getLayoutInflater().inflate(R.layout.leave_event_bottom_sheet_design, null);
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog
+                        (VolunteerSingleEventActivity.this);
+                View parentView = getLayoutInflater().inflate(R.layout
+                        .leave_event_bottom_sheet_design, null);
                 mBottomSheetDialog.setContentView(parentView);
-                BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
+                BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from((View)
+                        parentView.getParent());
                 mBottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension
                         (TypedValue.COMPLEX_UNIT_DIP, 210, getResources().getDisplayMetrics()));
                 mBottomSheetDialog.show();
@@ -236,12 +265,17 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
                         VolunteerMyEventsFragment.hasActionHappened = true;
                         mBottomSheetDialog.dismiss();
-                        Toast.makeText(VolunteerSingleEventActivity.this, "Leaving event...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(VolunteerSingleEventActivity.this, "Leaving event...",
+                                Toast.LENGTH_SHORT).show();
                         String newsID = mDatabase.child("news").push().getKey();
-                        mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, currentEvent.getEventID(),
-                                user.getUid(), currentEvent.getCreated_by(), "A volunteer has left your event " + currentEvent.getName() + ".", NewsMessage.VOLUNTEER_LEFT,
+                        mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil
+                                .getCurrentTimeInMillis(), newsID, currentEvent.getEventID(),
+                                user.getUid(), currentEvent.getCreated_by(), "A volunteer has " +
+                                "left your event " + currentEvent.getName() + ".", NewsMessage
+                                .VOLUNTEER_LEFT,
                                 false, false));
-                        mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid()).setValue(null);
+                        mDatabase.child("events").child(currentEvent.getEventID()).child("users")
+                                .child(user.getUid()).setValue(null);
                         events.remove(currentEvent.getEventID());
                         finish();
                     }
@@ -267,15 +301,18 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     }
 
     private void loadUI() {
-        storageRef.child("Photos").child("Event").child(currentEvent.getEventID()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+        storageRef.child("Photos").child("Event").child(currentEvent.getEventID()).getDownloadUrl
+                ().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    Picasso.with(getApplicationContext()).load(task.getResult()).fit().centerInside()
-
+                    Picasso.get().load(task.getResult()).fit()
+                            .centerInside()
                             .into(collapsingToolbarImage);
                 } else {
-                    Picasso.with(getApplicationContext()).load(imageUris.get(typeList.indexOf(currentEvent.getType()))).fit().centerCrop().into(collapsingToolbarImage);
+                    Picasso.get().load(imageUris.get(typeList.indexOf
+                            (currentEvent.getType()))).fit().centerCrop().into
+                            (collapsingToolbarImage);
                 }
             }
         });
@@ -291,28 +328,26 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         String deadline = CalendarUtil.getStringDateFromMM(currentEvent.getDeadline());
         mEventSize.setText(currentEvent.getSize() + " volunteers");
 
-
         int index = deadline.lastIndexOf("/");
         deadline = deadline.substring(0, index) + deadline.substring(index + 1);
         mEventDeadline.setText(deadline);
 
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
-
-        if (prefs.getInt("cameFrom", 1) == 1) {
+        if (mCameForm == 1) {
             mSignupForEventFloatingButton.setVisibility(View.VISIBLE);
         } else {
             mStatus.setVisibility(View.VISIBLE);
             mLeaveEvent.setVisibility(View.VISIBLE);
 
-            mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid())
+            mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user
+                    .getUid())
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists() && TextUtils.equals(dataSnapshot.child("status").getValue().toString(), "accepted")) {
+                            if (dataSnapshot.exists() && TextUtils.equals(dataSnapshot.child
+                                    ("status").getValue().toString(), VolteemConstants.VOLUNTEER_EVENT_STATUS_ACCEPTED)) {
                                 mStatus.setText("Accepted");
                                 mStatus.setTextColor(Color.rgb(25, 156, 136));
                                 mDownloadContract.setVisibility(View.VISIBLE);
-
                             }
                         }
 
@@ -332,7 +367,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (getIntent().getStringExtra("eventID") != null) {
+        if (getIntent().getStringExtra(VolteemConstants.INTENT_EVENT_ID) != null) {
             startActivity(new Intent(this, MainActivity.class));
         }
         super.onBackPressed();
@@ -341,7 +376,8 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
     private Uri parseUri(int ID) {
         return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + resources.getResourcePackageName(ID)
-                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName(ID));
+                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName
+                (ID));
 
     }
 
@@ -362,6 +398,4 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         typeList.add("Training");
         typeList.add("Other");
     }
-
-
 }

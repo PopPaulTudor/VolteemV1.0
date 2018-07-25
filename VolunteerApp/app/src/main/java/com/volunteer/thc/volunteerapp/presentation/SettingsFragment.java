@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -62,8 +63,8 @@ public class SettingsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         setAppVersionName(view);
-        generateOrganiserRegisterCode = (Button) view.findViewById(R.id.settings_generate_code);
-        notificationsSwitch = (SwitchCompat) view.findViewById(R.id.notification_button);
+        generateOrganiserRegisterCode = view.findViewById(R.id.settings_generate_code);
+        notificationsSwitch = view.findViewById(R.id.notification_button);
         prefs = getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
         notifications = prefs.getBoolean("notifications", true);
         notificationsSwitch.setChecked(notifications);
@@ -122,6 +123,13 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.settings_facebook_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(getFacebookIntent(getContext()));
+            }
+        });
+
         if (TextUtils.equals(user.getUid(), "QopA0aWk1uNibuwDHtqNvbYCKQE3") ||
                 TextUtils.equals(user.getUid(), "1leJRayuwnhdB1oxVB9mWqWODE93") ||
                 TextUtils.equals(user.getUid(), "OT1yfzTTKadOdRZ1ivLCBJCzIaR2")) {
@@ -162,9 +170,9 @@ public class SettingsFragment extends Fragment {
                         (TypedValue.COMPLEX_UNIT_DIP, 300, getResources().getDisplayMetrics()));
                 mBottomSheetDialog.show();
 
-                mOldPassword = (EditText) parentView.findViewById(R.id.oldPassword);
-                mNewPassword = (EditText) parentView.findViewById(R.id.newPassword);
-                mNewPasswordAgain = (EditText) parentView.findViewById(R.id.newPasswordAgain);
+                mOldPassword = parentView.findViewById(R.id.oldPassword);
+                mNewPassword = parentView.findViewById(R.id.newPassword);
+                mNewPasswordAgain = parentView.findViewById(R.id.newPasswordAgain);
 
                 parentView.findViewById(R.id.change_password).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -214,7 +222,7 @@ public class SettingsFragment extends Fragment {
                         (TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics()));
                 mBottomSheetDialog.show();
 
-                mPassword = (EditText) parentView.findViewById(R.id.password);
+                mPassword = parentView.findViewById(R.id.password);
 
                 parentView.findViewById(R.id.delete_account).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -256,9 +264,9 @@ public class SettingsFragment extends Fragment {
         view.findViewById(R.id.settings_feedback).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent Email = new Intent(Intent.ACTION_SEND);
-                Email.setType("text/email");
-                Email.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact.volteem@gmail.com"});
+                Intent Email = new Intent(Intent.ACTION_SENDTO);
+                Email.setType("message/rfc822");
+                Email.setData(Uri.parse("mailto:contact.volteem@gmail.com"));
                 Email.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
                 Email.putExtra(Intent.EXTRA_TEXT, "");
                 startActivity(Intent.createChooser(Email, "Send Feedback:"));
@@ -286,7 +294,7 @@ public class SettingsFragment extends Fragment {
             Log.e("SettingsFragment", e.getMessage());
         }
 
-        TextView appNameView = (TextView) view.findViewById(R.id.text_settings);
+        TextView appNameView = view.findViewById(R.id.text_settings);
         appNameView.setText("- App version: " + version + " -");
     }
 
@@ -295,5 +303,14 @@ public class SettingsFragment extends Fragment {
             return false;
         }
         return true;
+    }
+
+    private Intent getFacebookIntent(Context context) {
+        try {
+            context.getPackageManager().getPackageInfo("com.facebook.katana", 0);
+            return new Intent(Intent.ACTION_VIEW, Uri.parse("fb://page/501759200181206"));
+        } catch (Exception e) {
+            return new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/volteemapp"));
+        }
     }
 }

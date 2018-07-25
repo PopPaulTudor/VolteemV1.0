@@ -59,7 +59,6 @@ public class OrganiserRegisterFragment extends Fragment {
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private EditText mEmail, mPassword, mPhone, mCity, mCompany, mConfirmPass, mRegisterCode;
-    private Button mRegister, mBack;
     private Intent intent;
     private ProgressDialog mProgressDialog;
     private CircleImageView mImage;
@@ -68,7 +67,7 @@ public class OrganiserRegisterFragment extends Fragment {
     private boolean foundCode = false;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_organiserregister, container, false);
@@ -76,24 +75,24 @@ public class OrganiserRegisterFragment extends Fragment {
         mStorage = FirebaseStorage.getInstance().getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-        mEmail = (EditText) view.findViewById(R.id.email);
-        mConfirmPass = (EditText) view.findViewById(R.id.passwordConfirm);
-        mPassword = (EditText) view.findViewById(R.id.password);
-        mPhone = (EditText) view.findViewById(R.id.user_phone);
-        mCity = (EditText) view.findViewById(R.id.user_city);
-        mCompany = (EditText) view.findViewById(R.id.user_company);
-        mRegister = (Button) view.findViewById(R.id.register_user);
-        mImage = (CircleImageView) view.findViewById(R.id.photo);
-        mRegisterCode = (EditText) view.findViewById(R.id.user_register_code);
-        mBack = (Button) view.findViewById(R.id.back);
+        mEmail = view.findViewById(R.id.email);
+        mConfirmPass = view.findViewById(R.id.passwordConfirm);
+        mPassword = view.findViewById(R.id.password);
+        mPhone = view.findViewById(R.id.user_phone);
+        mCity = view.findViewById(R.id.user_city);
+        mCompany = view.findViewById(R.id.user_company);
+        Button register = view.findViewById(R.id.register_user);
+        mImage = view.findViewById(R.id.photo);
+        mRegisterCode = view.findViewById(R.id.user_register_code);
+        Button back = view.findViewById(R.id.back);
         intent = new Intent(getActivity(), MainActivity.class);
 
         uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + getResources().getResourcePackageName(R.drawable.user)
                 + '/' + getResources().getResourceTypeName(R.drawable.user) + '/' + getResources().getResourceEntryName(R.drawable.user));
-        Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
+        Picasso.get().load(uri).fit().centerCrop().into(mImage);
 
-        mRegister.setOnClickListener(new View.OnClickListener() {
+        register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (validateForm()) {
@@ -104,7 +103,7 @@ public class OrganiserRegisterFragment extends Fragment {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                if (TextUtils.equals(code, dataSnapshot1.getValue().toString())) {
+                                if (TextUtils.equals(code, String.valueOf(dataSnapshot1.getValue()))) {
                                     foundCode = true;
                                     createAccount(mEmail.getText().toString(), mPassword.getText().toString());
                                     mDatabase.child("codes/" + dataSnapshot1.getKey()).setValue(null);
@@ -113,7 +112,7 @@ public class OrganiserRegisterFragment extends Fragment {
                             }
                             if (!foundCode) {
                                 mProgressDialog.dismiss();
-                                mRegisterCode.setError("This code is invalid or has already been used.");
+                                mRegisterCode.setError(getString(R.string.invalid_registration_code));
                                 mRegisterCode.requestFocus();
                             } else {
                                 mRegisterCode.setError(null);
@@ -122,7 +121,7 @@ public class OrganiserRegisterFragment extends Fragment {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
+                            // do nothing for now
                         }
                     });
                 }
@@ -139,21 +138,27 @@ public class OrganiserRegisterFragment extends Fragment {
                     startActivityForResult(intent, GALLERY_INTENT);
 
                 } else {
-                    Snackbar.make(view, "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                        }
-                    }).show();
+                    if (getActivity() != null) {
+                        Snackbar.make(view, getString(R.string.storage_permission_needed), Snackbar.LENGTH_LONG).setAction("Set Permission", new View
+                                .OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                            }
+                        }).show();
+                    }
                 }
             }
         });
 
-        mBack.setOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), LoginActivity.class));
-                getActivity().finish();
+
+                if (getActivity() != null) {
+                    getActivity().finish();
+                }
             }
         });
 
@@ -163,18 +168,18 @@ public class OrganiserRegisterFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
+        if (isVisibleToUser && getActivity() != null) {
             AlertDialog needCodeDialog = new AlertDialog.Builder(getActivity())
-                    .setTitle("Registration code")
-                    .setMessage("To avoid spam, please submit an email to contact.volteem@gmail.com to receive your organiser registration code.")
+                    .setTitle(getString(R.string.registration_title))
+                    .setMessage(getString(R.string.registration_code_message))
                     .setCancelable(false)
-                    .setPositiveButton("I have a code", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(getString(R.string.code_have), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-
+                            // do nothing for now
                         }
                     })
-                    .setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getString(R.string.back), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             startActivity(new Intent(getActivity(), LoginActivity.class));
@@ -187,78 +192,86 @@ public class OrganiserRegisterFragment extends Fragment {
     }
 
     private void createAccount(final String email, String password) {
-        Log.d("TAG", "CreateAccount: " + email);
+        Log.d(TAG, "CreateAccount: " + email);
 
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+        if (getActivity() != null) {
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
 
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
 
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "createUserwithEmail:Succes");
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "createUserWithEmail: Success");
 
-                            FirebaseUser user = mAuth.getCurrentUser();
+                                FirebaseUser user = mAuth.getCurrentUser();
 
-                            String userID = user.getUid();
-                            String user_company = mCompany.getText().toString();
-                            String user_city = mCity.getText().toString();
-                            String user_phone = mPhone.getText().toString();
+                                if (user == null) {
+                                    // TODO handle errors
+                                    Log.w(TAG, "User not logged in!");
+                                    return;
+                                }
 
-                            Organiser organiser = new Organiser(email, user_company, user_city, user_phone);
+                                String userID = user.getUid();
+                                String user_company = mCompany.getText().toString();
+                                String user_city = mCity.getText().toString();
+                                String user_phone = mPhone.getText().toString();
 
-                            StorageReference filePath = mStorage.child("Photos").child("User").child(userID);
-                            filePath.putBytes(ImageUtils.compressImage(uri, getActivity(),getResources()));
+                                Organiser organiser = new Organiser(email, user_company, user_city, user_phone);
 
-                            mDatabase.child("users").child("organisers").child(userID).setValue(organiser);
+                                StorageReference filePath = mStorage.child("Photos").child("User").child(userID);
+                                filePath.putBytes(ImageUtils.compressImage(uri, getActivity(), getResources()));
 
-                            UserProfileChangeRequest mProfileUpdate = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(user_company)
-                                    .build();
+                                mDatabase.child("users").child("organisers").child(userID).setValue(organiser);
 
-                            user.updateProfile(mProfileUpdate)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d("ProfileUpdate ", "is successfull");
-                                            } else {
-                                                Log.d("ProfileUpdate ", "failed");
+                                UserProfileChangeRequest mProfileUpdate = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(user_company)
+                                        .build();
+
+                                user.updateProfile(mProfileUpdate)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "is successful");
+                                                } else {
+                                                    Log.d(TAG, "failed");
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
 
-                            Answers.getInstance().logSignUp(new SignUpEvent()
-                                    .putMethod("Organiser")
-                                    .putSuccess(true));
+                                Answers.getInstance().logSignUp(new SignUpEvent()
+                                        .putMethod("Organiser")
+                                        .putSuccess(true));
 
-                            user.sendEmailVerification();
-                            startActivity(intent);
-                            getActivity().finish();
-                        } else {
-                            Answers.getInstance().logSignUp(new SignUpEvent()
-                                    .putMethod("Organiser")
-                                    .putSuccess(false));
-                            if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                mEmail.setError("Email address is already in use.");
-                                mEmail.requestFocus();
+                                user.sendEmailVerification();
+                                startActivity(intent);
+                                getActivity().finish();
                             } else {
-                                if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                    mEmail.setError("Please enter a valid email address.");
+                                Answers.getInstance().logSignUp(new SignUpEvent()
+                                        .putMethod("Organiser")
+                                        .putSuccess(false));
+                                if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                    mEmail.setError(getString(R.string.existing_email_address));
                                     mEmail.requestFocus();
                                 } else {
-                                    Log.w("Error registering ", task.getException());
+                                    if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                        mEmail.setError(getString(R.string.invalid_email_address));
+                                        mEmail.requestFocus();
+                                    } else {
+                                        // TODO handle errors
+                                        Log.w("Error registering ", task.getException());
+                                    }
                                 }
                             }
+                            mProgressDialog.dismiss();
                         }
-                        mProgressDialog.dismiss();
-                    }
 
-                });
+                    });
+        }
     }
 
     private boolean validateForm() {
-
         boolean valid;
         valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mCompany) && editTextIsValid(mRegisterCode) &&
                 editTextIsValid(mCity) && editTextIsValid(mPhone) && (uri != null) && checkPass());
@@ -268,16 +281,15 @@ public class OrganiserRegisterFragment extends Fragment {
     private boolean editTextIsValid(EditText mEditText) {
         String text = mEditText.getText().toString();
         if (TextUtils.isEmpty(text)) {
-            mEditText.setError("This field can not be empty.");
+            mEditText.setError(getString(R.string.field_empty));
             mEditText.requestFocus();
             return false;
         } else {
             if (mEditText == mEmail && !text.contains("@") && !text.contains(".")) {
-                mEditText.setError("Please enter a valid email address.");
-
+                mEditText.setError(getString(R.string.invalid_email_address));
             } else {
                 if (mEditText == mPassword && text.length() < 6) {
-                    mEditText.setError("Your password must be at least 6 characters long.");
+                    mEditText.setError(getString(R.string.invalid_password));
                     mEditText.requestFocus();
                     return false;
                 } else {
@@ -290,10 +302,8 @@ public class OrganiserRegisterFragment extends Fragment {
     }
 
     private boolean checkPass() {
-
-
         if (!mPassword.getText().toString().equals(mConfirmPass.getText().toString())) {
-            mConfirmPass.setError("Passwords do not match");
+            mConfirmPass.setError(getString(R.string.password_not_match));
             mConfirmPass.requestFocus();
             return false;
         } else {
@@ -308,9 +318,7 @@ public class OrganiserRegisterFragment extends Fragment {
 
         if (requestCode == GALLERY_INTENT && (data != null)) {
             uri = data.getData();
-            Picasso.with(getContext()).load(uri).fit().centerCrop().into(mImage);
-
-
+            Picasso.get().load(uri).fit().centerCrop().into(mImage);
         }
     }
 }

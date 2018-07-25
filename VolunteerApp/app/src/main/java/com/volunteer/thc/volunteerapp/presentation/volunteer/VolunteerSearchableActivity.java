@@ -21,8 +21,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
-import com.volunteer.thc.volunteerapp.interrface.ActionListener;
+import com.volunteer.thc.volunteerapp.adapter.OrganiserEventsAdapter;
+import com.volunteer.thc.volunteerapp.adapter.VolunteerEventsAdapter;
+import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 
 public class VolunteerSearchableActivity extends AppCompatActivity implements ActionListener.EventPicturesLoadingListener{
 
+    public static boolean hasActionHappened = false;
     private String query;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -38,7 +40,6 @@ public class VolunteerSearchableActivity extends AppCompatActivity implements Ac
     private ProgressBar mProgressBar;
     private TextView mNoResultText;
     private int mLongAnimTime;
-    public static boolean hasActionHappened = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +50,13 @@ public class VolunteerSearchableActivity extends AppCompatActivity implements Ac
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.RecViewVolSearchableEvents);
+        recyclerView = findViewById(R.id.RecViewVolSearchableEvents);
         recyclerView.setHasFixedSize(true);
 
         mLongAnimTime = getResources().getInteger(android.R.integer.config_longAnimTime);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.indeterminateBar);
-        mNoResultText = (TextView) findViewById(R.id.nothing_found_text);
+        mProgressBar = findViewById(R.id.indeterminateBar);
+        mNoResultText = findViewById(R.id.nothing_found_text);
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -102,7 +103,10 @@ public class VolunteerSearchableActivity extends AppCompatActivity implements Ac
                 }  else {
                     Log.w("VolunteerSearchQuery", " event(s) found");
                 }
-                OrgEventsAdaptor adapter = new OrgEventsAdaptor(mResultEvents, VolunteerSearchableActivity.this, getResources(), OrgEventsAdaptor.ALL_EVENTS, VolunteerSearchableActivity.this);
+
+                VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mResultEvents,
+                        VolunteerSearchableActivity.this, getResources(), OrganiserEventsAdapter
+                        .ALL_EVENTS, VolunteerSearchableActivity.this, 1);
                 recyclerView.setAdapter(adapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(VolunteerSearchableActivity.this);
                 recyclerView.setLayoutManager(linearLayoutManager);

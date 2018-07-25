@@ -38,8 +38,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
-import com.volunteer.thc.volunteerapp.interrface.ActionListener;
+import com.volunteer.thc.volunteerapp.adapter.OrganiserEventsAdapter;
+import com.volunteer.thc.volunteerapp.adapter.VolunteerEventsAdapter;
+import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 
 import java.util.ArrayList;
@@ -52,8 +53,10 @@ import java.util.List;
  * Created by Cristi on 6/20/2017.
  */
 
-public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, ActionListener.EventPicturesLoadingListener{
+public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLayout
+        .OnRefreshListener, ActionListener.EventPicturesLoadingListener {
 
+    protected static boolean hasActionHappened = false;
     private List<Event> mEventsList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -66,7 +69,6 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     private Spinner actionFilter;
     private MenuItem filter;
     private int mLongAnimTime;
-    protected static boolean hasActionHappened = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,10 +76,10 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
         View view = inflater.inflate(R.layout.fragment_volunteerevents, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolEvents);
+        recyclerView = view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
-        noEvents = (TextView) view.findViewById(R.id.no_events_text);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        noEvents = view.findViewById(R.id.no_events_text);
+        mSwipeRefreshLayout = view.findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -98,7 +100,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onResume() {
         super.onResume();
-        if(hasActionHappened) {
+        if (hasActionHappened) {
             loadEvents();
             hasActionHappened = false;
         }
@@ -115,7 +117,8 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
         mSwipeRefreshLayout.setRefreshing(true);
         noEvents.setVisibility(View.GONE);
         if (isNetworkAvailable()) {
-            mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null).addListenerForSingleValueEvent(new ValueEventListener() {
+            mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     mEventsList = new ArrayList<>();
@@ -133,17 +136,21 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                         Collections.sort(mEventsList, new Comparator<Event>() {
                             @Override
                             public int compare(Event event, Event t1) {
-                                if(event.getDeadline() < t1.getDeadline())
+                                if (event.getDeadline() < t1.getDeadline())
                                     return -1;
-                                if(event.getDeadline() > t1.getDeadline())
+                                if (event.getDeadline() > t1.getDeadline())
                                     return 1;
                                 return 0;
                             }
                         });
 
-                        OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.ALL_EVENTS, VolunteerEventsFragment.this);
+                        VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
+                                getContext()
+                                , getResources(), OrganiserEventsAdapter.ALL_EVENTS,
+                                VolunteerEventsFragment.this, 1);
                         recyclerView.setAdapter(adapter);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager
+                                (getActivity());
                         recyclerView.setLayoutManager(linearLayoutManager);
                     }
                 }
@@ -163,12 +170,15 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     private void loadFilterQuery(final String filter) {
         mSwipeRefreshLayout.setRefreshing(true);
         mEventsList = new ArrayList<>();
-        mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    if (TextUtils.equals(dataSnapshot1.child("type").getValue().toString(), filter) &&
-                            dataSnapshot1.child("deadline").getValue(Long.class) > date.getTimeInMillis()) {
+                    if (TextUtils.equals(dataSnapshot1.child("type").getValue().toString(),
+                            filter) &&
+                            dataSnapshot1.child("deadline").getValue(Long.class) > date
+                                    .getTimeInMillis()) {
                         mEventsList.add(dataSnapshot1.getValue(Event.class));
                     }
                 }
@@ -182,17 +192,22 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                     Collections.sort(mEventsList, new Comparator<Event>() {
                         @Override
                         public int compare(Event event, Event t1) {
-                            if(event.getDeadline() < t1.getDeadline())
+                            if (event.getDeadline() < t1.getDeadline())
                                 return -1;
-                            if(event.getDeadline() > t1.getDeadline())
+                            if (event.getDeadline() > t1.getDeadline())
                                 return 1;
                             return 0;
                         }
                     });
 
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.ALL_EVENTS, VolunteerEventsFragment.this);
+                    VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
+                            getContext(),
+                            getResources(), OrganiserEventsAdapter.ALL_EVENTS,
+                            VolunteerEventsFragment
+                            .this, 1);
                     recyclerView.setAdapter(adapter);
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity
+                            ());
                     recyclerView.setLayoutManager(linearLayoutManager);
                 }
 
@@ -211,20 +226,24 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
         inflater.inflate(R.menu.menu_search, menu);
 
         ComponentName cn = new ComponentName(getActivity(), VolunteerSearchableActivity.class);
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        final SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context
+                .SEARCH_SERVICE);
+        final SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search)
+                .getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
         searchView.setIconifiedByDefault(false);
         searchView.clearFocus();
 
         MenuItem searchMenu = menu.findItem(R.id.app_bar_search);
         filter = menu.findItem(R.id.action_filter);
-        actionFilter = (Spinner) filter.getActionView().findViewById(R.id.filterSpinner);
+        actionFilter = filter.getActionView().findViewById(R.id.filterSpinner);
         populateSpinnerArray();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, typeList) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout
+                .simple_spinner_dropdown_item, typeList) {
             @NonNull
             @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup
+                    parent) {
                 View view = super.getView(position, convertView, parent);
                 view.setVisibility(View.GONE);
                 return view;
@@ -265,7 +284,8 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
                         item.getActionView().requestFocus();
                         filter.setVisible(false);
                         //get input method
-                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) getActivity()
+                                .getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
                         return true;  // Return true to expand action view
                     }
@@ -288,7 +308,8 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
-                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                = (ConnectivityManager) getActivity().getSystemService(Context
+                .CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
@@ -309,7 +330,6 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
     @Override
     public void onPicturesLoaded() {
-		//TODO asta e metoda care se apeleaza pt animatie 
         recyclerView.setAlpha(0f);
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.animate()

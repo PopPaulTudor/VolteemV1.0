@@ -2,7 +2,6 @@ package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -28,8 +27,7 @@ public class VolunteerRewardsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_volunteer_rewards, container, false);
-        NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-        mPager = (ViewPager) view.findViewById(R.id.volunteer_achivements_view_pager);
+        mPager = view.findViewById(R.id.volunteer_achivements_view_pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
@@ -37,10 +35,10 @@ public class VolunteerRewardsFragment extends Fragment {
     }
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
-
 
         @Override
         public Fragment getItem(int position) {
@@ -60,6 +58,4 @@ public class VolunteerRewardsFragment extends Fragment {
             return NUM_PAGES;
         }
     }
-
-
 }

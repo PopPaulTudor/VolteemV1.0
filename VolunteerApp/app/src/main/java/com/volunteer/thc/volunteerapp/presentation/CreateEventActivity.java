@@ -1,7 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
+import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -18,9 +18,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -29,7 +33,9 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,10 +51,14 @@ import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.ChatGroup;
 import com.volunteer.thc.volunteerapp.model.Event;
+import com.volunteer.thc.volunteerapp.model.type.EventType;
+import com.volunteer.thc.volunteerapp.adapter.EventQuestionsAdapter;
+import com.volunteer.thc.volunteerapp.model.InterviewQuestion;
 import com.volunteer.thc.volunteerapp.notification.NotificationEventReceiver;
 import com.volunteer.thc.volunteerapp.util.DatabaseUtils;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,23 +70,31 @@ import java.util.UUID;
 
 public class CreateEventActivity extends AppCompatActivity {
 
+    private static final String TAG = "CreateEventActivity";
     private static final int GALLERY_INTENT = 1;
     private static final int PICK_PDF = 2;
+    private static final int NUMBER_OF_EVENTS_ON_PAGE = 3;
     private EditText mName, mLocation, mDescription, mDeadline, mSize, mStartDate, mFinishDate;
     private ImageView mImage;
-    private Spinner mType;
+    private Spinner mTypeSpinner; // TODO refactor spinner and use some popup dialog
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
     private long startDate = -1, finishDate, deadline;
     private StorageReference mStorage;
-    private Uri uriPicture = null, uriPDF = null;
+    private Uri mUriPicture = null, mUriPDF = null;
     private ArrayList<String> typeList = new ArrayList<>();
-    private Resources resources;
     private ArrayList<Uri> imageUris = new ArrayList<>();
-    private boolean hasUserSelectedPicture = false;
-    private boolean hasSelectedPDF = false;
-    private Button mLoadPdf;
-
+    private boolean mSelectedPicture = false;
+    private boolean mSelectedPDF = false;
+    private Button mLoadPdf, mDoneButton;
+    private ArrayList<InterviewQuestion> questionsList = new ArrayList<>();
+    private Resources resources;
+    private TextView questionText;
+    private int longAnimTime;
+    private EventQuestionsAdapter eventQuestionsAdapter;
+    private ScrollView createEventScrollView;
+    private NestedScrollView questionsScrollView;
+    private RecyclerView questionsRecyclerView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,62 +111,88 @@ public class CreateEventActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_create_event);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("New event");
+            getSupportActionBar().setTitle(getString(R.string.new_event));
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mName = (EditText) findViewById(R.id.event_deadline);
-        mLocation = (EditText) findViewById(R.id.event_location);
-        mStartDate = (EditText) findViewById(R.id.event_date_start_create);
-        mFinishDate = (EditText) findViewById(R.id.event_date_finish_create);
-        mType = (Spinner) findViewById(R.id.event_type);
-        mDescription = (EditText) findViewById(R.id.event_description);
-        mDeadline = (EditText) findViewById(R.id.event_deadline_create);
-        mImage = (ImageView) findViewById(R.id.event_image);
-        mSize = (EditText) findViewById(R.id.event_size);
+        mName = findViewById(R.id.event_deadline);
+        mLocation = findViewById(R.id.event_location);
+        mStartDate = findViewById(R.id.event_date_start_create);
+        mFinishDate = findViewById(R.id.event_date_finish_create);
+        mTypeSpinner = findViewById(R.id.event_type);
+        mDescription = findViewById(R.id.event_description);
+        mDeadline = findViewById(R.id.event_deadline_create);
+        mImage = findViewById(R.id.event_image);
+        mSize = findViewById(R.id.event_size);
         mStorage = FirebaseStorage.getInstance().getReference();
+        mDoneButton = (Button) findViewById(R.id.questions_done);
+        questionText = (TextView) findViewById(R.id.question_text);
+        createEventScrollView = (ScrollView) findViewById(R.id.create_event);
+        questionsScrollView = (NestedScrollView) findViewById(R.id.questionsScrollView);
+        questionsRecyclerView = (RecyclerView) findViewById(R.id.questions_recyclerView);
+        questionsRecyclerView.setHasFixedSize(true);
         resources = getResources();
-
+        longAnimTime = resources.getInteger(android.R.integer.config_longAnimTime);
         populateUriList();
-
-        Picasso.with(this).load(imageUris.get(3)).fit().centerCrop().into(mImage);
-        Button mSaveEvent = (Button) findViewById(R.id.save_event);
-        Button mCancel = (Button) findViewById(R.id.cancel_event);
-        mLoadPdf = (Button) findViewById(R.id.upload_pdf);
-
         populateSpinnerArray();
+
+        Picasso.get().load(imageUris.get(NUMBER_OF_EVENTS_ON_PAGE)).fit().centerCrop().into(mImage);
+        Button mSaveEvent = findViewById(R.id.save_event);
+        Button mCancel = findViewById(R.id.cancel_event);
+        mLoadPdf = findViewById(R.id.upload_pdf);
+
+        mDatabase.child("questions").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    questionsList.add(dataSnapshot1.getValue(InterviewQuestion.class));
+                }
+                eventQuestionsAdapter = new EventQuestionsAdapter(questionsList);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(CreateEventActivity.this);
+                questionsRecyclerView.setAdapter(eventQuestionsAdapter);
+                questionsRecyclerView.setLayoutManager(linearLayoutManager);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("CreateEventQuestions", databaseError.getMessage());
+            }
+        });
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, typeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mType.setAdapter(adapter);
+        mTypeSpinner.setAdapter(adapter);
 
-        mType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (!hasUserSelectedPicture) {
-                    Picasso.with(CreateEventActivity.this).load(imageUris.get(mType.getSelectedItemPosition())).fit().centerCrop().into(mImage);
+                if (!mSelectedPicture) {
+                    Picasso.get().load(imageUris.get(mTypeSpinner.getSelectedItemPosition())).fit().centerCrop().into
+                            (mImage);
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                // do nothing
             }
         });
 
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (PermissionUtil.isStorageReadPermissionGranted(CreateEventActivity.this)) {
                     Intent intent = new Intent(Intent.ACTION_PICK);
                     intent.setType("image/*");
                     startActivityForResult(intent, GALLERY_INTENT);
-
                 } else {
-                    Snackbar.make(view, "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                    Snackbar.make(view, getString(R.string.allow_storge_permission), Snackbar.LENGTH_LONG).setAction(getString(R.string
+                            .set_permission), new View
+                            .OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                            ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    VolteemConstants.STORAGE_REQUEST_CODE);
                         }
                     }).show();
                 }
@@ -157,82 +201,69 @@ public class CreateEventActivity extends AppCompatActivity {
 
         mLoadPdf.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 if (PermissionUtil.isStorageReadPermissionGranted(CreateEventActivity.this)) {
                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                     intent.setType("application/pdf");
                     startActivityForResult(intent, PICK_PDF);
-
                 } else {
-                    Snackbar.make(v, "Please allow storage permission", Snackbar.LENGTH_LONG).setAction("Set Permission", new View.OnClickListener() {
+                    Snackbar.make(view, getString(R.string.allow_storge_permission), Snackbar.LENGTH_LONG).setAction(getString(R.string
+                            .set_permission), new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                            ActivityCompat.requestPermissions(CreateEventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    VolteemConstants.STORAGE_REQUEST_CODE);
                         }
                     }).show();
                 }
             }
         });
 
-        mStartDate.setOnClickListener(setonClickListenerCalendar(mStartDate));
-        mFinishDate.setOnClickListener(setonClickListenerCalendar(mFinishDate));
-        mDeadline.setOnClickListener(setonClickListenerCalendar(mDeadline));
+        mStartDate.setOnClickListener(setOnClickListenerCalendar(mStartDate));
+        mFinishDate.setOnClickListener(setOnClickListenerCalendar(mFinishDate));
+        mDeadline.setOnClickListener(setOnClickListenerCalendar(mDeadline));
 
         mSaveEvent.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("WrongConstant")
             @Override
             public void onClick(View view) {
+                // hide keyboard on save event pressed
+                hideKeyboardFrom(CreateEventActivity.this, view);
 
                 if (validateForm()) {
 
                     hideKeyboardFrom(CreateEventActivity.this, view);
-                    String name = mName.getText().toString();
-                    String location = mLocation.getText().toString();
-                    String description = mDescription.getText().toString();
-                    int size = Integer.parseInt(mSize.getText().toString());
-                    final String eventID = mDatabase.child("events").push().getKey();
-                    String type = mType.getSelectedItem().toString();
-                    StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
+                    animateQuestions();
 
-                    if (hasUserSelectedPicture) {
-                        filePath.putBytes(ImageUtils.compressImage(uriPicture, CreateEventActivity.this, getResources()));
-                    }
-                    if(hasSelectedPDF){
-                        filePath = mStorage.child("Contracts").child("Event").child(eventID);
-                        filePath.putFile(uriPDF);
-                    }
-
-                    mDatabase.child("users/organisers/" + user.getUid())
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    int lastEvent = (int) dataSnapshot.child("events").getChildrenCount();
-                                    int eventsNr = dataSnapshot.child("eventsnumber").getValue(Integer.class);
-                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/events/" + lastEvent, eventID);
-                                    DatabaseUtils.writeData("users/organisers/" + user.getUid() + "/eventsnumber", eventsNr + 1);
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-
-                    Event new_event = new Event(user.getUid(), name, location, startDate, finishDate, type, eventID, description, deadline, size);
-                    DatabaseUtils.writeData("events/" + eventID, new_event);
-                    DatabaseUtils.writeData("events/" + eventID + "/validity", "valid");
-
-                    Intent alarm = new Intent(CreateEventActivity.this, NotificationEventReceiver.class);
-                    alarm.putExtra("nameEvent", name);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(CreateEventActivity.this, 100, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(0, finishDate, pendingIntent);
-
-                    returnToEvents();
-                    Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
-                    ChatGroup chatGroup = new ChatGroup(user.getUid(),UUID.randomUUID().toString(),"you have been accepted to ", Calendar.getInstance().getTimeInMillis(),false,new_event.getEventID());
-                    mDatabase.child("conversation").child("group").push().setValue(chatGroup);
+                    mDoneButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View view) {
+                            final ArrayList<String> selectedQuestions = eventQuestionsAdapter.getSelectedQuestionsList();
+                            if (selectedQuestions.isEmpty()) {
+                                AlertDialog noQuestionsAlertDialog = new AlertDialog.Builder(CreateEventActivity.this)
+                                        .setTitle("Are you sure?")
+                                        .setMessage("Are you sure you want to save this event without creating a questions form?")
+                                        .setCancelable(true)
+                                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                ///do nothing
+                                            }
+                                        })
+                                        .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                createEvent(selectedQuestions);
+                                                Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                            }
+                                        })
+                                        .create();
+                                noQuestionsAlertDialog.show();
+                            } else {
+                                createEvent(selectedQuestions);
+                                Snackbar.make(view, "Event created!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -240,7 +271,7 @@ public class CreateEventActivity extends AppCompatActivity {
         mCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Event canceled.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                Snackbar.make(view, getString(R.string.event_canceled), Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 returnToEvents();
             }
         });
@@ -251,16 +282,15 @@ public class CreateEventActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (data != null) {
-
             if (requestCode == GALLERY_INTENT) {
-                uriPicture = data.getData();
-                hasUserSelectedPicture = true;
-                Picasso.with(this).load(uriPicture).fit().centerCrop().into(mImage);
+                mUriPicture = data.getData();
+                mSelectedPicture = true;
+                Picasso.get().load(mUriPicture).fit().centerCrop().into(mImage);
             } else {
                 if (requestCode == PICK_PDF) {
-                    uriPDF = data.getData();
-                    hasSelectedPDF = true;
-                    mLoadPdf.setText(ImageUtils.getFileName(uriPDF,CreateEventActivity.this));
+                    mUriPDF = data.getData();
+                    mSelectedPDF = true;
+                    mLoadPdf.setText(ImageUtils.getFileName(mUriPDF, CreateEventActivity.this));
                 }
             }
         }
@@ -279,19 +309,19 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         AlertDialog leaveAlertDialog = new AlertDialog.Builder(this)
-                .setTitle("Are you sure?")
-                .setMessage("Are you sure you want to leave this page? Your event will not be created and the changes made will be lost.")
+                .setTitle(getString(R.string.are_you_sure))
+                .setMessage(getString(R.string.are_you_sure_message))
                 .setCancelable(true)
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         CreateEventActivity.super.onBackPressed();
                     }
                 })
-                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        // do nothing, dismiss dialog
                     }
                 })
                 .create();
@@ -299,22 +329,22 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     public boolean validateForm() {
-
+        // TODO move some validations on cloud functions
         boolean valid;
         valid = (editTextIsValid(mName) && editTextIsValid(mLocation) && editTextIsValid(mStartDate) &&
                 editTextIsValid(mFinishDate) && editTextIsValid(mDescription) &&
                 editTextIsValid(mDeadline) && editTextIsValid(mSize));
-        if (valid && TextUtils.equals(mType.getSelectedItem().toString(), "Type")) {
-            Toast.makeText(this, "Please select a type.", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (valid && (deadline > finishDate)) {
-            Toast.makeText(this, "The deadline can not be after the finish date.", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (valid && (startDate > finishDate)) {
-            Toast.makeText(this, "The start date can not be after the finish date.", Toast.LENGTH_SHORT).show();
-            return false;
+        if (valid) {
+            if (TextUtils.equals(mTypeSpinner.getSelectedItem().toString(), "Type")) {
+                Toast.makeText(this, getString(R.string.select_type), Toast.LENGTH_SHORT).show();
+                valid = false;
+            } else if ((deadline > finishDate)) {
+                Toast.makeText(this, getString(R.string.deadline_after_finish_date), Toast.LENGTH_SHORT).show();
+                valid = false;
+            } else if (startDate > finishDate) {
+                Toast.makeText(this, getString(R.string.start_date_after_finish_date), Toast.LENGTH_SHORT).show();
+                valid = false;
+            }
         }
         return valid;
     }
@@ -322,7 +352,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private boolean editTextIsValid(EditText mEditText) {
         String text = mEditText.getText().toString();
         if (TextUtils.isEmpty(text)) {
-            mEditText.setError("This field can not be empty.");
+            mEditText.setError(getString(R.string.field_empty));
             mEditText.requestFocus();
             return false;
         } else {
@@ -332,21 +362,18 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void hideKeyboardFrom(Context context, View view) {
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     private void populateSpinnerArray() {
         typeList.add("Type");
-        typeList.add("Sports");
-        typeList.add("Music");
-        typeList.add("Festival");
-        typeList.add("Charity");
-        typeList.add("Training");
-        typeList.add("Other");
+        typeList.addAll(EventType.getAllAsList());
     }
 
-    View.OnClickListener setonClickListenerCalendar(final EditText editText) {
+    private View.OnClickListener setOnClickListenerCalendar(final EditText editText) {
         return new View.OnClickListener() {
 
             @Override
@@ -360,11 +387,13 @@ public class CreateEventActivity extends AppCompatActivity {
                         editText.setText(dayOfMonth + "/" + month + "/" + year);
                         month--;
                         myCalendar.set(year, month, dayOfMonth, 12, 15, 0);
-                        if (editText.equals(mStartDate)) startDate = myCalendar.getTimeInMillis();
-                        else if (editText.equals(mFinishDate))
+                        if (editText.equals(mStartDate)) {
+                            startDate = myCalendar.getTimeInMillis();
+                        } else if (editText.equals(mFinishDate)) {
                             finishDate = myCalendar.getTimeInMillis();
-                        else if (editText.equals(mDeadline))
+                        } else if (editText.equals(mDeadline)) {
                             deadline = myCalendar.getTimeInMillis();
+                        }
 
                     }
                 }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
@@ -375,8 +404,8 @@ public class CreateEventActivity extends AppCompatActivity {
 
     private Uri parseUri(int ID) {
         return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-                "://" + resources.getResourcePackageName(ID)
-                + '/' + resources.getResourceTypeName(ID) + '/' + resources.getResourceEntryName(ID));
+                "://" + getResources().getResourcePackageName(ID)
+                + '/' + getResources().getResourceTypeName(ID) + '/' + getResources().getResourceEntryName(ID));
 
     }
 
@@ -388,5 +417,104 @@ public class CreateEventActivity extends AppCompatActivity {
         imageUris.add(parseUri(R.drawable.image_charity));
         imageUris.add(parseUri(R.drawable.image_training));
         imageUris.add(parseUri(R.drawable.image_other));
+    }
+
+    private void animateQuestions() {
+        createEventScrollView.animate()
+                .alpha(0f)
+                .setDuration(longAnimTime)
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        createEventScrollView.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                });
+
+        questionText.setAlpha(0f);
+        questionText.setVisibility(View.VISIBLE);
+        questionText.animate()
+                .alpha(1f)
+                .setDuration(longAnimTime)
+                .setListener(null);
+
+        questionsScrollView.setAlpha(0f);
+        questionsScrollView.setVisibility(View.VISIBLE);
+        questionsScrollView.animate()
+                .alpha(1f)
+                .setDuration(longAnimTime)
+                .setListener(null);
+    }
+
+    private void createEvent(ArrayList<String> requiredQuestions) {
+
+        String name = mName.getText().toString();
+        String location = mLocation.getText().toString();
+        String description = mDescription.getText().toString();
+        int size = Integer.parseInt(mSize.getText().toString());
+        final String eventID = mDatabase.child("events").push().getKey();
+        String type = mTypeSpinner.getSelectedItem().toString();
+        StorageReference filePath = mStorage.child("Photos").child("Event").child(eventID);
+
+        if (mSelectedPicture) {
+            filePath.putBytes(ImageUtils.compressImage(mUriPicture, CreateEventActivity.this, getResources()));
+        }
+        if (mSelectedPDF) {
+            filePath = mStorage.child("Contracts").child("Event").child(eventID);
+            filePath.putFile(mUriPDF);
+        }
+
+        mDatabase.child("users/organisers/" + mUser.getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        int lastEvent = (int) dataSnapshot.child("events").getChildrenCount();
+                        DataSnapshot eventsNumber = dataSnapshot.child("eventsnumber");
+                        long eventsNr = eventsNumber.getValue() != null ? (Long) eventsNumber.getValue() : 0;
+                        DatabaseUtils.writeData("users/organisers/" + mUser.getUid() + "/events/" + lastEvent, eventID);
+                        DatabaseUtils.writeData("users/organisers/" + mUser.getUid() + "/eventsnumber", eventsNr + 1);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // do nothing for now
+                    }
+                });
+
+
+        Event new_event = new Event(mUser.getUid(), name, location, startDate, finishDate, type, eventID, description, deadline, size, requiredQuestions);
+        DatabaseUtils.writeData("events/" + eventID, new_event);
+        DatabaseUtils.writeData("events/" + eventID + "/validity", VolteemConstants.FLAG_EVENT_VALID);
+
+        Intent alarm = new Intent(CreateEventActivity.this, NotificationEventReceiver.class);
+        alarm.putExtra("nameEvent", name);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(CreateEventActivity.this, 100, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        if (alarmManager != null) {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, finishDate, pendingIntent);
+        } else {
+            Log.w(TAG, "AlarmManager is not available");
+        }
+
+        ChatGroup chatGroup = new ChatGroup(mUser.getUid(), UUID.randomUUID().toString(), getString(R.string.you_have_been_accepted),
+                Calendar.getInstance().getTimeInMillis(), false, new_event.getEventID());
+        mDatabase.child("conversation").child("group").push().setValue(chatGroup);
+
+        returnToEvents();
     }
 }

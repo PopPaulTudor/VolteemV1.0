@@ -35,18 +35,15 @@ public class VolunteerProfileFragment extends Fragment {
         mPager.setPageTransformer(true, new ZoomOutPageTransformer());
         mPager.setAdapter(mPagerAdapter);
         mPager.setCurrentItem(1);
-
-
+        
         setHasOptionsMenu(true);
         return view;
     }
-
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
-
 
         @Override
         public Fragment getItem(int position) {
@@ -68,6 +65,4 @@ public class VolunteerProfileFragment extends Fragment {
             return NUM_PAGES;
         }
     }
-
-
 }

@@ -25,11 +25,13 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.adaptor.OrgEventsAdaptor;
-import com.volunteer.thc.volunteerapp.interrface.ActionListener;
+import com.volunteer.thc.volunteerapp.adapter.OrganiserEventsAdapter;
+import com.volunteer.thc.volunteerapp.adapter.VolunteerEventsAdapter;
+import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.OrganiserRating;
 import com.volunteer.thc.volunteerapp.util.CalculateUtils;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 public class VolunteerMyEventsFragment extends Fragment implements ActionListener.EventPicturesLoadingListener{
 
+    protected static boolean hasActionHappened = false;
     private List<Event> mEventsList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -52,17 +55,16 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
     private TextView noEvents;
     private Calendar date = Calendar.getInstance();
     private int mLongAnimTime;
-    protected static boolean hasActionHappened = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_volunteer_my_events, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.RecViewVolMyEvents);
+        recyclerView = view.findViewById(R.id.RecViewVolMyEvents);
         recyclerView.setHasFixedSize(true);
-        mProgressBar = (ProgressBar) view.findViewById(R.id.indeterminateBar);
-        noEvents = (TextView) view.findViewById(R.id.no_events_text);
+        mProgressBar = view.findViewById(R.id.indeterminateBar);
+        noEvents = view.findViewById(R.id.no_events_text);
 
         mLongAnimTime = getResources().getInteger(android.R.integer.config_longAnimTime);
 
@@ -81,7 +83,8 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
 
     private void loadEvents() {
         mProgressBar.setVisibility(View.VISIBLE);
-        mDatabase.child("events").orderByChild("users/" + user.getUid() + "/flag").equalTo("valid").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("events").orderByChild("users/" + user.getUid() + "/flag").equalTo(VolteemConstants.VOLUNTEER_EVENT_FLAG_PENDING)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mEventsList = new ArrayList<>();
@@ -91,9 +94,10 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
                         mEventsList.add(currentEvent);
                     } else {
                         if (isFragmentActive()) {
-                            mDatabase.child("events/" + currentEvent.getEventID() + "/users/" + user.getUid() + "/flag").setValue("done");
+                            mDatabase.child("events/" + currentEvent.getEventID() + "/users/" + user.getUid() + "/flag")
+                                    .setValue(VolteemConstants.VOLUNTEER_EVENT_FLAG_DONE);
                             final boolean isUserAccepted = TextUtils.equals(eventSnapshot.child("users").child(user.getUid())
-                                    .child("status").getValue().toString(), "accepted");
+                                    .child("status").getValue().toString(), VolteemConstants.VOLUNTEER_EVENT_STATUS_ACCEPTED);
                             if (isUserAccepted) {
                                 mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -119,8 +123,8 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
                                         .setPositiveButton("DONE", null)
                                         .create();
 
-                                final RatingBar ratingBar = (RatingBar) alertView.findViewById(R.id.ratingBar);
-                                final TextView noStarsText = (TextView) alertView.findViewById(R.id.noStarsText);
+                                final RatingBar ratingBar = alertView.findViewById(R.id.ratingBar);
+                                final TextView noStarsText = alertView.findViewById(R.id.noStarsText);
 
                                 alert.show();
                                 alert.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
@@ -174,7 +178,11 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
                             return 0;
                         }
                     });
-                    OrgEventsAdaptor adapter = new OrgEventsAdaptor(mEventsList, getContext(), getResources(), OrgEventsAdaptor.MY_EVENTS, VolunteerMyEventsFragment.this);
+                    VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
+                            getContext(),
+                            getResources(), OrganiserEventsAdapter.MY_EVENTS,
+                            VolunteerMyEventsFragment
+                            .this, 2);
                     recyclerView.setAdapter(adapter);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(linearLayoutManager);
