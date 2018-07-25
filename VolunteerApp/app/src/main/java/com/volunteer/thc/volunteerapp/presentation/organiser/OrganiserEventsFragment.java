@@ -239,7 +239,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                             for (DataSnapshot event : dataSnapshot.getChildren()) {
                                 if ((filterType == null || TextUtils.equals(filterType, "All") || TextUtils.equals(
                                         String.valueOf(dataSnapshot.child("type").getValue()), filterType)) &&
-                                        TextUtils.equals(String.valueOf(event.child("validity").getValue()), "valid")) {
+                                        TextUtils.equals(String.valueOf(event.child("validity").getValue()), VolteemConstants.FLAG_EVENT_VALID)) {
                                     final Event currentEvent = event.getValue(Event.class);
                                     if (currentEvent == null) {
                                         continue;
@@ -277,7 +277,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
 
                                                         }
                                                     });
-                                            mDatabase.child("events").child(currentEvent.getEventID()).child("validity").setValue("expired");
+                                            mDatabase.child("events").child(currentEvent.getEventID()).child("validity").setValue(VolteemConstants.FLAG_EVENT_EXPIRED);
                                             AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
                                             alert.setTitle(getString(R.string.event_finished));
                                             alert.setCancelable(false);

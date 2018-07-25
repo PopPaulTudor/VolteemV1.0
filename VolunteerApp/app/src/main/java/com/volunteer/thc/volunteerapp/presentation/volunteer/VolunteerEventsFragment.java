@@ -330,7 +330,6 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
     @Override
     public void onPicturesLoaded() {
-        //TODO asta e metoda care se apeleaza pt animatie
         recyclerView.setAlpha(0f);
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.animate()

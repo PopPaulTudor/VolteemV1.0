@@ -56,8 +56,8 @@ public class OrganiserSingleEventRegisteredUsersFragment extends Fragment implem
 
         progressBar.setVisibility(View.VISIBLE);
 
-        mDatabase.child("events/" + currentEvent.getEventID() + "/users").orderByChild("status").equalTo("pending").addListenerForSingleValueEvent
-                (new ValueEventListener() {
+        mDatabase.child("events/" + currentEvent.getEventID() + "/users").orderByChild("status")
+                .equalTo(VolteemConstants.VOLUNTEER_EVENT_STATUS_PENDING).addListenerForSingleValueEvent (new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mRegisteredUsers = new ArrayList<>();

@@ -80,7 +80,7 @@ public class OrganiserSingleEventAcceptedUsersFragment extends Fragment implemen
                     if (dataSnapshot != null) {
                         for (DataSnapshot data : dataSnapshot.getChildren()) {
                             RegisteredUser registeredUser = data.getValue(RegisteredUser.class);
-                            if (TextUtils.equals(registeredUser.getStatus(), "accepted")) {
+                            if (TextUtils.equals(registeredUser.getStatus(), VolteemConstants.VOLUNTEER_EVENT_STATUS_ACCEPTED)) {
                                 mAcceptedUsers.add(registeredUser.getId());
                             }
                         }

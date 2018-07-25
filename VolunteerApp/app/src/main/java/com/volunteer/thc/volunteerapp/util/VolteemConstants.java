@@ -10,6 +10,16 @@ public class VolteemConstants {
 
     public static final String VOLUNTEER_EVENT_STATUS_PENDING = "VOLUNTEER_EVENT_STATUS_PENDING";
 
+    public static final String VOLUNTEER_EVENT_STATUS_ACCEPTED = "VOLUNTEER_EVENT_STATUS_ACCEPTED";
+
+    public static final String VOLUNTEER_EVENT_FLAG_PENDING = "FLAG_PENDING";
+
+    public static final String VOLUNTEER_EVENT_FLAG_DONE = "FLAG_DONE";
+
+    public static final String FLAG_EVENT_VALID = "EVENT_VALID";
+
+    public static final String FLAG_EVENT_EXPIRED = "EVENT_EXPIRED";
+
     public static final String VOLTEEM_DIRECTORY_NAME = "Volteem";
 
     public static final String USER_CUSTOM_ERROR_CRASHLYTICS = "UserCustomError";

@@ -165,7 +165,7 @@ public class OrganiserSingleEventActivity extends AppCompatActivity {
                 ArrayList<String> acc_users = new ArrayList<>();
 
                 for (DataSnapshot registered_users : dataSnapshot.child("users").getChildren()) {
-                    if (TextUtils.equals(String.valueOf(registered_users.child("status").getValue()), "pending")) {
+                    if (TextUtils.equals(String.valueOf(registered_users.child("status").getValue()), VolteemConstants.VOLUNTEER_EVENT_STATUS_PENDING)) {
                         reg_users.add(String.valueOf(registered_users.child("id").getValue()));
                     } else {
                         acc_users.add(String.valueOf(registered_users.child("id").getValue()));

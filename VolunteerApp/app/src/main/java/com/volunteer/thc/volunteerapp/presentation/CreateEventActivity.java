@@ -497,7 +497,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         Event new_event = new Event(mUser.getUid(), name, location, startDate, finishDate, type, eventID, description, deadline, size, requiredQuestions);
         DatabaseUtils.writeData("events/" + eventID, new_event);
-        DatabaseUtils.writeData("events/" + eventID + "/validity", "valid");
+        DatabaseUtils.writeData("events/" + eventID + "/validity", VolteemConstants.FLAG_EVENT_VALID);
 
         Intent alarm = new Intent(CreateEventActivity.this, NotificationEventReceiver.class);
         alarm.putExtra("nameEvent", name);

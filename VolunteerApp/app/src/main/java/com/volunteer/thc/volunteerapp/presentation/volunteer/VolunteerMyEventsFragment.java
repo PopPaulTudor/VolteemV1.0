@@ -31,6 +31,7 @@ import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.OrganiserRating;
 import com.volunteer.thc.volunteerapp.util.CalculateUtils;
+import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -82,7 +83,8 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
 
     private void loadEvents() {
         mProgressBar.setVisibility(View.VISIBLE);
-        mDatabase.child("events").orderByChild("users/" + user.getUid() + "/flag").equalTo("valid").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("events").orderByChild("users/" + user.getUid() + "/flag").equalTo(VolteemConstants.VOLUNTEER_EVENT_FLAG_PENDING)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mEventsList = new ArrayList<>();
@@ -92,9 +94,10 @@ public class VolunteerMyEventsFragment extends Fragment implements ActionListene
                         mEventsList.add(currentEvent);
                     } else {
                         if (isFragmentActive()) {
-                            mDatabase.child("events/" + currentEvent.getEventID() + "/users/" + user.getUid() + "/flag").setValue("done");
+                            mDatabase.child("events/" + currentEvent.getEventID() + "/users/" + user.getUid() + "/flag")
+                                    .setValue(VolteemConstants.VOLUNTEER_EVENT_FLAG_DONE);
                             final boolean isUserAccepted = TextUtils.equals(eventSnapshot.child("users").child(user.getUid())
-                                    .child("status").getValue().toString(), "accepted");
+                                    .child("status").getValue().toString(), VolteemConstants.VOLUNTEER_EVENT_STATUS_ACCEPTED);
                             if (isUserAccepted) {
                                 mDatabase.child("users").child("volunteers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override

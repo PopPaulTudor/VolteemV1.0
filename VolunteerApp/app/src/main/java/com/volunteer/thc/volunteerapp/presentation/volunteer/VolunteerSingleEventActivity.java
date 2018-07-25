@@ -112,7 +112,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
         mSignupForEventFloatingButton = findViewById(R.id.fab);
         mLeaveEvent = findViewById(R.id.event_leave);
         mDownloadContract = findViewById(R.id.event_pdf);
-        currentEvent = (Event) getIntent().getSerializableExtra("SingleEvent");
+        currentEvent = (Event) getIntent().getSerializableExtra(VolteemConstants.INTENT_EXTRA_SINGLE_EVENT);
 
         if (currentEvent != null) {
             loadUI();
@@ -228,7 +228,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                                 "event...", Toast.LENGTH_SHORT).show();
                         mDatabase.child("events").child(currentEvent.getEventID()).child("users")
                                 .child(user.getUid())
-                                .setValue(new RegisteredUser("pending", user.getUid(), "valid"));
+                                .setValue(new RegisteredUser(VolteemConstants.VOLUNTEER_EVENT_STATUS_PENDING, user.getUid(), VolteemConstants.VOLUNTEER_EVENT_FLAG_PENDING));
                         finish();
                     }
                 });
@@ -342,7 +342,7 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists() && TextUtils.equals(dataSnapshot.child
-                                    ("status").getValue().toString(), "accepted")) {
+                                    ("status").getValue().toString(), VolteemConstants.VOLUNTEER_EVENT_STATUS_ACCEPTED)) {
                                 mStatus.setText("Accepted");
                                 mStatus.setTextColor(Color.rgb(25, 156, 136));
                                 mDownloadContract.setVisibility(View.VISIBLE);
