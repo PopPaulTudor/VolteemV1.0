@@ -1,16 +1,12 @@
 package com.volunteer.thc.volunteerapp.presentation.chat;
 
 import android.animation.Animator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.Display;
@@ -35,7 +31,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adapter.ChatAdapter;
-import com.volunteer.thc.volunteerapp.model.ChatGroup;
 import com.volunteer.thc.volunteerapp.model.ChatSingle;
 import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.model.Organiser;
@@ -57,7 +52,6 @@ public class ChatFragment extends Fragment {
     private ChatAdapter chatAdapter;
     private TextView noChatText;
     private ImageView noChatImage;
-    private String type = "single";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,37 +65,16 @@ public class ChatFragment extends Fragment {
         noChatImage = v.findViewById(R.id.no_chat_image);
         rootLayout = v.findViewById(R.id.root_layout);
         noChatText = v.findViewById(R.id.no_chat_text);
-        final FloatingActionButton floatingActionButton = v.findViewById(R.id.change_list_chat);
-        populateList(type);
+        populateList();
 
 
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("ResourceAsColor")
-            @Override
-            public void onClick(View v) {
-                if (type.equals("single")) {
-                    type = "group";
-                    floatingActionButton.setImageResource(R.drawable.ic_person_black_24dp);
-                    floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(19, 122, 106)));
-
-                } else {
-                    type = "single";
-                    floatingActionButton.setImageResource(R.drawable.ic_group_black_24dp);
-                    floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(19, 122, 106)));
-                }
-                clearLists();
-                presentActivity(v);
-
-
-            }
-        });
         return v;
 
     }
 
-    private void populateList(final String type) {
+    private void populateList() {
 
-        mDatabase.child("conversation").child(type).orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("conversation").child("single").orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -109,9 +82,7 @@ public class ChatFragment extends Fragment {
                 noChatText.setVisibility(View.GONE);
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    Message chatData;
-                    if (type.equals("single")) chatData = data.getValue(ChatSingle.class);
-                    else chatData = data.getValue(ChatGroup.class);
+                    Message chatData = data.getValue(ChatSingle.class);
                     boolean change = false;
                     for (Message message : arrayWork) {
                         if (message.getSentBy().equals(chatData.getSentBy())) {
@@ -139,7 +110,6 @@ public class ChatFragment extends Fragment {
                                     Intent intent = new Intent(getContext(), ConversationActivity.class);
                                     intent.putExtra("chat", arrayWork.get(position));
                                     intent.putExtra("class", "fragment");
-                                    intent.putExtra("type", type);
                                     startActivity(intent);
 
                                 } else {
@@ -152,10 +122,9 @@ public class ChatFragment extends Fragment {
                                                     Intent intent = new Intent(getContext(), ConversationActivity.class);
                                                     intent.putExtra("chat", arrayWork.get(position));
                                                     intent.putExtra("class", "fragment");
-                                                    intent.putExtra("type", type);
                                                     startActivity(intent);
 
-                                                    mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(arrayWork.get(position)
+                                                    mDatabase.child("conversation").child("single").orderByChild("uuid").equalTo(arrayWork.get(position)
                                                             .getUuid()).addValueEventListener(new ValueEventListener() {
                                                         @Override
                                                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -211,7 +180,7 @@ public class ChatFragment extends Fragment {
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(arrayWork.get(position).getUuid())
+                                        mDatabase.child("conversation").child("single").orderByChild("uuid").equalTo(arrayWork.get(position).getUuid())
                                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -321,9 +290,9 @@ public class ChatFragment extends Fragment {
         chatAdapter.clear();
         arrayWork.clear();
         array.clear();
-        populateList(type);
         chatAdapter.notifyDataSetChanged();
     }
 
 
 }
+

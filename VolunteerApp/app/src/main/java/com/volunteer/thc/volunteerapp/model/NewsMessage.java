@@ -25,7 +25,7 @@ public class NewsMessage extends Message {
         this.starred = starred;
         this.expireDate = expireDate;
         this.eventID = eventID;
-        this.receivedBy=receivedBy;
+        this.receivedBy = receivedBy;
     }
 
     public int getType() {

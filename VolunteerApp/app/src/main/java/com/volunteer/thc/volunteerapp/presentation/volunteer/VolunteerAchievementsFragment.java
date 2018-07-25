@@ -10,6 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adapter.AchievementsAdapter;
 
@@ -21,13 +25,16 @@ import java.util.ArrayList;
 
 public class VolunteerAchievementsFragment extends Fragment{
 
-    private ArrayList<String> checkList = new ArrayList<>();
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private ArrayList<String> checkList=new ArrayList<String>();
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_volunteer_achivements, container, false);
+
         RecyclerView recyclerView = view.findViewById(R.id.volunteer_achivements_recycler_view);
         recyclerView.setHasFixedSize(true);
 

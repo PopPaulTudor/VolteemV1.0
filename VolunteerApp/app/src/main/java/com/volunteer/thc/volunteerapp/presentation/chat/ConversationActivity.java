@@ -44,9 +44,7 @@ public class ConversationActivity extends AppCompatActivity {
     private EditText reply;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String idSent, idReceive;
-    private ChatSingle chatSingle=null;
-    private  ChatGroup chatGroup=null;
-    private String type = "single";
+    private ChatSingle chatSingle = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,26 +56,13 @@ public class ConversationActivity extends AppCompatActivity {
         reply = findViewById(R.id.input_conversation);
 
 
-        ImageView sendMessage = findViewById(R.id.sendMessage);
-        if (getIntent().getStringExtra("type") != null) {
-            type = getIntent().getStringExtra("type");
-        } else {
-            type = "single";
-        }
-        if (getIntent().getSerializableExtra("chat") instanceof ChatSingle) {
-            chatGroup=null;
-            chatSingle = (ChatSingle) getIntent().getSerializableExtra("chat");
-            idActive=chatSingle.getUuid();
-        }
-        else {
-            chatSingle=null;
-            chatGroup = (ChatGroup) getIntent().getSerializableExtra("chat");
-            idActive=chatGroup.getUuid();
-        }
+        ImageView sendMessage = (ImageView) findViewById(R.id.sendMessage);
+        chatSingle = (ChatSingle) getIntent().getSerializableExtra("chat");
+        idActive = chatSingle.getUuid();
 
         idSent = user.getUid();
 
-        if(chatSingle!=null) {
+        if (chatSingle != null) {
             if (chatSingle.getSentBy().equals(idSent))
                 idReceive = chatSingle.getReceivedBy();
             else
@@ -96,13 +81,9 @@ public class ConversationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 conversation.getLayoutManager().scrollToPosition(conversationAdapter.getItemCount() - 1);
                 if (!reply.getText().toString().isEmpty()) {
-                    if (type.equals("single")) {
-                        ChatSingle chatSingle = new ChatSingle(idSent, idReceive, reply.getText().toString(), ConversationActivity.this.chatSingle.getUuid(), Calendar.getInstance().getTimeInMillis(), false);
-                        mDatabase.child("conversation").child(type).push().setValue(chatSingle);
-                    } else {
-                          ChatGroup chatGroup= new ChatGroup(user.getUid(),ConversationActivity.this.chatGroup.getUuid(),reply.getText().toString(),Calendar.getInstance().getTimeInMillis(),false,ConversationActivity.this.chatGroup.getUuidEvent());
-                            mDatabase.child("conversation").child(type).push().setValue(chatGroup);
-                    }
+
+                    ChatSingle chatSingle = new ChatSingle(idSent, idReceive, reply.getText().toString(), ConversationActivity.this.chatSingle.getUuid(), Calendar.getInstance().getTimeInMillis(), false);
+                    mDatabase.child("conversation").child("single").push().setValue(chatSingle);
                     reply.setText(null);
 
                 }
@@ -111,7 +92,7 @@ public class ConversationActivity extends AppCompatActivity {
         });
 
 
-        mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(chatSingle.getUuid()).addChildEventListener(new ChildEventListener() {
+        mDatabase.child("conversation").child("single").orderByChild("uuid").equalTo(chatSingle.getUuid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 ChatSingle chatSingleData = dataSnapshot.getValue(ChatSingle.class);
@@ -188,7 +169,6 @@ public class ConversationActivity extends AppCompatActivity {
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-
                                     OrganiserSingleEventRegisteredUsersFragment.adapter.acceptVolunteer(positionId, ConversationActivity.this);
                                     OrganiserSingleEventRegisteredUsersFragment.adapter.notifyDataSetChanged();
                                     finish();
