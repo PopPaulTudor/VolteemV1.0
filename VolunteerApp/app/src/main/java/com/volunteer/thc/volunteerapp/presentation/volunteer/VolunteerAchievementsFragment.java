@@ -31,14 +31,13 @@ public class VolunteerAchievementsFragment extends Fragment{
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ArrayList<String> checkList=new ArrayList<String>();
-    private RecyclerView recyclerView;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_volunteer_achivements, container, false);
-        recyclerView= (RecyclerView) view.findViewById(R.id.volunteer_achivements_recycler_view);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.volunteer_achivements_recycler_view);
         recyclerView.setHasFixedSize(true);
 
         /*

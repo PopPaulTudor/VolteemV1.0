@@ -198,10 +198,9 @@ public class VolunteerSingleEventActivity extends AppCompatActivity {
 
                         VolunteerEventsFragment.hasActionHappened = true;
                         String newsID = mDatabase.child("news").push().getKey();
-                        mDatabase.child("news/" + newsID).setValue(new NewsMessage(CalendarUtil.getCurrentTimeInMillis(),
-                                newsID, currentEvent.getEventID(), user.getUid(), currentEvent.getCreated_by()
-                                , "A new volunteer registered for your event " + currentEvent.getName()
-                                , NewsMessage.REGISTERED, false, false));
+                        NewsMessage newsMessage = new NewsMessage(CalendarUtil.getCurrentTimeInMillis(), newsID, currentEvent.getEventID(), user.getUid(), currentEvent.getCreated_by()
+                                , "A new volunteer registered for your event" + currentEvent.getName(), NewsMessage.REGISTERED, false, false);
+                        mDatabase.child("news/" + newsID).setValue(newsMessage);
                         mBottomSheetDialog.dismiss();
                         Toast.makeText(VolunteerSingleEventActivity.this, "Signing up for event...", Toast.LENGTH_SHORT).show();
                         mDatabase.child("events").child(currentEvent.getEventID()).child("users").child(user.getUid())

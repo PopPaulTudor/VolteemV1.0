@@ -57,7 +57,6 @@ public class ChatFragment extends Fragment {
     private ImageView noChatImage;
     final ArrayList<Message> array = new ArrayList<>();
     final ArrayList<Message> arrayWork = new ArrayList<>();
-    private String type = "single";
 
     View rootLayout;
 
@@ -67,43 +66,21 @@ public class ChatFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
 
         listChat = (ListView) v.findViewById(R.id.list_chat);
-
         chatAdapter = new ChatAdapter(getContext(), array);
         listChat.setAdapter(chatAdapter);
         noChatImage = (ImageView) v.findViewById(R.id.no_chat_image);
         rootLayout = v.findViewById(R.id.root_layout);
         noChatText = (TextView) v.findViewById(R.id.no_chat_text);
-        final FloatingActionButton floatingActionButton = (FloatingActionButton) v.findViewById(R.id.change_list_chat);
-        populateList(type);
+        populateList();
 
 
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("ResourceAsColor")
-            @Override
-            public void onClick(View v) {
-                if (type.equals("single")) {
-                    type = "group";
-                    floatingActionButton.setImageResource(R.drawable.ic_person_black_24dp);
-                    floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(19, 122, 106)));
-
-                } else {
-                    type = "single";
-                    floatingActionButton.setImageResource(R.drawable.ic_group_black_24dp);
-                    floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(19, 122, 106)));
-                }
-                clearLists();
-                presentActivity(v);
-
-
-            }
-        });
         return v;
 
     }
 
-    private void populateList(final String type) {
+    private void populateList() {
 
-        mDatabase.child("conversation").child(type).orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("conversation").child("single").orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -112,8 +89,7 @@ public class ChatFragment extends Fragment {
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     Message chatData;
-                    if (type.equals("single")) chatData = data.getValue(ChatSingle.class);
-                    else chatData = data.getValue(ChatGroup.class);
+                    chatData = data.getValue(ChatSingle.class);
                     boolean change = false;
                     for (Message message : arrayWork) {
                         if (message.getSentBy().equals(chatData.getSentBy())) {
@@ -141,7 +117,6 @@ public class ChatFragment extends Fragment {
                                     Intent intent = new Intent(getContext(), ConversationActivity.class);
                                     intent.putExtra("chat", arrayWork.get(position));
                                     intent.putExtra("class", "fragment");
-                                    intent.putExtra("type", type);
                                     startActivity(intent);
 
                                 } else {
@@ -153,10 +128,9 @@ public class ChatFragment extends Fragment {
                                             Intent intent = new Intent(getContext(), ConversationActivity.class);
                                             intent.putExtra("chat", arrayWork.get(position));
                                             intent.putExtra("class", "fragment");
-                                            intent.putExtra("type", type);
                                             startActivity(intent);
 
-                                            mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(arrayWork.get(position).getUuid()).addValueEventListener(new ValueEventListener() {
+                                            mDatabase.child("conversation").child("single").orderByChild("uuid").equalTo(arrayWork.get(position).getUuid()).addValueEventListener(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                                     long size = dataSnapshot.getChildrenCount();
@@ -197,7 +171,6 @@ public class ChatFragment extends Fragment {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                        // TODO: 07.12.2017 don't allow anyone to delete
                         final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
                         alert.setTitle("Delete conversation?")
                                 .setCancelable(true)
@@ -211,7 +184,7 @@ public class ChatFragment extends Fragment {
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        mDatabase.child("conversation").child(type).orderByChild("uuid").equalTo(arrayWork.get(position).getUuid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        mDatabase.child("conversation").child("single").orderByChild("uuid").equalTo(arrayWork.get(position).getUuid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
                                                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
@@ -320,7 +293,7 @@ public class ChatFragment extends Fragment {
         chatAdapter.clear();
         arrayWork.clear();
         array.clear();
-        populateList(type);
+        populateList();
         chatAdapter.notifyDataSetChanged();
     }
 
