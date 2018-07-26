@@ -111,4 +111,7 @@
     <string name="loading_questions">Loading questions...</string>
     <string name="next_question">NEXT QUESTION</string>
     <string name="all_questions_answered">You\'ve answered all available questions!</string>
+    <string name="no_feedback_text">No feedback.</string>
+    <string name="past_events">Past Events</string>
+    <string name="no_past_events">You have no past events.</string>
 </resources>

@@ -296,7 +296,8 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     Intent intent = new Intent(getActivity(), OrganiserFeedbackActivity.class);
                                                     //TODO extract names to constants in VolteemConstants
-                                                    intent.putExtra("name", currentEvent.getName());
+                                                    intent.putExtra("eventName", currentEvent.getName());
+                                                    intent.putExtra("eventID", currentEvent.getEventID());
                                                     intent.putExtra("volunteers", currentEvent.getAccepted_volunteers());
                                                     startActivity(intent);
                                                     dialogInterface.dismiss();
@@ -331,7 +332,7 @@ public class OrganiserEventsFragment extends Fragment implements SwipeRefreshLay
                                         snackbar.show();
                                     }
                                 }
-
+                                recyclerView.setVisibility(View.GONE);
                                 OrganiserEventsAdapter adapter = new OrganiserEventsAdapter
                                         (mEventsList,
                                                 getContext(), getResources(), OrganiserEventsAdapter

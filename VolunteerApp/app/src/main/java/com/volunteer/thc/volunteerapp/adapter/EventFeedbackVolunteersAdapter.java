@@ -37,14 +37,15 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ActionListener.FeedbackDoneListener feedbackDoneListener;
-    private String eventName;
+    private String eventName, eventID;
     private Calendar date = Calendar.getInstance();
 
-    public EventFeedbackVolunteersAdapter(ArrayList<Volunteer> list, String eventName, ArrayList<String> volunteerIDs, ActionListener.FeedbackDoneListener feedbackDoneListener) {
+    public EventFeedbackVolunteersAdapter(ArrayList<Volunteer> list, String eventID, String eventName, ArrayList<String> volunteerIDs, ActionListener.FeedbackDoneListener feedbackDoneListener) {
         listVolunteer = list;
         this.volunteerIDs = volunteerIDs;
         this.feedbackDoneListener = feedbackDoneListener;
         this.eventName = eventName;
+        this.eventID = eventID;
     }
 
     @Override
@@ -101,7 +102,7 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
                             feedbackDialog.dismiss();
                             notifyDataSetChanged();
                             mDatabase.child("users").child("volunteers").child(volunteerIDs.get(position)).child("feedback")
-                                    .child(user.getUid()).setValue(feedbackText);
+                                    .child(eventID).setValue(feedbackText);
                             String newsID = mDatabase.child("news").push().getKey();
                             mDatabase.child("news").child(newsID).setValue(new NewsMessage(date.getTimeInMillis(), newsID, "soon", user.getUid(), volunteerIDs.get(position),
                                     "You have received feedback for your activity at " + eventName, NewsMessage.FEEDBACK, false, false));

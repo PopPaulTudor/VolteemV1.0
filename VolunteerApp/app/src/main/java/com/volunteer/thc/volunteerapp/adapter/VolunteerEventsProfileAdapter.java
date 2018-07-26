@@ -55,10 +55,10 @@ public class VolunteerEventsProfileAdapter extends RecyclerView.Adapter<Voluntee
     @Override
     public void onBindViewHolder(final EventViewHolder holder, int position) {
         long nrOfDays = TimeUnit.MILLISECONDS.toDays(events.get(position).getFinishDate() - events.get(position).getStartDate());
-        long experience= CalculateUtils.calculateVolunteerExperience(events.get(position).getSize(),nrOfDays);
+        long experience = CalculateUtils.calculateVolunteerExperience(events.get(position).getSize(), nrOfDays);
 
         holder.eventName.setText(events.get(position).getName());
-        holder.eventExperience.setText(experience+"");
+        holder.eventExperience.setText("XP: " + experience);
 
 
         storageRef.child("Photos").child("Event").child(events.get(position).getEventID()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -68,18 +68,16 @@ public class VolunteerEventsProfileAdapter extends RecyclerView.Adapter<Voluntee
             }
         });
 
-        String eventOrgID = events.get(position).getCreated_by();
+        String eventID = events.get(position).getEventID();
 
-
-        databaseRef.child("users/volunteers/" + user.getUid() + "/feedback/"+eventOrgID).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseRef.child("users/volunteers/" + user.getUid() + "/feedback/" + eventID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot.getValue()==null) {
-                    holder.eventFeedback.setText("No feedback");
+                if (dataSnapshot.getValue() == null) {
+                    holder.eventFeedback.setText(R.string.no_feedback_text);
                 } else {
-
-                   holder.eventFeedback.setText(dataSnapshot.getValue(String.class));
+                    holder.eventFeedback.setText(dataSnapshot.getValue(String.class));
                 }
             }
 
@@ -88,9 +86,6 @@ public class VolunteerEventsProfileAdapter extends RecyclerView.Adapter<Voluntee
                 Log.e("EvVolAdapterFeedback", databaseError.getMessage());
             }
         });
-
-
-
 
 
     }
@@ -111,7 +106,7 @@ public class VolunteerEventsProfileAdapter extends RecyclerView.Adapter<Voluntee
             eventName = (TextView) itemView.findViewById(R.id.CardProfileName);
             eventExperience = (TextView) itemView.findViewById(R.id.CardProfileExperience);
             eventImage = (ImageView) itemView.findViewById(R.id.CardProfileImage);
-            eventFeedback= (TextView) itemView.findViewById(R.id.CardProfileFeedback);
+            eventFeedback = (TextView) itemView.findViewById(R.id.CardProfileFeedback);
         }
     }
 }
