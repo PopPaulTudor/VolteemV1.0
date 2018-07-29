@@ -11,9 +11,7 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.ChatGroup;
 import com.volunteer.thc.volunteerapp.model.ChatSingle;
-import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
@@ -25,16 +23,15 @@ import java.util.ArrayList;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.EventViewHolder> {
 
-    ChatSingle chatSingle = null;
-    ChatGroup chatGroup = null;
-    long hour;
-    private ArrayList<Message> data = new ArrayList<>();
+    private ChatSingle chatSingle = null;
+    private long hour;
+    private ArrayList<ChatSingle> data = new ArrayList<>();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int contClick = 1;
     private Context context;
 
 
-    public ConversationAdapter(ArrayList<Message> data, Context context) {
+    public ConversationAdapter(ArrayList<ChatSingle> data, Context context) {
         this.data = data;
         this.context = context;
     }
@@ -51,28 +48,29 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     @Override
     public void onBindViewHolder(final ConversationAdapter.EventViewHolder holder, int position) {
 
-        if (data.get(position) instanceof ChatSingle) {
-            chatSingle = (ChatSingle) data.get(position);
-            hour = chatSingle.getHour();
-        } else {
-            chatGroup = (ChatGroup) data.get(position);
-            hour = chatGroup.getHour();
+        chatSingle = (ChatSingle) data.get(position);
+        hour = chatSingle.getHour();
+
+        if(data!=null) {
+
+
+            if (data.get(position).getSentBy().equals(user.getUid())) {
+
+                holder.relativeSent.setVisibility(View.VISIBLE);
+                holder.relativeReceive.setVisibility(View.INVISIBLE);
+                holder.textSent.setText(data.get(position).getContent());
+                holder.hourSent.setText(CalendarUtil.getHourFromLong(hour));
+
+            } else {
+                holder.relativeSent.setVisibility(View.INVISIBLE);
+                holder.relativeReceive.setVisibility(View.VISIBLE);
+                holder.textReceive.setText(data.get(position).getContent());
+                holder.hourReceive.setText(CalendarUtil.getHourFromLong(hour));
+
+
+            }
         }
-        if (data.get(position).getSentBy().equals(user.getUid())) {
 
-            holder.relativeSent.setVisibility(View.VISIBLE);
-            holder.relativeReceive.setVisibility(View.INVISIBLE);
-            holder.textSent.setText(data.get(position).getContent());
-            holder.hourSent.setText(CalendarUtil.getHourFromLong(hour));
-
-        } else {
-            holder.relativeSent.setVisibility(View.INVISIBLE);
-            holder.relativeReceive.setVisibility(View.VISIBLE);
-            holder.textReceive.setText(data.get(position).getContent());
-            holder.hourReceive.setText(CalendarUtil.getHourFromLong(hour));
-
-
-        }
 
         final int start = holder.textReceive.getPaddingStart();
         final int end = holder.textReceive.getPaddingEnd();

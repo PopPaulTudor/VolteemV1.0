@@ -49,7 +49,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
-import com.volunteer.thc.volunteerapp.model.ChatGroup;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.type.EventType;
 import com.volunteer.thc.volunteerapp.adapter.EventQuestionsAdapter;
@@ -62,7 +61,6 @@ import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.UUID;
 
 /**
  * Created on 6/23/2017.
@@ -511,9 +509,7 @@ public class CreateEventActivity extends AppCompatActivity {
             Log.w(TAG, "AlarmManager is not available");
         }
 
-        ChatGroup chatGroup = new ChatGroup(mUser.getUid(), UUID.randomUUID().toString(), getString(R.string.you_have_been_accepted),
-                Calendar.getInstance().getTimeInMillis(), false, new_event.getEventID());
-        mDatabase.child("conversation").child("group").push().setValue(chatGroup);
+
 
         returnToEvents();
     }

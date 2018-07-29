@@ -433,8 +433,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             public void onClick(View v) {
 
                 final Intent intent = new Intent(context, ConversationActivity.class);
-
-                mDatabase.child("conversation").child("single").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
+                mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
 
                     public void onDataChange(DataSnapshot dataSnapshot) {

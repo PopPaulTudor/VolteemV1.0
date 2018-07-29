@@ -21,7 +21,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adapter.ConversationAdapter;
-import com.volunteer.thc.volunteerapp.model.ChatGroup;
 import com.volunteer.thc.volunteerapp.model.ChatSingle;
 import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
@@ -59,7 +58,6 @@ public class ConversationActivity extends AppCompatActivity {
         ImageView sendMessage = (ImageView) findViewById(R.id.sendMessage);
         chatSingle = (ChatSingle) getIntent().getSerializableExtra("chat");
         idActive = chatSingle.getUuid();
-
         idSent = user.getUid();
 
         if (chatSingle != null) {
@@ -82,8 +80,11 @@ public class ConversationActivity extends AppCompatActivity {
                 conversation.getLayoutManager().scrollToPosition(conversationAdapter.getItemCount() - 1);
                 if (!reply.getText().toString().isEmpty()) {
 
-                    ChatSingle chatSingle = new ChatSingle(idSent, idReceive, reply.getText().toString(), ConversationActivity.this.chatSingle.getUuid(), Calendar.getInstance().getTimeInMillis(), false);
-                    mDatabase.child("conversation").child("single").push().setValue(chatSingle);
+                    ChatSingle chatSingle = new ChatSingle(idSent, idReceive,
+                            reply.getText().toString(), ConversationActivity.this.chatSingle.getUuid(),
+                            Calendar.getInstance().getTimeInMillis(), false);
+
+                    mDatabase.child("conversation").push().setValue(chatSingle);
                     reply.setText(null);
 
                 }
@@ -92,7 +93,7 @@ public class ConversationActivity extends AppCompatActivity {
         });
 
 
-        mDatabase.child("conversation").child("single").orderByChild("uuid").equalTo(chatSingle.getUuid()).addChildEventListener(new ChildEventListener() {
+        mDatabase.child("conversation").orderByChild("uuid").equalTo(chatSingle.getUuid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 ChatSingle chatSingleData = dataSnapshot.getValue(ChatSingle.class);
@@ -148,43 +149,50 @@ public class ConversationActivity extends AppCompatActivity {
         MenuItem acceptVolunteer = menu.findItem(R.id.chat_accept_volunteer);
         final String positionId = getIntent().getStringExtra("id");
         String parentClass = getIntent().getStringExtra("class");
-        if (!parentClass.equals("adapter")) {
-            acceptVolunteer.setVisible(false);
-        } else {
-            acceptVolunteer.setVisible(true);
-            acceptVolunteer.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
+        String isAccepted= getIntent().getStringExtra("accept");
 
-                    final AlertDialog.Builder alert = new AlertDialog.Builder(ConversationActivity.this);
-                    alert.setTitle("Accept Volunteer?")
-                            .setCancelable(true)
-                            .setMessage("Are you sure you want to accept this volunteer?")
-                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
+        if(parentClass.equals("adapter")) {
 
-                                }
-                            })
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    OrganiserSingleEventRegisteredUsersFragment.adapter.acceptVolunteer(positionId, ConversationActivity.this);
-                                    OrganiserSingleEventRegisteredUsersFragment.adapter.notifyDataSetChanged();
-                                    finish();
+            if (!isAccepted.equals("not_acc")) {
+                acceptVolunteer.setVisible(false);
+            } else {
+                acceptVolunteer.setVisible(true);
+                acceptVolunteer.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+
+                        final AlertDialog.Builder alert = new AlertDialog.Builder(ConversationActivity.this);
+                        alert.setTitle("Accept Volunteer?")
+                                .setCancelable(true)
+                                .setMessage("Are you sure you want to accept this volunteer?")
+                                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                })
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        OrganiserSingleEventRegisteredUsersFragment.adapter.acceptVolunteer(positionId, ConversationActivity.this);
+                                        OrganiserSingleEventRegisteredUsersFragment.adapter.notifyDataSetChanged();
+                                        finish();
 
 
-                                }
-                            });
+                                    }
+                                });
 
 
-                    alert.show();
+                        alert.show();
 
-                    return false;
-                }
-            });
+                        return false;
+                    }
+                });
 
-        }
+            }
+
+        }else acceptVolunteer.setVisible(false);
+
         return super.onCreateOptionsMenu(menu);
 
     }

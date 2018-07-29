@@ -74,7 +74,7 @@ public class ChatFragment extends Fragment {
 
     private void populateList() {
 
-        mDatabase.child("conversation").child("single").orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("conversation").orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -124,7 +124,7 @@ public class ChatFragment extends Fragment {
                                                     intent.putExtra("class", "fragment");
                                                     startActivity(intent);
 
-                                                    mDatabase.child("conversation").child("single").orderByChild("uuid").equalTo(arrayWork.get(position)
+                                                    mDatabase.child("conversation").orderByChild("uuid").equalTo(arrayWork.get(position)
                                                             .getUuid()).addValueEventListener(new ValueEventListener() {
                                                         @Override
                                                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -166,7 +166,6 @@ public class ChatFragment extends Fragment {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                        // TODO: 07.12.2017 don't allow anyone to delete
                         final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
                         alert.setTitle("Delete conversation?")
                                 .setCancelable(true)
@@ -180,7 +179,7 @@ public class ChatFragment extends Fragment {
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        mDatabase.child("conversation").child("single").orderByChild("uuid").equalTo(arrayWork.get(position).getUuid())
+                                        mDatabase.child("conversation").orderByChild("uuid").equalTo(arrayWork.get(position).getUuid())
                                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(DataSnapshot dataSnapshot) {

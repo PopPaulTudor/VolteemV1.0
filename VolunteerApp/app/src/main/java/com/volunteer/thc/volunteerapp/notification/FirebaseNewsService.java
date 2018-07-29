@@ -123,12 +123,12 @@ public class FirebaseNewsService extends Service {
         });
 
 
-        mDatabase.child("conversation").child("single").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
+        mDatabase.child("conversation").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 final ChatSingle chatSingle = dataSnapshot.getValue(ChatSingle.class);
                 if (!chatSingle.isReceived() && !chatSingle.getContent().contains("You have been accepted to ")) {
-                    mDatabase.child("conversation/single/" + dataSnapshot.getKey() + "/received").setValue(true);
+                    mDatabase.child("conversation/" + dataSnapshot.getKey() + "/received").setValue(true);
                     badgeCount = prefs.getInt("badgeCount", 0);
                     ++badgeCount;
                     prefs.edit().putInt("badgeCount", badgeCount).apply();
@@ -248,7 +248,7 @@ public class FirebaseNewsService extends Service {
         final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Intent intent = new Intent(this, ConversationActivity.class);
 
-        intent.putExtra("chatSingle", chat);
+        intent.putExtra("chat", chat);
         intent.putExtra("class", "firebase");
         ConversationActivity.nameChat = title;
 
