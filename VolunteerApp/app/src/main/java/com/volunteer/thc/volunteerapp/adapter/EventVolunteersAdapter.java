@@ -283,8 +283,8 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             }
         });
 
-        holder.sendMessage.setOnClickListener(sendMessage(position,"not_acc"));
-        holder.sendMessageAccepted.setOnClickListener(sendMessage(position,"acc"));
+        holder.sendMessage.setOnClickListener(sendMessage(position, "not_acc"));
+        holder.sendMessageAccepted.setOnClickListener(sendMessage(position, "acc"));
 
         holder.kickVolunteer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -433,33 +433,37 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             public void onClick(View v) {
 
                 final Intent intent = new Intent(context, ConversationActivity.class);
+                intent.putExtra("statusVolunteer",accepted);
+
+
                 mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
 
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         boolean ifHasConv = false;
                         if (!dataSnapshot.hasChildren()) {
-                            ChatSingle chatSingle = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
-                            intent.putExtra("chat", chatSingle);
+                            ChatSingle chat = new ChatSingle(user.getUid(), volunteerIDs.get(position), " ", UUID.randomUUID().toString(), 0, false);
+                            intent.putExtra("chat", chat);
                         } else {
                             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                ChatSingle chatSingle = dataSnapshot1.getValue(ChatSingle.class);
-                                if (TextUtils.equals(chatSingle.getSentBy(), user.getUid())) {
-                                    intent.putExtra("chat", chatSingle);
+                                ChatSingle chat = dataSnapshot1.getValue(ChatSingle.class);
+                                if (TextUtils.equals(chat.getSentBy(), user.getUid())) {
+                                    intent.putExtra("chat", chat);
                                     ifHasConv = true;
                                     break;
                                 }
                             }
 
                             if (!ifHasConv) {
-                                ChatSingle chatSingle = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
-                                intent.putExtra("chat", chatSingle);
+                                ChatSingle chat = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
+                                intent.putExtra("chat", chat);
+
                             }
                         }
                         ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname();
                         intent.putExtra("class", "adapter");
                         intent.putExtra("id", volunteerIDs.get(position));
-                        intent.putExtra("accept",accepted);
+
                         ConversationActivity.fragment = fragment;
                         context.startActivity(intent);
                     }
@@ -471,13 +475,14 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
 
                         ConversationActivity.nameChat = listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname();
                         intent.putExtra("class", "adapter");
-                        ChatSingle chatSingle = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
-                        intent.putExtra("chat", chatSingle);
+                        ChatSingle chat = new ChatSingle(user.getUid(), volunteerIDs.get(position), "", UUID.randomUUID().toString(), 0, false);
+                        intent.putExtra("chat", chat);
                         intent.putExtra("id", volunteerIDs.get(position));
                         ConversationActivity.fragment = fragment;
                         context.startActivity(intent);
                     }
                 });
+
 
             }
         };

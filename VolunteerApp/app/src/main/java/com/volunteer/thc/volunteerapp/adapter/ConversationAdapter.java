@@ -23,8 +23,6 @@ import java.util.ArrayList;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.EventViewHolder> {
 
-    private ChatSingle chatSingle = null;
-    private long hour;
     private ArrayList<ChatSingle> data = new ArrayList<>();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int contClick = 1;
@@ -33,7 +31,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     public ConversationAdapter(ArrayList<ChatSingle> data, Context context) {
         this.data = data;
-        this.context = context;
+        this.context=context;
     }
 
 
@@ -47,50 +45,42 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     @Override
     public void onBindViewHolder(final ConversationAdapter.EventViewHolder holder, int position) {
+        if (data.get(position).getSentBy().equals(user.getUid())) {
 
-        chatSingle = (ChatSingle) data.get(position);
-        hour = chatSingle.getHour();
+            holder.relativeSent.setVisibility(View.VISIBLE);
+            holder.relativeReceive.setVisibility(View.INVISIBLE);
+            holder.textSent.setText(data.get(position).getContent());
+            holder.hourSent.setText(CalendarUtil.getHourFromLong(data.get(position).getHour()));
 
-        if(data!=null) {
-
-
-            if (data.get(position).getSentBy().equals(user.getUid())) {
-
-                holder.relativeSent.setVisibility(View.VISIBLE);
-                holder.relativeReceive.setVisibility(View.INVISIBLE);
-                holder.textSent.setText(data.get(position).getContent());
-                holder.hourSent.setText(CalendarUtil.getHourFromLong(hour));
-
-            } else {
-                holder.relativeSent.setVisibility(View.INVISIBLE);
-                holder.relativeReceive.setVisibility(View.VISIBLE);
-                holder.textReceive.setText(data.get(position).getContent());
-                holder.hourReceive.setText(CalendarUtil.getHourFromLong(hour));
+        } else {
+            holder.relativeSent.setVisibility(View.INVISIBLE);
+            holder.relativeReceive.setVisibility(View.VISIBLE);
+            holder.textReceive.setText(data.get(position).getContent());
+            holder.hourReceive.setText(CalendarUtil.getHourFromLong(data.get(position).getHour()));
 
 
-            }
+
         }
 
-
-        final int start = holder.textReceive.getPaddingStart();
-        final int end = holder.textReceive.getPaddingEnd();
-        final int top = holder.textReceive.getCompoundPaddingTop();
-        final int bottom = holder.textReceive.getPaddingBottom();
+        final int start=holder.textReceive.getPaddingStart();
+        final int end=holder.textReceive.getPaddingEnd();
+        final int top= holder.textReceive.getCompoundPaddingTop();
+        final int bottom= holder.textReceive.getPaddingBottom();
 
 
         holder.relativeReceive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int start = holder.textReceive.getPaddingStart();
-                int end = holder.textReceive.getPaddingEnd();
-                int top = holder.textReceive.getCompoundPaddingTop();
-                int bottom = holder.textReceive.getPaddingBottom();
+                int start=holder.textReceive.getPaddingStart();
+                int end=holder.textReceive.getPaddingEnd();
+                int top= holder.textReceive.getCompoundPaddingTop();
+                int bottom= holder.textReceive.getPaddingBottom();
 
                 if (contClick % 2 == 1) {
                     contClick++;
                     holder.hourReceive.setVisibility(View.VISIBLE);
                     holder.hourReceive.setVisibility(View.VISIBLE);
-                    holder.textReceive.setPaddingRelative(start, top, end, bottom + 7);
+                    holder.textReceive.setPaddingRelative(start, top, end, bottom+7);
                 } else {
                     contClick++;
                     holder.hourReceive.setVisibility(View.GONE);
@@ -108,7 +98,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                     contClick++;
                     holder.hourSent.setVisibility(View.VISIBLE);
                     holder.hourSent.setVisibility(View.VISIBLE);
-                    holder.textSent.setPaddingRelative(start, top, end, bottom + 7);
+                    holder.textSent.setPaddingRelative(start, top, end, bottom+7);
                 } else {
                     contClick++;
                     holder.hourSent.setVisibility(View.GONE);
@@ -125,10 +115,6 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         return data.size();
     }
 
-    public void addElement(ChatSingle chatSingle) {
-        data.add(chatSingle);
-        notifyDataSetChanged();
-    }
 
     class EventViewHolder extends RecyclerView.ViewHolder {
         TextView textSent;
@@ -149,6 +135,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
 
         }
+    }
+
+    public void addElement(ChatSingle chat) {
+        data.add(chat);
+        notifyDataSetChanged();
     }
 
 

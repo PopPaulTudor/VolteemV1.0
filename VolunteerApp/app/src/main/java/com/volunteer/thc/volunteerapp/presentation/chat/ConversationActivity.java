@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.adapter.ConversationAdapter;
 import com.volunteer.thc.volunteerapp.model.ChatSingle;
-import com.volunteer.thc.volunteerapp.model.Message;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
 
 import java.util.ArrayList;
@@ -34,16 +34,16 @@ import java.util.Calendar;
 
 public class ConversationActivity extends AppCompatActivity {
 
+    final ArrayList<ChatSingle> arrayList = new ArrayList<>();
     public static String nameChat = null;
     public static String idActive = "";
-    public static OrganiserSingleEventRegisteredUsersFragment fragment;
-    final ArrayList<Message> arrayList = new ArrayList<>();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private ConversationAdapter conversationAdapter;
     private EditText reply;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String idSent, idReceive;
-    private ChatSingle chatSingle = null;
+    private ChatSingle chatDefault;
+    public static OrganiserSingleEventRegisteredUsersFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,20 +51,16 @@ public class ConversationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_converation);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(nameChat);
-        final RecyclerView conversation = findViewById(R.id.list_conversation);
-        reply = findViewById(R.id.input_conversation);
-
-
+        final RecyclerView conversation = (RecyclerView) findViewById(R.id.list_conversation);
+        reply = (EditText) findViewById(R.id.input_conversation);
         ImageView sendMessage = (ImageView) findViewById(R.id.sendMessage);
-        chatSingle = (ChatSingle) getIntent().getSerializableExtra("chat");
-        idActive = chatSingle.getUuid();
+        chatDefault = (ChatSingle) getIntent().getSerializableExtra("chat");
+        idActive = chatDefault.getUuid();
         idSent = user.getUid();
-
-        if (chatSingle != null) {
-            if (chatSingle.getSentBy().equals(idSent))
-                idReceive = chatSingle.getReceivedBy();
-            else
-                idReceive = chatSingle.getSentBy();
+        if (chatDefault.getSentBy().equals(idSent)) {
+            idReceive = chatDefault.getReceivedBy();
+        } else {
+            idReceive = chatDefault.getSentBy();
         }
 
         conversation.setHasFixedSize(true);
@@ -78,26 +74,22 @@ public class ConversationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 conversation.getLayoutManager().scrollToPosition(conversationAdapter.getItemCount() - 1);
-                if (!reply.getText().toString().isEmpty()) {
-
-                    ChatSingle chatSingle = new ChatSingle(idSent, idReceive,
-                            reply.getText().toString(), ConversationActivity.this.chatSingle.getUuid(),
-                            Calendar.getInstance().getTimeInMillis(), false);
-
-                    mDatabase.child("conversation").push().setValue(chatSingle);
+                if (!reply.getText().toString().isEmpty() && !reply.getText().toString().equals(" ")) {
+                    ChatSingle chat = new ChatSingle(idSent, idReceive, reply.getText().toString(), chatDefault.getUuid(), Calendar.getInstance().getTimeInMillis(), false);
+                    mDatabase.child("conversation").push().setValue(chat);
                     reply.setText(null);
-
+                } else {
+                    Toast.makeText(getApplicationContext(), "Can't send empty message", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
 
 
-        mDatabase.child("conversation").orderByChild("uuid").equalTo(chatSingle.getUuid()).addChildEventListener(new ChildEventListener() {
+        mDatabase.child("conversation").orderByChild("uuid").equalTo(chatDefault.getUuid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                ChatSingle chatSingleData = dataSnapshot.getValue(ChatSingle.class);
-                conversationAdapter.addElement(chatSingleData);
+                ChatSingle chatData = dataSnapshot.getValue(ChatSingle.class);
+                conversationAdapter.addElement(chatData);
                 conversation.getLayoutManager().scrollToPosition(conversationAdapter.getItemCount() - 1);
 
             }
@@ -149,11 +141,13 @@ public class ConversationActivity extends AppCompatActivity {
         MenuItem acceptVolunteer = menu.findItem(R.id.chat_accept_volunteer);
         final String positionId = getIntent().getStringExtra("id");
         String parentClass = getIntent().getStringExtra("class");
-        String isAccepted= getIntent().getStringExtra("accept");
 
-        if(parentClass.equals("adapter")) {
+        if (!parentClass.equals("adapter")) {
+            acceptVolunteer.setVisible(false);
+        } else {
 
-            if (!isAccepted.equals("not_acc")) {
+            String statusVolunteer = getIntent().getStringExtra("statusVolunteer");
+            if (!statusVolunteer.equals("not_acc")) {
                 acceptVolunteer.setVisible(false);
             } else {
                 acceptVolunteer.setVisible(true);
@@ -174,10 +168,10 @@ public class ConversationActivity extends AppCompatActivity {
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
+
                                         OrganiserSingleEventRegisteredUsersFragment.adapter.acceptVolunteer(positionId, ConversationActivity.this);
                                         OrganiserSingleEventRegisteredUsersFragment.adapter.notifyDataSetChanged();
                                         finish();
-
 
                                     }
                                 });
@@ -190,9 +184,7 @@ public class ConversationActivity extends AppCompatActivity {
                 });
 
             }
-
-        }else acceptVolunteer.setVisible(false);
-
+        }
         return super.onCreateOptionsMenu(menu);
 
     }
@@ -200,6 +192,7 @@ public class ConversationActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        idActive = chatDefault.getUuid();
     }
 
     @Override

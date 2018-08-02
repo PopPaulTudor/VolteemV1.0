@@ -18,6 +18,7 @@ public class ChatSingle extends Message implements Serializable {
 
     public ChatSingle(String sentBy, String receivedBy, String content, String uuid, long hour, boolean received) {
         super(sentBy, uuid, content);
+        this.uuid=uuid;
         this.hour = hour;
         this.receivedBy=receivedBy;
         this.received=received;

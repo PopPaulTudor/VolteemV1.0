@@ -127,7 +127,7 @@ public class FirebaseNewsService extends Service {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 final ChatSingle chatSingle = dataSnapshot.getValue(ChatSingle.class);
-                if (!chatSingle.isReceived() && !chatSingle.getContent().contains("You have been accepted to ")) {
+                if (!chatSingle.isReceived() && !chatSingle.getContent().equals(" ")) {
                     mDatabase.child("conversation/" + dataSnapshot.getKey() + "/received").setValue(true);
                     badgeCount = prefs.getInt("badgeCount", 0);
                     ++badgeCount;
@@ -184,6 +184,7 @@ public class FirebaseNewsService extends Service {
                             }
                         });
                     }
+
                 }
             }
 
