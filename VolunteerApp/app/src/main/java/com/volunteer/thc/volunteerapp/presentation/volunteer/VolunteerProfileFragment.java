@@ -49,7 +49,7 @@ public class VolunteerProfileFragment extends Fragment {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new VolunteerProfileEventsFragment();
+                    return new VolunteerProfilePastEventsFragment();
                 case 1:
                     return new VolunteerProfileInformationFragment();
                 case 2:

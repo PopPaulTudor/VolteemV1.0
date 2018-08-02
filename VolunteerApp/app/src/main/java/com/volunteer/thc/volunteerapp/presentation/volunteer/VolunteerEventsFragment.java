@@ -63,12 +63,12 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     private RecyclerView recyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Calendar date = Calendar.getInstance();
-    private TextView noEvents;
+    private TextView noEventsTextView;
     private ArrayList<String> typeList = new ArrayList<>();
     private String filterType = "All";
     private Spinner actionFilter;
     private MenuItem filter;
-    private int mLongAnimTime;
+    private int mMediumAnimTime;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,7 +78,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
 
         recyclerView = view.findViewById(R.id.RecViewVolEvents);
         recyclerView.setHasFixedSize(true);
-        noEvents = view.findViewById(R.id.no_events_text);
+        noEventsTextView = view.findViewById(R.id.no_events_text);
         mSwipeRefreshLayout = view.findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
@@ -90,8 +90,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
             }
         });
 
-        mLongAnimTime = getResources().getInteger(android.R.integer.config_longAnimTime);
-
+        mMediumAnimTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
         loadEvents();
         setHasOptionsMenu(true);
         return view;
@@ -115,51 +114,51 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
     private void loadEvents() {
 
         mSwipeRefreshLayout.setRefreshing(true);
-        noEvents.setVisibility(View.GONE);
+        noEventsTextView.setVisibility(View.GONE);
         if (isNetworkAvailable()) {
             mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    mEventsList = new ArrayList<>();
-                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        final Event currentEvent = data.getValue(Event.class);
-                        if (currentEvent.getDeadline() > date.getTimeInMillis()) {
-                            mEventsList.add(currentEvent);
-                        }
-                    }
-                    if (mEventsList.isEmpty()) {
-                        noEvents.setVisibility(View.VISIBLE);
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                    if (isFragmentActive()) {
-                        Collections.sort(mEventsList, new Comparator<Event>() {
-                            @Override
-                            public int compare(Event event, Event t1) {
-                                if (event.getDeadline() < t1.getDeadline())
-                                    return -1;
-                                if (event.getDeadline() > t1.getDeadline())
-                                    return 1;
-                                return 0;
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            mEventsList = new ArrayList<>();
+                            for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                final Event currentEvent = data.getValue(Event.class);
+                                if (currentEvent.getDeadline() > date.getTimeInMillis()) {
+                                    mEventsList.add(currentEvent);
+                                }
                             }
-                        });
+                            if (mEventsList.isEmpty()) {
+                                noEventsTextView.setVisibility(View.VISIBLE);
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            }
+                            if (isFragmentActive()) {
+                                Collections.sort(mEventsList, new Comparator<Event>() {
+                                    @Override
+                                    public int compare(Event event, Event t1) {
+                                        if (event.getDeadline() < t1.getDeadline())
+                                            return -1;
+                                        if (event.getDeadline() > t1.getDeadline())
+                                            return 1;
+                                        return 0;
+                                    }
+                                });
+                                recyclerView.setVisibility(View.GONE);
+                                VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
+                                        getContext()
+                                        , getResources(), OrganiserEventsAdapter.ALL_EVENTS,
+                                        VolunteerEventsFragment.this, 1);
+                                recyclerView.setAdapter(adapter);
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager
+                                        (getActivity());
+                                recyclerView.setLayoutManager(linearLayoutManager);
+                            }
+                        }
 
-                        VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
-                                getContext()
-                                , getResources(), OrganiserEventsAdapter.ALL_EVENTS,
-                                VolunteerEventsFragment.this, 1);
-                        recyclerView.setAdapter(adapter);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager
-                                (getActivity());
-                        recyclerView.setLayoutManager(linearLayoutManager);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e("VolEventsF: loadEvents", databaseError.getMessage());
-                }
-            });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e("VolEventsF: loadEvents", databaseError.getMessage());
+                        }
+                    });
 
         } else {
             mSwipeRefreshLayout.setRefreshing(false);
@@ -172,52 +171,52 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
         mEventsList = new ArrayList<>();
         mDatabase.child("events").orderByChild("users/" + user.getUid()).equalTo(null)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    if (TextUtils.equals(dataSnapshot1.child("type").getValue().toString(),
-                            filter) &&
-                            dataSnapshot1.child("deadline").getValue(Long.class) > date
-                                    .getTimeInMillis()) {
-                        mEventsList.add(dataSnapshot1.getValue(Event.class));
-                    }
-                }
-                if (isFragmentActive()) {
-
-                    if (mEventsList.isEmpty()) {
-                        noEvents.setVisibility(View.VISIBLE);
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-
-                    Collections.sort(mEventsList, new Comparator<Event>() {
-                        @Override
-                        public int compare(Event event, Event t1) {
-                            if (event.getDeadline() < t1.getDeadline())
-                                return -1;
-                            if (event.getDeadline() > t1.getDeadline())
-                                return 1;
-                            return 0;
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                            if (TextUtils.equals(dataSnapshot1.child("type").getValue().toString(),
+                                    filter) &&
+                                    dataSnapshot1.child("deadline").getValue(Long.class) > date
+                                            .getTimeInMillis()) {
+                                mEventsList.add(dataSnapshot1.getValue(Event.class));
+                            }
                         }
-                    });
+                        if (isFragmentActive()) {
 
-                    VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
-                            getContext(),
-                            getResources(), OrganiserEventsAdapter.ALL_EVENTS,
-                            VolunteerEventsFragment
-                            .this, 1);
-                    recyclerView.setAdapter(adapter);
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity
-                            ());
-                    recyclerView.setLayoutManager(linearLayoutManager);
-                }
+                            if (mEventsList.isEmpty()) {
+                                noEventsTextView.setVisibility(View.VISIBLE);
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            }
 
-            }
+                            Collections.sort(mEventsList, new Comparator<Event>() {
+                                @Override
+                                public int compare(Event event, Event t1) {
+                                    if (event.getDeadline() < t1.getDeadline())
+                                        return -1;
+                                    if (event.getDeadline() > t1.getDeadline())
+                                        return 1;
+                                    return 0;
+                                }
+                            });
+                            recyclerView.setVisibility(View.GONE);
+                            VolunteerEventsAdapter adapter = new VolunteerEventsAdapter(mEventsList,
+                                    getContext(),
+                                    getResources(), OrganiserEventsAdapter.ALL_EVENTS,
+                                    VolunteerEventsFragment
+                                            .this, 1);
+                            recyclerView.setAdapter(adapter);
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity
+                                    ());
+                            recyclerView.setLayoutManager(linearLayoutManager);
+                        }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("VolEventsF: loadFilterQ", databaseError.getMessage());
-            }
-        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("VolEventsF: loadFilterQ", databaseError.getMessage());
+                    }
+                });
     }
 
     @Override
@@ -255,7 +254,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!TextUtils.equals(filterType, actionFilter.getSelectedItem().toString())) {
                     filterType = actionFilter.getSelectedItem().toString();
-                    noEvents.setVisibility(View.GONE);
+                    noEventsTextView.setVisibility(View.GONE);
                     if (TextUtils.equals(filterType, "All")) {
                         loadEvents();
                     } else {
@@ -334,7 +333,7 @@ public class VolunteerEventsFragment extends Fragment implements SwipeRefreshLay
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.animate()
                 .alpha(1f)
-                .setDuration(mLongAnimTime)
+                .setDuration(mMediumAnimTime)
                 .setListener(null);
         mSwipeRefreshLayout.setRefreshing(false);
     }

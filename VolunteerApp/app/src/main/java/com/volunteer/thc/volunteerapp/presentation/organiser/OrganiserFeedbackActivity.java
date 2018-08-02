@@ -34,7 +34,8 @@ public class OrganiserFeedbackActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organiser_feedback);
 
-        final String eventName = getIntent().getStringExtra("name");
+        final String eventName = getIntent().getStringExtra("eventName");
+        final String eventID = getIntent().getStringExtra("eventID");
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(eventName);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -67,7 +68,7 @@ public class OrganiserFeedbackActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     mVolunteers.add(dataSnapshot.getValue(Volunteer.class));
                     if (TextUtils.equals(acceptedUsers.get(acceptedUsers.size() - 1), volunteerID)) {
-                        EventFeedbackVolunteersAdapter adapter = new EventFeedbackVolunteersAdapter(mVolunteers, eventName, acceptedUsers,
+                        EventFeedbackVolunteersAdapter adapter = new EventFeedbackVolunteersAdapter(mVolunteers, eventID ,eventName, acceptedUsers,
                                 new ActionListener.FeedbackDoneListener() {
                                     @Override
                                     public void onFeedbackCompleted() {
