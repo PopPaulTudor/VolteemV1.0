@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -37,8 +36,7 @@ public class ChatFragment extends Fragment {
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ListView listChat;
     private ChatAdapter chatAdapter;
-    private TextView noChatText;
-    private ImageView noChatImage;
+    private TextView noChatTextView;
     final ArrayList<ChatSingle> array = new ArrayList<>();
     final ArrayList<ChatSingle> arrayCopy = new ArrayList<>();
 
@@ -52,16 +50,12 @@ public class ChatFragment extends Fragment {
 
         chatAdapter = new ChatAdapter(getContext(), array);
         listChat.setAdapter(chatAdapter);
-        noChatImage = (ImageView) v.findViewById(R.id.no_chat_image);
-        noChatText = (TextView) v.findViewById(R.id.no_chat_text);
+        noChatTextView = v.findViewById(R.id.no_chat_text);
 
         mDatabase.child("conversation").orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                noChatImage.setVisibility(View.GONE);
-                noChatText.setVisibility(View.GONE);
-
+                noChatTextView.setVisibility(View.GONE);
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     ChatSingle chatData = data.getValue(ChatSingle.class);
                     boolean change = false;
@@ -75,11 +69,8 @@ public class ChatFragment extends Fragment {
                         arrayCopy.add(chatData);
                         chatAdapter.add(chatData);
                         chatAdapter.notifyDataSetChanged();
-
                     }
                 }
-
-
                 listChat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -125,8 +116,6 @@ public class ChatFragment extends Fragment {
 
                                                 }
                                             });
-
-
                                         }
 
                                         @Override
@@ -142,7 +131,6 @@ public class ChatFragment extends Fragment {
 
                             }
                         });
-
                     }
                 });
 
@@ -184,8 +172,7 @@ public class ChatFragment extends Fragment {
                                         chatAdapter.notifyDataSetChanged();
 
                                         if (chatAdapter.isEmpty()) {
-                                            noChatImage.setVisibility(View.VISIBLE);
-                                            noChatText.setVisibility(View.VISIBLE);
+                                            noChatTextView.setVisibility(View.VISIBLE);
                                             listChat.setVisibility(View.GONE);
                                         }
 
@@ -200,16 +187,12 @@ public class ChatFragment extends Fragment {
                 });
 
                 if (arrayCopy.isEmpty()) {
-                    noChatImage.setVisibility(View.VISIBLE);
-                    noChatText.setVisibility(View.VISIBLE);
+                    noChatTextView.setVisibility(View.VISIBLE);
                     listChat.setVisibility(View.GONE);
                 } else {
-                    noChatImage.setVisibility(View.GONE);
-                    noChatText.setVisibility(View.GONE);
+                    noChatTextView.setVisibility(View.GONE);
                     listChat.setVisibility(View.VISIBLE);
                 }
-
-
             }
 
             @Override
@@ -217,16 +200,6 @@ public class ChatFragment extends Fragment {
 
             }
         });
-
-
-
         return v;
-
     }
-
-
-
-
-
-
 }

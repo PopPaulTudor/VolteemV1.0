@@ -26,7 +26,7 @@
             android:layout_marginStart="30dp"
             android:background="@drawable/edit_text_box"
             android:gravity="center"
-            android:hint="Email"
+            android:hint="@string/email"
             android:inputType="textEmailAddress"
             android:maxLines="1"
             android:padding="5dp"
@@ -56,7 +56,6 @@
             android:background="@drawable/edit_text_box"
             android:gravity="center"
             android:hint="@string/password"
-            android:imeActionId="@+id/login"
             android:imeOptions="actionUnspecified"
             android:inputType="textPassword"
             android:maxLines="1"
@@ -100,7 +99,7 @@
         android:layout_below="@id/forgot_password"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="OR"
+        android:text="@string/or"
         android:textSize="14sp" />
 
     <Button

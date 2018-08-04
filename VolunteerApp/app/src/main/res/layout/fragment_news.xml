@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/newsRecView"
@@ -11,22 +10,16 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    <ImageView
-        android:id="@+id/no_news_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/ic_news"
-        android:visibility="gone" />
-
     <TextView
         android:id="@+id/no_news_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/no_news_image"
-        android:text="No news."
+        android:layout_centerVertical="true"
+        android:drawableTop="@drawable/ic_news"
+        android:text="@string/no_news"
+        android:textColor="@android:color/black"
         android:textSize="20sp"
         android:visibility="gone" />
+
 </RelativeLayout>

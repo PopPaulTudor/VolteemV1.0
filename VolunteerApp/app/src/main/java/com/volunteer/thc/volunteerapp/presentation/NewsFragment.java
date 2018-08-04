@@ -39,16 +39,14 @@ public class NewsFragment extends Fragment implements ActionListener.NewsDeleted
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ArrayList<NewsMessage> news = new ArrayList<>();
     private RecyclerView newsRecView;
-    private TextView noNewsText;
-    private ImageView noNewsImage;
+    private TextView noNewsTextView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news, container, false);
 
-        noNewsText = view.findViewById(R.id.no_news_text);
-        noNewsImage = view.findViewById(R.id.no_news_image);
+        noNewsTextView = view.findViewById(R.id.no_news_text);
         newsRecView = view.findViewById(R.id.newsRecView);
         newsRecView.setHasFixedSize(true);
         mDatabase.child("news").orderByChild("receivedBy").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -59,8 +57,7 @@ public class NewsFragment extends Fragment implements ActionListener.NewsDeleted
                 }
 
                 if(news.isEmpty()){
-                    noNewsImage.setVisibility(View.VISIBLE);
-                    noNewsText.setVisibility(View.VISIBLE);
+                    noNewsTextView.setVisibility(View.VISIBLE);
                 }
 
                 Collections.reverse(news);
@@ -83,7 +80,6 @@ public class NewsFragment extends Fragment implements ActionListener.NewsDeleted
 
     @Override
     public void onNewsDeleted() {
-        noNewsImage.setVisibility(View.VISIBLE);
-        noNewsText.setVisibility(View.VISIBLE);
+        noNewsTextView.setVisibility(View.VISIBLE);
     }
 }
