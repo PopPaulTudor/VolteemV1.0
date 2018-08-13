@@ -1,6 +1,7 @@
 package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -39,12 +41,14 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.presentation.CreateEventActivity;
 import com.volunteer.thc.volunteerapp.presentation.LoginActivity;
 import com.volunteer.thc.volunteerapp.presentation.MainActivity;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -61,7 +65,8 @@ public class VolunteerRegisterFragment extends Fragment {
     private static final int GALLERY_INTENT = 1;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
-    private EditText mEmail, mPassword, mPhone, mCity, mAge, mFirstname, mLastname, mConfirmPass;
+    private EditText mEmail, mPassword, mPhone, mCity, mBirthdate, mFirstname, mLastname, mConfirmPass;
+    private long birthdate;
     private Button mRegister, mBack;
     private Intent intent;
     private ProgressDialog mProgressDialog;
@@ -87,7 +92,7 @@ public class VolunteerRegisterFragment extends Fragment {
         mPassword = view.findViewById(R.id.password);
         mPhone = view.findViewById(R.id.user_phone);
         mCity = view.findViewById(R.id.user_city);
-        mAge = view.findViewById(R.id.user_age);
+        mBirthdate = view.findViewById(R.id.user_age);
         mFirstname = view.findViewById(R.id.first_name);
         mLastname = view.findViewById(R.id.last_name);
         mImage = view.findViewById(R.id.photo);
@@ -102,6 +107,26 @@ public class VolunteerRegisterFragment extends Fragment {
         uriMale = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + getResources().getResourcePackageName(R.drawable.user)
                 + '/' + getResources().getResourceTypeName(R.drawable.user) + '/' + getResources().getResourceEntryName(R.drawable.user));
+
+        mBirthdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Calendar myCalendar = Calendar.getInstance();
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+                        month++;
+                        mBirthdate.setText(dayOfMonth + "/" + month + "/" + year);
+                        month--;
+                        myCalendar.set(year, month, dayOfMonth, 12, 15, 0);
+                        birthdate = myCalendar.getTimeInMillis();
+
+                    }
+                }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.show();
+            }
+        });
 
         uri = uriMale;
         Picasso.get().load(uri).fit().centerCrop().into(mImage);
@@ -187,7 +212,7 @@ public class VolunteerRegisterFragment extends Fragment {
                             mFirstname.setVisibility(View.GONE);
                             mLastname.setVisibility(View.GONE);
                             mCity.setVisibility(View.GONE);
-                            mAge.setVisibility(View.GONE);
+                            mBirthdate.setVisibility(View.GONE);
                             mRegister.setVisibility(View.VISIBLE);
                             StorageReference mStorage = FirebaseStorage.getInstance().getReference();
 
@@ -196,11 +221,10 @@ public class VolunteerRegisterFragment extends Fragment {
                             String userID = user.getUid();
                             String user_firstname = mFirstname.getText().toString();
                             String user_lastname = mLastname.getText().toString();
-                            int user_age = Integer.parseInt(mAge.getText().toString());
                             String user_city = mCity.getText().toString();
                             String user_phone = mPhone.getText().toString();
 
-                            Volunteer volunteer1 = new Volunteer(user_firstname, user_lastname, email, user_age, user_city, user_phone, mGender);
+                            Volunteer volunteer1 = new Volunteer(user_firstname, user_lastname, email, birthdate, user_city, user_phone, mGender);
                             mDatabase.child("users").child("volunteers").child(userID).setValue(volunteer1);
 
                             if (mGender.equals("Male")) {
@@ -258,7 +282,7 @@ public class VolunteerRegisterFragment extends Fragment {
     private boolean validateForm() {
         boolean valid;
         valid = (editTextIsValid(mEmail) && editTextIsValid(mPassword) && editTextIsValid(mFirstname) &&
-                editTextIsValid(mLastname) && editTextIsValid(mAge) && editTextIsValid(mPhone) && editTextIsValid(mCity) && (uri != null) && checkPass());
+                editTextIsValid(mLastname) && editTextIsValid(mBirthdate) && editTextIsValid(mPhone) && editTextIsValid(mCity) && (uri != null) && checkPass());
         valid &= !TextUtils.isEmpty(mGender);
         return valid;
     }

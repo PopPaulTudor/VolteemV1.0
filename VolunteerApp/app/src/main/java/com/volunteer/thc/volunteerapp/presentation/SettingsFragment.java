@@ -139,17 +139,21 @@ public class SettingsFragment extends Fragment {
         generateOrganiserRegisterCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String code = UUID.randomUUID().toString();
-                mDatabase.child("codes").push().setValue(code);
+                //TODO when testing is over, restart de code system
+                //final String code = UUID.randomUUID().toString();
+                //mDatabase.child("codes").push().setValue(code);
                 AlertDialog codeAlertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle("Generated code")
-                        .setMessage("Code: " + code)
+                        //.setTitle("Generated code")
+                        .setTitle("Code")
+                        //.setMessage("Code: " + code)
+                        .setMessage("While testing the app, use the code \"thankyoufortesting\".")
                         .setCancelable(false)
                         .setPositiveButton("Copy to clipboard", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 ClipboardManager clipboardManager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                                ClipData clip = ClipData.newPlainText("Code", code);
+                                ClipData clip = ClipData.newPlainText("Code", "thankyoufortesting");
+                                //ClipData clip = ClipData.newPlainText("Code", code);
                                 clipboardManager.setPrimaryClip(clip);
                                 Toast.makeText(getActivity(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
                             }

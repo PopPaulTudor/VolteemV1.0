@@ -106,7 +106,7 @@ public class OrganiserRegisterFragment extends Fragment {
                                 if (TextUtils.equals(code, String.valueOf(dataSnapshot1.getValue()))) {
                                     foundCode = true;
                                     createAccount(mEmail.getText().toString(), mPassword.getText().toString());
-                                    mDatabase.child("codes/" + dataSnapshot1.getKey()).setValue(null);
+                                    //mDatabase.child("codes/" + dataSnapshot1.getKey()).setValue(null);
                                     break;
                                 }
                             }

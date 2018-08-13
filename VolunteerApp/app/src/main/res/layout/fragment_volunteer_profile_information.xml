@@ -203,23 +203,12 @@
                     android:layout_marginTop="10dp"
                     android:background="@android:color/transparent"
                     android:inputType="phone"
-                    android:maxLength="6"
+                    android:maxLength="15"
+                    android:focusable="false"
                     android:text=""
                     android:textColor="@color/black"
                     android:textSize="13sp"
                     tools:ignore="LabelFor,TextFields" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/ProfileVolunteerDate"
-                    android:layout_alignStart="@+id/ProfileVolunteerDate"
-                    android:layout_marginStart="23dp"
-                    android:text="@string/years"
-
-                    android:textColor="@android:color/black"
-                    android:textSize="13sp" />
 
                 <View
                     android:id="@+id/line5"

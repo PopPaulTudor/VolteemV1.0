@@ -67,60 +67,61 @@ public class FirebaseNewsService extends Service {
         Log.w("FirebaseService", "created");
         prefs = getApplicationContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
+        if (user != null) {
+            mDatabase.child("news").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    if (user != null) {
+                        NewsMessage newsMessage = dataSnapshot.getValue(NewsMessage.class);
 
-        mDatabase.child("news").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (user != null) {
-                    NewsMessage newsMessage = dataSnapshot.getValue(NewsMessage.class);
-
-                    if (newsMessage.getContent().contains("A new contract has been uploaded for")) {
-                        sendNews(newsMessage);
-                        mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
-
-                    } else {
-                        if (!newsMessage.isStarred() && (newsMessage.getExpireDate() + 604800000) < date.getTimeInMillis()) {
+                        if (newsMessage.getContent().contains("A new contract has been uploaded for")) {
+                            sendNews(newsMessage);
                             mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
+
                         } else {
-                            if (!newsMessage.isNotified()) {
-                                if (prefs.getBoolean("notifications", true)) {
-                                    sendNews(newsMessage);
-                                    badgeCount = prefs.getInt("badgeCount", 0);
-                                    ++badgeCount;
-                                    prefs.edit().putInt("badgeCount", badgeCount).apply();
-                                    ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
-                                }
-                                mDatabase.child("news/" + dataSnapshot.getKey() + "/notified").setValue(true);
-                                if (newsMessage.getType() == NewsMessage.EVENT_DELETED) {
-                                    mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
+                            if (!newsMessage.isStarred() && (newsMessage.getExpireDate() + 604800000) < date.getTimeInMillis()) {
+                                mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
+                            } else {
+                                if (!newsMessage.isNotified()) {
+                                    if (prefs.getBoolean("notifications", true)) {
+                                        sendNews(newsMessage);
+                                        badgeCount = prefs.getInt("badgeCount", 0);
+                                        ++badgeCount;
+                                        prefs.edit().putInt("badgeCount", badgeCount).apply();
+                                        ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
+                                    }
+                                    mDatabase.child("news/" + dataSnapshot.getKey() + "/notified").setValue(true);
+                                    if (newsMessage.getType() == NewsMessage.EVENT_DELETED) {
+                                        mDatabase.child("news/" + newsMessage.getNewsID()).setValue(null);
+                                    }
                                 }
                             }
-                        }
 
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-            }
+                }
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-            }
+                }
 
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-            }
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("NewsService", databaseError.getMessage());
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("NewsService", databaseError.getMessage());
+                }
+            });
+        }
 
 
         mDatabase.child("conversation").orderByChild("receivedBy").equalTo(user.getUid()).addChildEventListener(new ChildEventListener() {

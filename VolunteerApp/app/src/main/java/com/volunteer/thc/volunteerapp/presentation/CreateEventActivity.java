@@ -97,6 +97,8 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_create_event);
+
         Configuration conf = getResources().getConfiguration();
         if (conf.smallestScreenWidthDp >= 600) { // now it is at least a tablet with 7'in
             if (conf.smallestScreenWidthDp >= 720) { // now it is a 10'in tablet
@@ -107,7 +109,7 @@ public class CreateEventActivity extends AppCompatActivity {
         } else { // now it is a regular device below 7`in
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         }
-        setContentView(R.layout.activity_create_event);
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(getString(R.string.new_event));
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
