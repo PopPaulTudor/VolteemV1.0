@@ -39,14 +39,12 @@ import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.ChatSingle;
 import com.volunteer.thc.volunteerapp.model.Event;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
-import com.volunteer.thc.volunteerapp.model.OrganiserRating;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.chat.ConversationActivity;
 import com.volunteer.thc.volunteerapp.presentation.organiser.OrganiserSingleEventRegisteredUsersFragment;
 import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.util.VolteemConstants;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.UUID;
@@ -112,10 +110,10 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
     public void onBindViewHolder(final EventVolunteersAdapter.EventViewHolder holder, final int position) {
 
         mShortAnimTime = context.getResources().getInteger(android.R.integer.config_shortAnimTime);
-
+        int age = CalendarUtil.getAgeFromBirthdate(listVolunteer.get(position).getBirthdate());
         holder.nameVolunteer.setText(listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname());
         holder.cityVolunteer.setText("City: " + listVolunteer.get(position).getCity());
-        holder.ageVolunteer.setText("Age: " + listVolunteer.get(position).getAge());
+        holder.ageVolunteer.setText("Age: " + age);
         holder.emailVolunteer.setText("Email: " + listVolunteer.get(position).getEmail());
 
         mStorage.child("Photos").child("User").child(volunteerIDs.get(position)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -124,7 +122,6 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                 Picasso.get().load(uri).fit().centerCrop().into(holder.volunteerImage);
             }
         });
-
 
         if (classParent.contains("accept")) {
             holder.phoneVolunteer.setText("Experience: " + listVolunteer.get(position).getExperience());
@@ -202,14 +199,13 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                         } else {
                             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                                 final String feedbackText = dataSnapshot1.getValue().toString();
-                                mDatabase.child("users/organisers/" + dataSnapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener
+                                mDatabase.child("events/" + dataSnapshot1.getKey()).addListenerForSingleValueEvent(new ValueEventListener
                                         () {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot2) {
                                         ++counter;
-                                        OrganiserRating rating = dataSnapshot2.child("org_rating").getValue(OrganiserRating.class);
-                                        String company = dataSnapshot2.child("company").getValue().toString();
-                                        feedback.add(company + ", " + new DecimalFormat("#.##").format(rating.getRating()) + "/5: " + feedbackText);
+                                        String eventName = dataSnapshot2.child("name").getValue().toString();
+                                        feedback.add(eventName + ": " + feedbackText);
                                         if (counter == count) {
                                             progressBar.setVisibility(View.GONE);
 
@@ -323,13 +319,13 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                         int selectedItemID = radioGroup.getCheckedRadioButtonId();
                         switch (selectedItemID) {
                             case R.id.not_respect_duties:
-                                mDatabase.child("users/volunteers/" + volunteerIDs.get(position) + "/feedback" + user.getUid()).setValue("This" +
+                                mDatabase.child("users/volunteers/" + volunteerIDs.get(position) + "/feedback" + event.getEventID()).setValue("This" +
                                         " user has been kicked out from " + event.getName() + " for not respecting his duties.");
                                 removeVolunteerFromEvent(position);
                                 kickVolunteerDialog.dismiss();
                                 break;
                             case R.id.inappropriate_behaviour:
-                                mDatabase.child("users/volunteers/" + volunteerIDs.get(position) + "/feedback" + user.getUid()).setValue("This" +
+                                mDatabase.child("users/volunteers/" + volunteerIDs.get(position) + "/feedback" + event.getEventID()).setValue("This" +
                                         " user has been kicked out from " + event.getName() + " for having inappropriate behaviour.");
                                 removeVolunteerFromEvent(position);
                                 kickVolunteerDialog.dismiss();
@@ -347,7 +343,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
                                 if (reason.isEmpty()) {
                                     Toast.makeText(context, "You've selected Other, please write the reason.", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    mDatabase.child("users/volunteers/" + volunteerIDs.get(position) + "/feedback" + user.getUid()).setValue("This" +
+                                    mDatabase.child("users/volunteers/" + volunteerIDs.get(position) + "/feedback" + event.getEventID()).setValue("This" +
                                             " user has been kicked out from " + event.getName() + " with the feedback: \"" + reason + "\".");
                                     removeVolunteerFromEvent(position);
                                     kickVolunteerDialog.dismiss();
@@ -433,7 +429,7 @@ public class EventVolunteersAdapter extends RecyclerView.Adapter<EventVolunteers
             public void onClick(View v) {
 
                 final Intent intent = new Intent(context, ConversationActivity.class);
-                intent.putExtra("statusVolunteer",accepted);
+                intent.putExtra("statusVolunteer", accepted);
 
 
                 mDatabase.child("conversation").orderByChild("receivedBy").equalTo(volunteerIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {

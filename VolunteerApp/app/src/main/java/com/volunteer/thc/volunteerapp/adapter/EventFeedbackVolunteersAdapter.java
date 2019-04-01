@@ -21,9 +21,11 @@ import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.callback.ActionListener;
 import com.volunteer.thc.volunteerapp.model.NewsMessage;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
+import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Cristi on 8/14/2017.
@@ -57,9 +59,11 @@ public class EventFeedbackVolunteersAdapter extends RecyclerView.Adapter<EventFe
 
     @Override
     public void onBindViewHolder(EventViewHolder holder, final int position) {
+
+        int age = CalendarUtil.getAgeFromBirthdate(listVolunteer.get(position).getBirthdate());
         holder.nameVolunteer.setText(listVolunteer.get(position).getFirstname() + " " + listVolunteer.get(position).getLastname());
         holder.cityVolunteer.setText("City: " + listVolunteer.get(position).getCity());
-        holder.ageVolunteer.setText("Age: " + listVolunteer.get(position).getAge());
+        holder.ageVolunteer.setText("Age: " + age);
         holder.emailVolunteer.setText("Email: " + listVolunteer.get(position).getEmail());
         holder.phoneVolunteer.setText("Phone: " + listVolunteer.get(position).getPhone());
         holder.expVolunteer.setText("Experience: " + listVolunteer.get(position).getExperience());

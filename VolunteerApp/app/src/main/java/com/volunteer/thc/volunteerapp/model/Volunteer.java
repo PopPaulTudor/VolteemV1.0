@@ -8,18 +8,19 @@ package com.volunteer.thc.volunteerapp.model;
 public class Volunteer {
 
     private String firstname, lastname, email, city, phone, gender;
-    private int age, experience;
+    private int experience;
+    private long birthdate;
 
     public Volunteer() { ///constructor is empty to be able to call dataSnapshot on this class
 
     }
 
-    public Volunteer(String firstname, String lastname, String email, int age, String city, String phone, String gender) {
+    public Volunteer(String firstname, String lastname, String email, long birthdate, String city, String phone, String gender) {
 
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
-        this.age = age;
+        this.birthdate = birthdate;
         this.city = city;
         this.phone = phone;
         this.experience = 0;
@@ -58,14 +59,6 @@ public class Volunteer {
         this.experience = experience;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
     public String getPhone() {
         return phone;
     }
@@ -90,5 +83,11 @@ public class Volunteer {
         this.gender = gender;
     }
 
+    public long getBirthdate() {
+        return birthdate;
+    }
 
+    public void setBirthdate(long birthdate) {
+        this.birthdate = birthdate;
+    }
 }

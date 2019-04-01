@@ -48,7 +48,7 @@ public final class CalendarUtil {
         if (minute < 10) {
             clock = clock + 0 + minute;
         } else {
-            clock=clock+minute;
+            clock = clock + minute;
         }
 
         return clock;
@@ -57,5 +57,17 @@ public final class CalendarUtil {
     public static long getCurrentTimeInMillis() {
         Calendar calendar = Calendar.getInstance();
         return calendar.getTimeInMillis();
+    }
+
+    public static int getAgeFromBirthdate(long birthdateInMillis) {
+        Calendar birthCalendar = Calendar.getInstance();
+        Calendar nowCalendar = Calendar.getInstance();
+        birthCalendar.setTimeInMillis(birthdateInMillis);
+        nowCalendar.setTimeInMillis(getCurrentTimeInMillis());
+        int age = nowCalendar.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR);
+        if (nowCalendar.get(Calendar.DAY_OF_YEAR) < birthCalendar.get(Calendar.DAY_OF_YEAR)) {
+            --age;
+        }
+        return age;
     }
 }

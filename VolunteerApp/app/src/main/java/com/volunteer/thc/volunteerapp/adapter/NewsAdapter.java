@@ -130,7 +130,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
-               // mDatabase.child("news/" + newsList.get(position).getNewsID()).setValue(null);
+                mDatabase.child("news/" + newsList.get(position).getNewsID()).setValue(null);
                 newsList.remove(position);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, newsList.size());

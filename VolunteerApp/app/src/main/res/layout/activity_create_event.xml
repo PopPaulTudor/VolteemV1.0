@@ -16,7 +16,7 @@
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,7 +37,7 @@
                         android:id="@+id/event_deadline"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:hint="Name"
+                        android:hint="@string/name"
                         android:inputType="textPersonName" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -50,7 +50,7 @@
                         android:id="@+id/event_location"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:hint="Location"
+                        android:hint="@string/location"
                         android:inputType="textPersonName" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -65,7 +65,7 @@
                         android:layout_height="match_parent"
                         android:ems="10"
                         android:focusable="false"
-                        android:hint="Start event date " />
+                        android:hint="@string/start_event_date" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -79,7 +79,7 @@
                         android:layout_height="match_parent"
                         android:ems="10"
                         android:focusable="false"
-                        android:hint="Finish event date" />
+                        android:hint="@string/finish_event_date" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -97,7 +97,7 @@
                         android:id="@+id/event_description"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:hint="Description"
+                        android:hint="@string/description"
                         android:inputType="textPersonName" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -112,7 +112,7 @@
                         android:layout_height="match_parent"
                         android:ems="10"
                         android:focusable="false"
-                        android:hint="Deadline" />
+                        android:hint="@string/deadline" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -124,7 +124,7 @@
                         android:id="@+id/event_size"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:hint="Volunteers needed"
+                        android:hint="@string/volunteers_needed"
                         android:inputType="number" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -137,7 +137,7 @@
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
                     android:background="@color/colorPrimary"
-                    android:text="Upload Contract"
+                    android:text="@string/upload_contract"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
 
@@ -148,7 +148,7 @@
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
                     android:background="@color/colorPrimary"
-                    android:text="SAVE"
+                    android:text="@string/save"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
 
@@ -159,7 +159,7 @@
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
                     android:background="@color/colorPrimary"
-                    android:text="CANCEL"
+                    android:text="@string/cancel"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
 
@@ -176,7 +176,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:text="Please select which questions you want the volunteers to answer about themselves."
+        android:text="@string/select_questions"
         android:textSize="17sp"
         android:textStyle="bold"
         android:visibility="gone" />
@@ -209,7 +209,7 @@
                 android:layout_margin="5dp"
                 android:layout_marginTop="5dp"
                 android:background="@color/colorPrimary"
-                android:text="DONE"
+                android:text="@string/done"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 

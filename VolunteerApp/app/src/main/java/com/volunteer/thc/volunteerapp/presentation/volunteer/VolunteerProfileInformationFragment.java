@@ -2,6 +2,7 @@ package com.volunteer.thc.volunteerapp.presentation.volunteer;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -45,9 +47,12 @@ import com.squareup.picasso.Picasso;
 import com.volunteer.thc.volunteerapp.R;
 import com.volunteer.thc.volunteerapp.model.Volunteer;
 import com.volunteer.thc.volunteerapp.presentation.DisplayPhotoFragment;
+import com.volunteer.thc.volunteerapp.util.CalendarUtil;
 import com.volunteer.thc.volunteerapp.util.ImageUtils;
 import com.volunteer.thc.volunteerapp.util.PermissionUtil;
 import com.volunteer.thc.volunteerapp.util.VolteemConstants;
+
+import java.util.Calendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -69,6 +74,7 @@ public class VolunteerProfileInformationFragment extends Fragment {
     private CircleImageView circleImageViewMenu;
     private FloatingActionButton mEditFloating, mCancelFloating;
     private ImageView mImagePhone, mImageAge, mImageLocation;
+    private long birthdate;
     private Uri uri;
 
     @Nullable
@@ -94,6 +100,25 @@ public class VolunteerProfileInformationFragment extends Fragment {
         mImageLocation = view.findViewById(R.id.icon_edit_city);
         mImagePhone = view.findViewById(R.id.icon_edit_phone);
 
+        mAge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Calendar myCalendar = Calendar.getInstance();
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+                        month++;
+                        mAge.setText(dayOfMonth + "/" + month + "/" + year);
+                        month--;
+                        myCalendar.set(year, month, dayOfMonth, 12, 15, 0);
+                        birthdate = myCalendar.getTimeInMillis();
+
+                    }
+                }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.show();
+            }
+        });
 
         mEmail.setTag(mEmail.getKeyListener());
         mAge.setTag(mAge.getKeyListener());
@@ -190,8 +215,8 @@ public class VolunteerProfileInformationFragment extends Fragment {
                 mPhone.setText(volunteer1.getPhone());
                 mCity.setText(volunteer1.getCity());
                 mVolunteerName.setText(volunteer1.getFirstname() + " " + volunteer1.getLastname());
-                mAge.setText(volunteer1.getAge() + "");
-
+                mAge.setText(CalendarUtil.getStringDateFromMM(volunteer1.getBirthdate()));
+                Log.e("date", CalendarUtil.getStringDateFromMM(volunteer1.getBirthdate()));
                 mStorage.child("Photos").child("User").child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
@@ -241,10 +266,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
 
     private void onSaveItemPressed() {
         String currentCity = null, currentPhone = null, fullName = null;
-        int currentAge = 0;
-        if (mAge.getText().length() != 0) {
-            currentAge = Integer.parseInt(mAge.getText().toString());
-        }
         if (mCity.getText().length() != 0) {
             currentCity = mCity.getText().toString();
         }
@@ -254,9 +275,9 @@ public class VolunteerProfileInformationFragment extends Fragment {
 
         if (validateForm()) {
 
-            if (currentAge != volunteer1.getAge() && currentAge != 0) {
-                mDatabase.child("users").child("volunteers").child(user.getUid()).child("age").setValue(currentAge);
-                volunteer1.setAge(currentAge);
+            if (birthdate != volunteer1.getBirthdate()) {
+                mDatabase.child("users").child("volunteers").child(user.getUid()).child("birthdate").setValue(birthdate);
+                volunteer1.setBirthdate(birthdate);
             }
 
             if (currentCity != null && !currentCity.equals(volunteer1.getCity()) && !currentCity.isEmpty()) {
@@ -285,7 +306,7 @@ public class VolunteerProfileInformationFragment extends Fragment {
     private void onCancelItemPressed() {
         mPhone.setText(volunteer1.getPhone());
         mCity.setText(volunteer1.getCity());
-        mAge.setText(volunteer1.getAge() + "");
+        mAge.setText(CalendarUtil.getStringDateFromMM(volunteer1.getBirthdate()));
         mPhone.setError(null);
         mCity.setError(null);
         mAge.setError(null);
@@ -315,8 +336,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
     private void toggleFocusOn() {
         mEmail.setFocusableInTouchMode(true);
         mEmail.setFocusable(true);
-        mAge.setFocusableInTouchMode(true);
-        mAge.setFocusable(true);
         mPhone.setFocusableInTouchMode(true);
         mPhone.setFocusable(true);
         mCity.setFocusableInTouchMode(true);
@@ -326,8 +345,6 @@ public class VolunteerProfileInformationFragment extends Fragment {
     private void toggleFocusOff() {
         mEmail.setFocusableInTouchMode(false);
         mEmail.setFocusable(false);
-        mAge.setFocusableInTouchMode(false);
-        mAge.setFocusable(false);
         mPhone.setFocusableInTouchMode(false);
         mPhone.setFocusable(false);
         mCity.setFocusableInTouchMode(false);
